@@ -9,6 +9,7 @@ import { SlGraph } from "react-icons/sl";
 import { SiSpeedtest } from "react-icons/si";
 import { FaCheck } from "react-icons/fa";
 import { IoWarningOutline, IoDocumentTextOutline } from "react-icons/io5";
+import MapComponent from '@/components/map/mapComponent';
 
 // Register Chart.js components
 ChartJS.register(
@@ -333,6 +334,7 @@ const DashboardSummary = () => {
           </div>
         )}
       </div>
+      <MapComponent/>
     </div>
   );
 };

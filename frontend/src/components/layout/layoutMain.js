@@ -8,8 +8,8 @@ import listMenu from "@/data/menu.json";
 import listMenuMobility from "@/data/menuMobility.json";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/authContext";
-import Breadcrumbs from "./breadcrumbs";
-import ProfileDropdown from "@/components/profileDropdown"
+import Breadcrumbs from "../ui/breadcrumbs";
+import ProfileDropdown from "@/components/dialog/dialogProfile"
 import PageWrapper from "./wrapper";
 import { Logout } from '@/app/auth/logout';
 

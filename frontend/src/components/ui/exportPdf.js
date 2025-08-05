@@ -5,10 +5,8 @@ import { FaFilePdf } from 'react-icons/fa6';
 import Image from 'next/image';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
-import HourVehicleTable from './HourVehicleTable';
-import ClasificationTable from "@/components/clasificationTable";
 
-const ExportSurveyTable = ({ vehicleData, activeClassification }) => {
+const ExportSurveyTable = ({ vehicleData }) => {
   const tableRef = useRef(null);
 
   const exportToPdfAdvanced = async () => {
@@ -223,8 +221,6 @@ const ExportSurveyTable = ({ vehicleData, activeClassification }) => {
           </div>
         </div>
 
-        <HourVehicleTable statusHour={true} vehicleData={vehicleData} classification={activeClassification} customSize={true} pdf={true} />
-        <ClasificationTable typeClass={activeClassification} customSize={true} />
       </div>
     </div>
   );

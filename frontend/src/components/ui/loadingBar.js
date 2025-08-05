@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../../contexts/authContext';
 function LoadingBar() {
     const {loading, setLoading} = useAuth()
     const [progress, setProgress] = useState(0);

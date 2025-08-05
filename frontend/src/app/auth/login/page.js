@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { authApi } from '@/lib/apiService';
+import { toast } from 'react-toastify';
 import { useAuth } from '@/contexts/authContext';
 import { fakeToken } from '@/lib/fake';
 // import { Eye, EyeOff } from 'lucide-react';
@@ -42,6 +43,8 @@ export default function AuthLogin () {
       login(fakeToken)
       router.push('/');
       return;
+    } else {
+      toast.error("Password atau Username salah", {position: "top-center"})
     }
 
     setLoading(true);

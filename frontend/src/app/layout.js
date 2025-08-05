@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google"
-import LoadingBar from "@/components/loadingBar";
-import LayoutMain from "@/components/layoutMain";
+import LoadingBar from "@/components/ui/loadingBar";
+import LayoutMain from "@/components/layout/layoutMain";
 import { AuthProvider } from "@/contexts/authContext";
 import { Suspense } from "react";
 
