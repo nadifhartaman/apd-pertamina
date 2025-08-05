@@ -10,3 +10,10 @@ export const fakeToken = [
   ),
   "fakesignature123" // just a dummy string
 ].join(".");
+
+export const fakeUser = {
+  id: 1,
+  name: "test",
+  email: "test@pertamina.go.id",
+  roles: [{name: 'admin'}]
+}

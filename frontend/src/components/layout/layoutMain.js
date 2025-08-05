@@ -8,9 +8,9 @@ import listMenu from "@/data/menu.json";
 import listMenuMobility from "@/data/menuMobility.json";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/authContext";
-import Breadcrumbs from "../ui/breadcrumbs";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
 import ProfileDropdown from "@/components/dialog/dialogProfile"
-import PageWrapper from "./wrapper";
+import PageWrapper from "../layout/wrapper";
 import { Logout } from '@/app/auth/logout';
 
 // import { redirect } from "next/navigation";
@@ -71,7 +71,7 @@ const Layout = ({ children }) => {
   //   return <div>{children}</div>;
   // }
 
-  if (!token && pathname !== "/dashboard/mobility" || pathname === "/auth" || pathname === "/not-found") {
+  if (!token && pathname !== "/dashboard/mobility" || pathname === "/auth/login" || pathname === "/not-found") {
     return (
       <div>
         <ToastContainer />
@@ -105,7 +105,7 @@ const Layout = ({ children }) => {
           <div className="flex-1 overflow-auto">
             <PageWrapper>
               <ToastContainer />
-              <div className="hidden 2xl:flex flex-1 text-sm font-normal place-items-center w-fit xl:w-full not-xl:overflow-hidden not-xl:text-ellipsis h-20 justify-between">
+              <div className="hidden 2xl:flex flex-1 text-sm font-normal place-items-center w-fit xl:w-full not-xl:overflow-hidden not-xl:text-ellipsis h-20 justify-between pr-3">
                 <Breadcrumbs />
                 <div className="flex-none">
                   <div className="flex menu-horizontal items-center gap-2">

@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import { authApi } from '@/lib/apiService';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/contexts/authContext';
-import { fakeToken } from '@/lib/fake';
+import { fakeToken, fakeUser } from '@/lib/fake';
 // import { Eye, EyeOff } from 'lucide-react';
 
 export default function AuthLogin () {
@@ -40,7 +40,7 @@ export default function AuthLogin () {
       email === 'test@pertamina.go.id' &&
       password === 'password'
     ) {
-      login(fakeToken)
+      login(fakeToken, fakeUser)
       router.push('/');
       return;
     } else {
@@ -59,6 +59,7 @@ export default function AuthLogin () {
     //   setErrorMessage("Invalid username or password");
     // }
   };
+  
 
   return (
     <div className="min-h-screen md:flex md:flex-row-reverse">
