@@ -21,10 +21,7 @@ export function AuthProvider ({ children }) {
   const [user, setUser] = useState(null);
 
   const protectedRoutes = [
-    "/", "/cctvTest", "/survei-proporsi", "/manajemen-kamera",
-    "/survei-pergerakan", "/survei-simpang", "/survei-lhrk",
-    "/trainning-export", "/form-sa-ii", "/form-sa-i", "/form-sa-iii",
-    "/form-sa-iv", "/form-sa-v"
+    "/", "/camera/manager", "/camera"
   ];
 
   function parseJwt (token) {
@@ -75,7 +72,7 @@ export function AuthProvider ({ children }) {
 
     if (storedToken && validateToken(storedToken)) {
       setToken(storedToken);
-      if (pathname === "/auth") {
+      if (pathname === "/auth/login") {
         router.push("/");
       }
     } else {
@@ -86,7 +83,7 @@ export function AuthProvider ({ children }) {
       }
       setToken(null);
       if (protectedRoutes.includes(pathname)) {
-        router.push("/auth");
+        router.push("/auth/login");
       }
     }
 
@@ -143,7 +140,7 @@ const logout = () => {
   Cookies.remove("id_user");
   setToken(null);
   setUserId(0);
-  router.push("/auth");
+  router.push("/auth/login");
 };
 
 const userRoles = user?.roles?.map(item => item.name.toLowerCase()) || [];

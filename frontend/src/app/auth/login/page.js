@@ -5,8 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { authApi } from '@/lib/apiService';
+import { toast } from 'react-toastify';
 import { useAuth } from '@/contexts/authContext';
-import { fakeToken } from '@/lib/fake';
+import { fakeToken, fakeUser } from '@/lib/fake';
 // import { Eye, EyeOff } from 'lucide-react';
 
 export default function AuthLogin () {
@@ -15,8 +16,8 @@ export default function AuthLogin () {
   const [loaded, setLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test@pertamina.go.id');
+  const [password, setPassword] = useState('password');
   const [showPassword, setShowPassword] = useState(false);
 
   // const handleLogin = (e) => {
@@ -39,9 +40,11 @@ export default function AuthLogin () {
       email === 'test@pertamina.go.id' &&
       password === 'password'
     ) {
-      login(fakeToken)
+      login(fakeToken, fakeUser)
       router.push('/');
       return;
+    } else {
+      toast.error("Password atau Username salah", {position: "top-center"})
     }
 
     setLoading(true);
@@ -56,6 +59,7 @@ export default function AuthLogin () {
     //   setErrorMessage("Invalid username or password");
     // }
   };
+  
 
   return (
     <div className="min-h-screen md:flex md:flex-row-reverse">
@@ -120,7 +124,7 @@ export default function AuthLogin () {
                 />
                 <button
                   type="button"
-                  className="absolute top-0 right-0 h-full px-3 text-sm text-gray-500"
+                  className="absolute top-0 right-0 h-full px-3 text-sm text-gray-500 cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? 'Sembunyi' : 'Lihat'}

@@ -2,9 +2,9 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Logout } from '@/app/auth/logout';
-import ThemeToggle from './customTheme';
+import ThemeToggle from '../ui/customTheme';
 import { FaAngleDown } from "react-icons/fa6";
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../../contexts/authContext';
 
 export default function NavbarUserDropdown () {
   const { user } = useAuth()

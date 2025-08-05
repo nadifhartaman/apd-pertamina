@@ -9,8 +9,8 @@ export function middleware (req) {
     return NextResponse.next();
   }
 
-  const protectedRoutes = ["/", "/camera"];
-  const validRoutes = ["/", "/auth/login", "/camera", "/not-found", "/auth/register"];
+  const protectedRoutes = ["/", "/camera", "/camera/manager"];
+  const validRoutes = ["/", "/auth/login", "/camera", "/not-found", "/auth/register", "/camera/manager"];
   const isRouteValid = (path) => validRoutes.includes(path);
 
   // Jika halaman bukan valid route, redirect ke not-found

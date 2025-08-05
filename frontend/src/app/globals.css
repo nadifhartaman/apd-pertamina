@@ -2,6 +2,8 @@
 @tailwind utilities;
 @import "tailwindcss";
 @plugin "daisyui";
+
+@import 'leaflet/dist/leaflet.css';
 /* {
   themes: light --default, dark --prefersdark; 
 }; */

@@ -11,7 +11,7 @@
   },
     {
     "name": "CCTV Manager",
-    "url": "/manager",
+    "url": "/camera/manager",
     "icon": "AiOutlineControl"
   }
 ]
