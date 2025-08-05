@@ -16,8 +16,8 @@ export default function AuthLogin () {
   const [loaded, setLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test@pertamina.go.id');
+  const [password, setPassword] = useState('password');
   const [showPassword, setShowPassword] = useState(false);
 
   // const handleLogin = (e) => {
@@ -124,7 +124,7 @@ export default function AuthLogin () {
                 />
                 <button
                   type="button"
-                  className="absolute top-0 right-0 h-full px-3 text-sm text-gray-500"
+                  className="absolute top-0 right-0 h-full px-3 text-sm text-gray-500 cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? 'Sembunyi' : 'Lihat'}
