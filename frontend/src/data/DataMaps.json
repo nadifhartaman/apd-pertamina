@@ -1,0 +1,32 @@
+{
+  "buildings": [
+    {
+      "id": 2,
+      "name": "Simpang Prambanan",
+      "location": { "latitude": -7.75539, "longitude": 110.48903 },
+      "model_detection": true,
+      "category": "timur"
+    },
+    {
+      "id": 4,
+      "name": "Simpang Piyungan",
+      "location": { "latitude": -7.838162, "longitude": 110.476066 },
+      "model_detection": true,
+      "category": "timur"
+    },
+    {
+      "id": 3,
+      "name": "Simpang Demen Glagah",
+      "location": { "latitude": -7.888059, "longitude": 110.092591 },
+      "model_detection": true,
+      "category": "barat"
+    },
+    {
+      "id": 5,
+      "name": "Simpang Tempel",
+      "location": { "latitude": -7.653937, "longitude": 110.325663 },
+      "model_detection": true,
+      "category": "utara"
+    }
+  ]
+}

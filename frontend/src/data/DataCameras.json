@@ -1,0 +1,37 @@
+[
+  {
+    "camera_id": 1,
+    "id": "detection1",
+    "location_id": 2,
+    "title": "Camera 1",
+    "socketEvent": "result_detection_2"
+  },
+  {
+    "camera_id": 2,
+    "id": "detection2",
+    "location_id": 2,
+    "title": "Camera 1",
+    "socketEvent": "result_detection_1"
+  },
+  {
+    "camera_id": 3,
+    "id": "detection3",
+    "location_id": 4,
+    "title": "Camera 3",
+    "socketEvent": "result_detection_3"
+  },
+  {
+    "camera_id": 4,
+    "id": "detection4",
+    "location_id": 3,
+    "title": "Camera 4",
+    "socketEvent": "result_detection_4"
+  },
+  {
+    "camera_id": 5,
+    "id": "detection5",
+    "location_id": 5,
+    "title": "Camera 5",
+    "socketEvent": "result_detection_5"
+  }
+]

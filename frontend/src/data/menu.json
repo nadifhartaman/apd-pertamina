@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Dashboard",
+    "url": "/",
+    "icon": "AiFillHome"
+  },
+    {
+    "name": "Camera",
+    "url": "/camera",
+    "icon": "FaCameraRetro"
+  },
+    {
+    "name": "CCTV Manager",
+    "url": "/manager",
+    "icon": "AiOutlineControl"
+  }
+]

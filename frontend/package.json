@@ -1,0 +1,54 @@
+{
+  "name": "mobility-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Indismart",
+  "description": "Dishub Jogja Frontend",
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@amcharts/amcharts5": "^5.13.4",
+    "@react-pdf/renderer": "^4.3.0",
+    "@turf/turf": "^7.2.0",
+    "@vis.gl/react-maplibre": "^8.0.1",
+    "axios": "^1.8.4",
+    "chart.js": "^4.4.8",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "d3": "^7.9.0",
+    "daisyui": "^5.0.0",
+    "file-saver": "^2.0.5",
+    "formidable": "^3.5.2",
+    "hls.js": "^1.6.5",
+    "html2canvas": "^1.4.1",
+    "html2canvas-pro": "^1.5.11",
+    "js-cookie": "^3.0.5",
+    "jspdf": "^3.0.1",
+    "lucide-react": "^0.536.0",
+    "maplibre-gl": "^5.2.0",
+    "next": "^15.3.3",
+    "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-date-range": "^2.0.1",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "react-toastify": "^11.0.5",
+    "react-window": "^1.8.11",
+    "recharts": "^2.15.2",
+    "socket.io-client": "^4.8.1",
+    "tesseract.js": "^6.0.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.12",
+    "tailwindcss": "^4.0.12"
+  },
+  "resolutions": {
+    "@tensorflow/tfjs-core": "4.22.0"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "yearlyData": [
+    {
+      "year": "2025",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "year": "2026",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "year": "2027",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "year": "2028",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    }
+  ],
+  "lhrtData": [
+    {
+      "period": "LHRT 2025",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "period": "LHRT 2026",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "period": "LHRT 2027",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "period": "LHRT 2028",
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    }
+  ]
+}

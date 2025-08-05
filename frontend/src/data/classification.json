@@ -1,0 +1,272 @@
+[
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "SM",
+    "mainCategory": "Sepeda Motor",
+    "subCode": "SM",
+    "subCategory": "(Sepeda Motor)",
+    "description": "Kendaraan Bermotor dengan 2 atau 3 Roda (Sepeda Motor, Skuter, Becak/Gerobak Motor)"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "MP",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "MP",
+    "subCategory": "(Mobil Pribadi)",
+    "description": "Kendaraan Penumpang dengan 4 (2 baris) s.d. 7 (3 baris) tempat duduk (Jeep, Sedan, Minibus, Taksi)"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "MP",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "AUP",
+    "subCategory": "(Angkutan Umum Penumpang)",
+    "description": "Kendaraan Penumpang maksimal 15 tempat duduk (Angkot, Angkudes, Mikrobus/Van)"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "MP",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "TR",
+    "subCategory": "(Truk Ringan)",
+    "description": "Mobil Bak Terbuka dan Bak Tertutup, Mobil Hantaran (Pickup, Box, Blind Van)"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "KS",
+    "mainCategory": "Kendaraan Sedang",
+    "subCode": "BS",
+    "subCategory": "(Bus Sedang)",
+    "description": "Kendaraan Penumpang dengan tempat duduk antara 16 s.d. 26 kursi (Bus Engkel, Bus Antar Jemput, Bus Kota, AKDP)"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "KS",
+    "mainCategory": "Kendaraan Sedang",
+    "subCode": "TS",
+    "subCategory": "(Truk Sedang)",
+    "description": "Truk 2 Sumbu dengan 4 atau 6 roda jarak gandar 3.5 s.d. 5 m"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "BB",
+    "mainCategory": "Bus Besar (Kendaraan Berat)",
+    "subCode": "BB",
+    "subCategory": "(Bus Besar)",
+    "description": "Bus 2 atau 3 Sumbu dengan jarak gandar 5 s.d. 6 m (Bus AKAP, Bus Wisata, Bus Tingkat)"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "TB",
+    "mainCategory": "Truk Besar (Kendaraan Berat)",
+    "subCode": "TB",
+    "subCategory": "(Truk Berat)",
+    "description": "Truk 2 Sumbu dengan 6 roda jarak gandar 5 s.d. 6 m, Truk 3 Sumbu atau lebih (Truk Trintin, Tronton, Trinton)"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "TB",
+    "mainCategory": "Truk Besar (Kendaraan Berat)",
+    "subCode": "Gandeng/Semitrailer",
+    "subCategory": "",
+    "description": "Truk Gandeng, Truk Semitrailer"
+  },
+  {
+    "type": "luar_kota",
+    "title": "PKJI 2023 Luar Kota",
+    "mainCode": "KTB",
+    "mainCategory": "Kendaraan Tidak Bermotor",
+    "subCode": "KTB",
+    "subCategory": "(Kendaraan Tidak Bermotor)",
+    "description": "Sepeda, Becak, Gerobak Dorong/Tarik, Kendaraan ditarik Hewan (Pedati, Delman, Andong)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "SM",
+    "mainCategory": "Sepeda Motor",
+    "subCode": "SM",
+    "subCategory": "(Sepeda Motor)",
+    "description": "Kendaraan Bermotor dengan 2 atau 3 Roda (Sepeda Motor, Skuter, Becak/Gerobak Motor)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "MP",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "MP",
+    "subCategory": "(Mobil Pribadi)",
+    "description": "Kendaraan Penumpang dengan 4 (2 baris) s.d. 7 (3 baris) tempat duduk (Jeep, Sedan, Minibus, Taksi)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "MP",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "AUP",
+    "subCategory": "(Angkutan Umum Penumpang)",
+    "description": "Kendaraan Penumpang maksimal 15 tempat duduk (Angkot, Angkudes, Mikrobus/Van)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "MP",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "TR",
+    "subCategory": "(Truk Ringan)",
+    "description": "Mobil Bak Terbuka dan Bak Tertutup, Mobil Hantaran (Pickup, Box, Blind Van)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "KS",
+    "mainCategory": "Kendaraan Sedang",
+    "subCode": "BS",
+    "subCategory": "(Bus Sedang)",
+    "description": "Kendaraan Penumpang dengan tempat duduk antara 16 s.d. 26 kursi (Bus Engkel, Bus Antar Jemput, Bus Kota, AKDP)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "KS",
+    "mainCategory": "Kendaraan Sedang",
+    "subCode": "TS",
+    "subCategory": "(Truk Sedang)",
+    "description": "Truk 2 Sumbu dengan 4 atau 6 roda jarak gandar 3.5 s.d. 5 m"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "KS",
+    "mainCategory": "Kendaraan Sedang",
+    "subCode": "BB",
+    "subCategory": "(Bus Besar)",
+    "description": "Bus 2 atau 3 Sumbu dengan jarak gandar 5 s.d. 6 m (Bus AKAP, Bus Wisata, Bus Tingkat)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "KS",
+    "mainCategory": "Kendaraan Sedang",
+    "subCode": "TB",
+    "subCategory": "(Truk Berat)",
+    "description": "Truk 2 Sumbu dengan 6 roda jarak gandar 5 s.d. 6 m, Truk 3 Sumbu atau lebih (Truk Trintin, Tronton, Trinton)"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "KS",
+    "mainCategory": "Kendaraan Sedang",
+    "subCode": "Gandeng/Semitrailer",
+    "subCategory": "",
+    "description": "Truk Gandeng, Truk Semitrailer"
+  },
+  {
+    "type": "dalam_kota",
+    "title": "PKJI 2023 Dalam Kota",
+    "mainCode": "KTB",
+    "mainCategory": "Kendaraan Tidak Bermotor",
+    "subCode": "KTB",
+    "subCategory": "(Kendaraan Tidak Bermotor)",
+    "description": "Sepeda, Becak, Gerobak Dorong/Tarik, Kendaraan ditarik Hewan (Pedati, Delman, Andong)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Motor",
+    "mainCategory": "Sepeda Motor",
+    "subCode": "SM",
+    "subCategory": "(Sepeda Motor)",
+    "description": "Kendaraan Bermotor dengan 2 atau 3 Roda (Sepeda Motor, Skuter, Becak/Gerobak Motor)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Mobil",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "MP",
+    "subCategory": "(Mobil Pribadi)",
+    "description": "Kendaraan Penumpang dengan 4 (2 baris) s.d. 7 (3 baris) tempat duduk (Jeep, Sedan, Minibus, Taksi)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Mobil",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "AUP",
+    "subCategory": "(Angkutan Umum Penumpang)",
+    "description": "Kendaraan Penumpang maksimal 15 tempat duduk (Angkot, Angkudes, Mikrobus/Van)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Mobil",
+    "mainCategory": "Mobil Penumpang (Kendaraan Ringan)",
+    "subCode": "TR",
+    "subCategory": "(Truk Ringan)",
+    "description": "Mobil Bak Terbuka dan Bak Tertutup, Mobil Hantaran (Pickup, Box, Blind Van)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Bus",
+    "mainCategory": "Bus (Kendaraan Berat)",
+    "subCode": "BS",
+    "subCategory": "(Bus Sedang)",
+    "description": "Kendaraan Penumpang dengan tempat duduk antara 16 s.d. 26 kursi (Bus Engkel, Bus Antar Jemput, Bus Kota, AKDP)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Bus",
+    "mainCategory": "Bus (Kendaraan Berat)",
+    "subCode": "TS",
+    "subCategory": "(Truk Sedang)",
+    "description": "Truk 2 Sumbu dengan 4 atau 6 roda jarak gandar 3,5 s.d. 5 m"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Truk",
+    "mainCategory": "Bus Besar (Kendaraan Berat)",
+    "subCode": "BB",
+    "subCategory": "(Bus Besar)",
+    "description": "Bus 2 atau 3 Sumbu dengan jarak gandar 5 s.d. 6 m (Bus AKAP, Bus Wisata, Bus Tingkat)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Truk",
+    "mainCategory": "Truk (Kendaraan Berat)",
+    "subCode": "TB",
+    "subCategory": "(Truk Berat)",
+    "description": "Truk 2 Sumbu dengan 6 roda jarak gandar 5 s.d. 6 m, Truk 3 Sumbu atau lebih (Truk Trintin, Tronton, Trinton)"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "Truk",
+    "mainCategory": "Truk (Kendaraan Berat)",
+    "subCode": "Gandeng/Semitrailer",
+    "subCategory": "",
+    "description": "Truk Gandeng, Truk Semitrailer"
+  },
+  {
+    "type": "tipikal",
+    "title": "Tipikal",
+    "mainCode": "KTB",
+    "mainCategory": "Kendaraan Tidak Bermotor",
+    "subCode": "KTB",
+    "subCategory": "(Kendaraan Tidak Bermotor)",
+    "description": "Sepeda, Becak, Gerobak Dorong/Tarik, Kendaraan ditarik Hewan (Pedati, Delman, Andong)"
+  }
+]

@@ -1,0 +1,389 @@
+{
+  "vehicleData": [
+  {
+    "period": "Malam",
+    "timeSlots": [
+      {
+        "time": "00:00 - 00:15",
+        "status": 1,
+        "data": {
+          "sm": 12,
+          "mp": 8,
+          "aup": 5,
+          "trMp": 3,
+          "tr": 7,
+          "bs": 2,
+          "ts": 4,
+          "bb": 1,
+          "tb": 3,
+          "gandengSemitrailer": 0,
+          "ktb": 6,
+          "total": 51
+        }
+      },
+      {
+        "time": "00:15 - 00:30",
+        "status": 1,
+        "data": {
+          "sm": 10,
+          "mp": 6,
+          "aup": 4,
+          "trMp": 2,
+          "tr": 5,
+          "bs": 3,
+          "ts": 2,
+          "bb": 0,
+          "tb": 1,
+          "gandengSemitrailer": 1,
+          "ktb": 4,
+          "total": 38
+        }
+      },
+      {
+        "time": "--",
+        "status": 0,
+        "data": {
+          "sm": 0,
+          "mp": 0,
+          "aup": 0,
+          "trMp": 0,
+          "tr": 0,
+          "bs": 0,
+          "ts": 0,
+          "bb": 0,
+          "tb": 0,
+          "gandengSemitrailer": 0,
+          "ktb": 0,
+          "total": 0
+        }
+      },
+      {
+        "time": "04:45 - 05:00",
+        "status": 1,
+        "data": {
+          "sm": 15,
+          "mp": 9,
+          "aup": 6,
+          "trMp": 4,
+          "tr": 8,
+          "bs": 3,
+          "ts": 2,
+          "bb": 1,
+          "tb": 2,
+          "gandengSemitrailer": 1,
+          "ktb": 7,
+          "total": 58
+        }
+      }
+    ]
+  },
+  {
+    "period": "Pagi",
+    "timeSlots": [
+      {
+        "time": "00:00 - 00:15",
+        "status": 1,
+        "data": {
+          "sm": 25,
+          "mp": 15,
+          "aup": 8,
+          "trMp": 6,
+          "tr": 12,
+          "bs": 4,
+          "ts": 3,
+          "bb": 2,
+          "tb": 4,
+          "gandengSemitrailer": 1,
+          "ktb": 9,
+          "total": 89
+        }
+      },
+      {
+        "time": "00:15 - 00:30",
+        "status": 1,
+        "data": {
+          "sm": 30,
+          "mp": 18,
+          "aup": 10,
+          "trMp": 7,
+          "tr": 15,
+          "bs": 5,
+          "ts": 4,
+          "bb": 2,
+          "tb": 3,
+          "gandengSemitrailer": 1,
+          "ktb": 12,
+          "total": 107
+        }
+      },
+      {
+        "time": "--",
+        "status": 0,
+        "data": {
+          "sm": 0,
+          "mp": 0,
+          "aup": 0,
+          "trMp": 0,
+          "tr": 0,
+          "bs": 0,
+          "ts": 0,
+          "bb": 0,
+          "tb": 0,
+          "gandengSemitrailer": 0,
+          "ktb": 0,
+          "total": 0
+        }
+      },
+      {
+        "time": "04:45 - 05:00",
+        "status": 1,
+        "data": {
+          "sm": 28,
+          "mp": 16,
+          "aup": 9,
+          "trMp": 7,
+          "tr": 14,
+          "bs": 6,
+          "ts": 5,
+          "bb": 3,
+          "tb": 4,
+          "gandengSemitrailer": 2,
+          "ktb": 10,
+          "total": 104
+        }
+      }
+    ]
+  },
+  {
+    "period": "Siang",
+    "timeSlots": [
+      {
+        "time": "00:00 - 00:15",
+        "status": 1,
+        "data": {
+          "sm": 22,
+          "mp": 14,
+          "aup": 7,
+          "trMp": 5,
+          "tr": 10,
+          "bs": 4,
+          "ts": 3,
+          "bb": 2,
+          "tb": 3,
+          "gandengSemitrailer": 1,
+          "ktb": 8,
+          "total": 79
+        }
+      },
+      {
+        "time": "00:15 - 00:30",
+        "status": 1,
+        "data": {
+          "sm": 20,
+          "mp": 12,
+          "aup": 6,
+          "trMp": 4,
+          "tr": 9,
+          "bs": 3,
+          "ts": 2,
+          "bb": 1,
+          "tb": 2,
+          "gandengSemitrailer": 1,
+          "ktb": 7,
+          "total": 67
+        }
+      },
+      {
+        "time": "--",
+        "status": 0,
+        "data": {
+          "sm": 0,
+          "mp": 0,
+          "aup": 0,
+          "trMp": 0,
+          "tr": 0,
+          "bs": 0,
+          "ts": 0,
+          "bb": 0,
+          "tb": 0,
+          "gandengSemitrailer": 0,
+          "ktb": 0,
+          "total": 0
+        }
+      },
+      {
+        "time": "04:45 - 05:00",
+        "status": 1,
+        "data": {
+          "sm": 24,
+          "mp": 15,
+          "aup": 8,
+          "trMp": 6,
+          "tr": 11,
+          "bs": 5,
+          "ts": 4,
+          "bb": 2,
+          "tb": 3,
+          "gandengSemitrailer": 1,
+          "ktb": 9,
+          "total": 88
+        }
+      }
+    ]
+  },
+  {
+    "period": "Sore",
+    "timeSlots": [
+      {
+        "time": "00:00 - 00:15",
+        "status": 1,
+        "data": {
+          "sm": 26,
+          "mp": 16,
+          "aup": 9,
+          "trMp": 7,
+          "tr": 13,
+          "bs": 5,
+          "ts": 4,
+          "bb": 2,
+          "tb": 3,
+          "gandengSemitrailer": 1,
+          "ktb": 10,
+          "total": 96
+        }
+      },
+      {
+        "time": "00:15 - 00:30",
+        "status": 1,
+        "data": {
+          "sm": 24,
+          "mp": 15,
+          "aup": 8,
+          "trMp": 6,
+          "tr": 12,
+          "bs": 4,
+          "ts": 3,
+          "bb": 2,
+          "tb": 3,
+          "gandengSemitrailer": 1,
+          "ktb": 9,
+          "total": 87
+        }
+      },
+      {
+        "time": "--",
+        "status": 0,
+        "data": {
+          "sm": 0,
+          "mp": 0,
+          "aup": 0,
+          "trMp": 0,
+          "tr": 0,
+          "bs": 0,
+          "ts": 0,
+          "bb": 0,
+          "tb": 0,
+          "gandengSemitrailer": 0,
+          "ktb": 0,
+          "total": 0
+        }
+      },
+      {
+        "time": "04:45 - 05:00",
+        "status": 1,
+        "data": {
+          "sm": 28,
+          "mp": 17,
+          "aup": 9,
+          "trMp": 7,
+          "tr": 14,
+          "bs": 6,
+          "ts": 5,
+          "bb": 3,
+          "tb": 4,
+          "gandengSemitrailer": 2,
+          "ktb": 11,
+          "total": 106
+        }
+      }
+    ]
+  },
+  {
+    "period": "Malam",
+    "timeSlots": [
+      {
+        "time": "00:00 - 00:15",
+        "status": 1,
+        "data": {
+          "sm": 18,
+          "mp": 10,
+          "aup": 6,
+          "trMp": 4,
+          "tr": 8,
+          "bs": 3,
+          "ts": 2,
+          "bb": 1,
+          "tb": 2,
+          "gandengSemitrailer": 1,
+          "ktb": 7,
+          "total": 62
+        }
+      },
+      {
+        "time": "00:15 - 00:30",
+        "status": 1,
+        "data": {
+          "sm": 16,
+          "mp": 9,
+          "aup": 5,
+          "trMp": 3,
+          "tr": 7,
+          "bs": 2,
+          "ts": 2,
+          "bb": 1,
+          "tb": 2,
+          "gandengSemitrailer": 0,
+          "ktb": 6,
+          "total": 53
+        }
+      },
+      {
+        "time": "--",
+        "status": 0,
+        "data": {
+          "sm": 0,
+          "mp": 0,
+          "aup": 0,
+          "trMp": 0,
+          "tr": 0,
+          "bs": 0,
+          "ts": 0,
+          "bb": 0,
+          "tb": 0,
+          "gandengSemitrailer": 0,
+          "ktb": 0,
+          "total": 0
+        }
+      },
+      {
+        "time": "04:45 - 05:00",
+        "status": 1,
+        "data": {
+          "sm": 14,
+          "mp": 8,
+          "aup": 4,
+          "trMp": 3,
+          "tr": 6,
+          "bs": 2,
+          "ts": 1,
+          "bb": 1,
+          "tb": 1,
+          "gandengSemitrailer": 0,
+          "ktb": 5,
+          "total": 45
+          }
+        }
+      ]
+    }
+  ]
+}

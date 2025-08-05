@@ -1,0 +1,172 @@
+{
+  "tableData": [
+    {
+      "kodePendekat": "U",
+      "tipePendekat": "P",
+      "arah": "Terlindung",
+      "pemisahanLurusRka": "",
+      "phases": {
+        "f1": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f2": {
+          "mf": "",
+          "whi": "33",
+          "wAll": {
+            "wk": "24",
+            "wms": "3"
+          }
+        },
+        "f3": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f4": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        }
+      },
+      "whi": "1",
+      "s": ""
+    },
+    {
+      "kodePendekat": "S",
+      "tipePendekat": "P",
+      "arah": "Terlindung",
+      "pemisahanLurusRka": "",
+      "phases": {
+        "f1": {
+          "mf": "0",
+          "whi": "29",
+          "wAll": {
+            "wk": "3",
+            "wms": "1"
+          }
+        },
+        "f2": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f3": {
+          "mf": "",
+          "whi": "70",
+          "wAll": {
+            "wk": "41",
+            "wms": "3"
+          }
+        },
+        "f4": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        }
+      },
+      "whi": "3",
+      "s": "14"
+    },
+    {
+      "kodePendekat": "T",
+      "tipePendekat": "O",
+      "arah": "Terlawan",
+      "pemisahanLurusRka": 1,
+      "phases": {
+        "f1": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f2": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f3": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f4": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        }
+      },
+      "whi": "",
+      "s": "117"
+    },
+    {
+      "kodePendekat": "B",
+      "tipePendekat": "P/O",
+      "arah": "Terlindung/Terlawan",
+      "pemisahanLurusRka": "",
+      "phases": {
+        "f1": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f2": {
+          "mf": "",
+          "whi": "",
+          "wAll": {
+            "wk": "",
+            "wms": ""
+          }
+        },
+        "f3": {
+          "mf": "",
+          "whi": "61",
+          "wAll": {
+            "wk": "9",
+            "wms": "0"
+          }
+        },
+        "f4": {
+          "mf": "",
+          "whi": "0",
+          "wAll": {
+            "wk": "70",
+            "wms": "41"
+          }
+        }
+      },
+      "whi": "3",
+      "s": "3"
+    }
+  ]
+}

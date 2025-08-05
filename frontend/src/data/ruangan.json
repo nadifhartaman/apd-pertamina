@@ -1,0 +1,205 @@
+[
+  {
+    "building": "Gedung A",
+    "totalFloors": 2,
+    "totalRooms": 12,
+    "floors": [
+      {
+        "floor": 1,
+        "floorImage": "/denah_ruangan.svg",
+        "rooms": [
+          {
+            "id": 1,
+            "name": "Ruang Meeting 1",
+            "description": "Ruang rapat kecil dengan sistem face recognition untuk kontrol akses.",
+            "x": 215,
+            "y": 135,
+            "width": 90,
+            "height": 140,
+            "type": "face recognition"
+          },
+          {
+            "id": 2,
+            "name": "Ruang Meeting 2",
+            "description": "Digunakan untuk pertemuan tim dengan pengenalan wajah otomatis.",
+            "x": 30,
+            "y": 212,
+            "width": 92,
+            "height": 60,
+            "type": "face recognition"
+          },
+          {
+            "id": 3,
+            "name": "Ruang Meeting 3",
+            "description": "Area rapat yang dipantau untuk aktivitas mencurigakan secara real-time.",
+            "x": 310,
+            "y": 135,
+            "width": 90,
+            "height": 140,
+            "type": "suspicious person"
+          },
+          {
+            "id": 4,
+            "name": "Ruang Meeting 4",
+            "description": "Ruang diskusi yang memiliki pengawasan untuk deteksi orang mencurigakan.",
+            "x": 402,
+            "y": 135,
+            "width": 90,
+            "height": 140,
+            "type": "suspicious person"
+          },
+          {
+            "id": 5,
+            "name": "Ruang Manajemen",
+            "description": "Diperuntukkan untuk tim manajemen, dilengkapi pengawasan ketat.",
+            "x": 495,
+            "y": 135,
+            "width": 90,
+            "height": 140,
+            "type": "suspicious person"
+          },
+          {
+            "id": 6,
+            "name": "Ruang Meeting 6",
+            "description": "Meeting room yang aman dengan verifikasi identitas berbasis wajah.",
+            "x": 590,
+            "y": 135,
+            "width": 90,
+            "height": 140,
+            "type": "face recognition"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "floorImage": "/denah_ruangan.svg",
+        "rooms": [
+          {
+            "id": 13,
+            "name": "Ruang Kerja 1",
+            "description": "Ruang kerja staf dengan akses masuk menggunakan face recognition.",
+            "x": 28,
+            "y": 310,
+            "width": 90,
+            "height": 140,
+            "type": "face recognition"
+          },
+          {
+            "id": 14,
+            "name": "Ruang Kerja 2",
+            "description": "Tempat kerja yang diawasi kamera untuk mendeteksi aktivitas mencurigakan.",
+            "x": 120,
+            "y": 310,
+            "width": 90,
+            "height": 140,
+            "type": "suspicious person"
+          },
+          {
+            "id": 15,
+            "name": "Ruang Presentasi",
+            "description": "Ruang presentasi dengan akses aman melalui pengenalan wajah.",
+            "x": 215,
+            "y": 310,
+            "width": 90,
+            "height": 140,
+            "type": "face recognition"
+          },
+          {
+            "id": 16,
+            "name": "Ruang CEO",
+            "description": "Kantor eksekutif tertinggi yang dilengkapi sistem deteksi keamanan tinggi.",
+            "x": 310,
+            "y": 310,
+            "width": 90,
+            "height": 140,
+            "type": "suspicious person"
+          },
+          {
+            "id": 17,
+            "name": "Ruang Manajemen",
+            "description": "Tempat kerja manajemen yang dipantau ketat untuk keamanan aktivitas.",
+            "x": 402,
+            "y": 135,
+            "width": 90,
+            "height": 140,
+            "type": "suspicious person"
+          },
+          {
+            "id": 18,
+            "name": "Ruang Server",
+            "description": "Ruang penyimpanan server dengan kontrol akses berbasis wajah.",
+            "x": 495,
+            "y": 135,
+            "width": 90,
+            "height": 140,
+            "type": "face recognition"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "building": "Gedung B",
+    "totalFloors": 1,
+    "location": {
+      "latitude": -6.9175,
+      "longitude": 107.6200
+    },
+    "floors": [
+      {
+        "floor": 1,
+        "floorImage": "/denah_ruangan2.svg",
+        "rooms": [
+          {
+            "id": 19,
+            "name": "Ruang Barat 1",
+            "description": "Ruang parkir yang aman dengan kontrol akses berbasis wajah.",
+            "x": 28,
+            "y": 228,
+            "width": 160,
+            "height": 100,
+            "type": "suspicious person"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "building": "Parkir A",
+    "totalFloors": 1,
+    "location": {
+      "latitude": -6.9175,
+      "longitude": 107.6200
+    },
+    "floors": [
+      {
+        "floor": 1,
+        "floorImage": "/denah_parkir.svg",
+        "rooms": [
+          {
+            "id": 19,
+            "name": "Pintu Masuk 1",
+            "description": "Ruang parkir yang aman dengan kontrol akses berbasis wajah.",
+            "x": 45,
+            "y": 115,
+            "width": 65,
+            "height": 90,
+            "type": "plate detection"
+          },
+          {
+            "id": 20,
+            "name": "Pintu Keluar 1",
+            "description": "Ruang parkir yang aman dengan kontrol akses berbasis wajah.",
+            "x": 45,
+            "y": 390,
+            "width": 65,
+            "height": 90,
+            "type": "plate detection"
+          }
+        ]
+      }
+    ]
+  }
+]

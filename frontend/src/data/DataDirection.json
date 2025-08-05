@@ -1,0 +1,148 @@
+{
+  "west": {
+    "vehicleData": [
+      {
+        "period": "Malam",
+        "timeSlots": [
+          {
+            "time": "00:00 - 00:15",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 8, "mp": 5, "ks": 3, "ktb": 3, "total": 19 },
+              "rightTurn": { "sm": 4, "mp": 3, "ks": 2, "ktb": 3, "total": 12 },
+              "leftTurn": { "sm": 3, "mp": 2, "ks": 1, "ktb": 1, "total": 7 },
+              "total": { "sm": 15, "mp": 10, "ks": 6, "ktb": 7, "total": 38 }
+            }
+          },
+          {
+            "time": "00:15 - 00:30",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 7, "mp": 4, "ks": 2, "ktb": 2, "total": 15 },
+              "rightTurn": { "sm": 3, "mp": 2, "ks": 1, "ktb": 2, "total": 8 },
+              "leftTurn": { "sm": 2, "mp": 1, "ks": 1, "ktb": 1, "total": 5 },
+              "total": { "sm": 12, "mp": 7, "ks": 4, "ktb": 5, "total": 28 }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "north": {
+    "vehicleData": [
+      {
+        "period": "Pagi",
+        "timeSlots": [
+          {
+            "time": "06:00 - 06:15",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 15, "mp": 8, "ks": 4, "ktb": 2, "total": 29 },
+              "rightTurn": { "sm": 7, "mp": 4, "ks": 2, "ktb": 1, "total": 14 },
+              "leftTurn": { "sm": 10, "mp": 6, "ks": 3, "ktb": 2, "total": 21 },
+              "total": { "sm": 32, "mp": 18, "ks": 9, "ktb": 5, "total": 64 }
+            }
+          },
+          {
+            "time": "06:15 - 06:30",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 18, "mp": 10, "ks": 5, "ktb": 3, "total": 36 },
+              "rightTurn": { "sm": 8, "mp": 5, "ks": 3, "ktb": 2, "total": 18 },
+              "leftTurn": { "sm": 12, "mp": 7, "ks": 4, "ktb": 2, "total": 25 },
+              "total": { "sm": 38, "mp": 22, "ks": 12, "ktb": 7, "total": 79 }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "south": {
+    "vehicleData": [
+      {
+        "period": "Siang",
+        "timeSlots": [
+          {
+            "time": "12:00 - 12:15",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 20, "mp": 12, "ks": 6, "ktb": 4, "total": 42 },
+              "rightTurn": { "sm": 9, "mp": 5, "ks": 3, "ktb": 2, "total": 19 },
+              "leftTurn": { "sm": 11, "mp": 7, "ks": 4, "ktb": 3, "total": 25 },
+              "total": { "sm": 40, "mp": 24, "ks": 13, "ktb": 9, "total": 86 }
+            }
+          },
+          {
+            "time": "12:15 - 12:30",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 22, "mp": 13, "ks": 7, "ktb": 5, "total": 47 },
+              "rightTurn": { "sm": 10, "mp": 6, "ks": 3, "ktb": 2, "total": 21 },
+              "leftTurn": { "sm": 13, "mp": 8, "ks": 4, "ktb": 3, "total": 28 },
+              "total": { "sm": 45, "mp": 27, "ks": 14, "ktb": 10, "total": 96 }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "east": {
+    "vehicleData": [
+      {
+        "period": "Pagi",
+        "timeSlots": [
+          {
+            "time": "06:00 - 06:15",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 10, "mp": 5, "ks": 3, "ktb": 2, "total": 20 },
+              "rightTurn": { "sm": 5, "mp": 3, "ks": 2, "ktb": 1, "total": 11 },
+              "leftTurn": { "sm": 6, "mp": 4, "ks": 2, "ktb": 1, "total": 13 },
+              "total": { "sm": 21, "mp": 12, "ks": 7, "ktb": 4, "total": 44 }
+            }
+          }
+        ]
+      },
+      {
+        "period": "Siang",
+        "timeSlots": [
+          {
+            "time": "12:00 - 12:15",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 20, "mp": 12, "ks": 6, "ktb": 4, "total": 42 },
+              "rightTurn": { "sm": 9, "mp": 5, "ks": 3, "ktb": 2, "total": 19 },
+              "leftTurn": { "sm": 11, "mp": 7, "ks": 4, "ktb": 3, "total": 25 },
+              "total": { "sm": 40, "mp": 24, "ks": 13, "ktb": 9, "total": 86 }
+            }
+          }
+        ]
+      },
+      {
+        "period": "Sore",
+        "timeSlots": [
+          {
+            "time": "16:00 - 16:15",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 25, "mp": 15, "ks": 8, "ktb": 5, "total": 53 },
+              "rightTurn": { "sm": 12, "mp": 7, "ks": 4, "ktb": 3, "total": 26 },
+              "leftTurn": { "sm": 15, "mp": 9, "ks": 5, "ktb": 4, "total": 33 },
+              "total": { "sm": 52, "mp": 31, "ks": 17, "ktb": 12, "total": 112 }
+            }
+          },
+          {
+            "time": "16:15 - 16:30",
+            "status": 1,
+            "data": {
+              "straight": { "sm": 27, "mp": 16, "ks": 9, "ktb": 6, "total": 58 },
+              "rightTurn": { "sm": 13, "mp": 8, "ks": 4, "ktb": 3, "total": 28 },
+              "leftTurn": { "sm": 16, "mp": 10, "ks": 5, "ktb": 4, "total": 35 },
+              "total": { "sm": 56, "mp": 34, "ks": 18, "ktb": 13, "total": 121 }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

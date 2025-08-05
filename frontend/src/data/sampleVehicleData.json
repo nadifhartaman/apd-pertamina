@@ -1,0 +1,210 @@
+{
+  "surveyInfo": {
+    "simpangCode": "SMG-001",
+    "direction": "Utara",
+    "surveyor": "Ahmad Sudrajat",
+    "date": "2023-05-12"
+  },
+  "periods": [
+    {
+      "name": "Pagi",
+      "timeSlots": [
+        {
+          "time": "06:00 - 06:15",
+          "status": 1,
+          "data": {
+            "sm": 120,
+            "mp": 45,
+            "aup": 8,
+            "trMp": 2,
+            "tr": 5,
+            "bs": 3,
+            "ts": 2,
+            "bb": 1,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 7,
+            "total": 193
+          }
+        },
+        {
+          "time": "06:15 - 06:30",
+          "status": 1,
+          "data": {
+            "sm": 135,
+            "mp": 50,
+            "aup": 10,
+            "trMp": 3,
+            "tr": 4,
+            "bs": 2,
+            "ts": 1,
+            "bb": 2,
+            "tb": 1,
+            "gandengSemitrailer": 0,
+            "ktb": 5,
+            "total": 213
+          }
+        },
+        {
+          "time": "06:30 - 06:45",
+          "status": 1,
+          "data": {
+            "sm": 150,
+            "mp": 60,
+            "aup": 12,
+            "trMp": 4,
+            "tr": 6,
+            "bs": 3,
+            "ts": 2,
+            "bb": 1,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 8,
+            "total": 246
+          }
+        },
+        {
+          "time": "06:45 - 07:00",
+          "status": 1,
+          "data": {
+            "sm": 180,
+            "mp": 75,
+            "aup": 15,
+            "trMp": 5,
+            "tr": 7,
+            "bs": 4,
+            "ts": 3,
+            "bb": 2,
+            "tb": 1,
+            "gandengSemitrailer": 0,
+            "ktb": 10,
+            "total": 302
+          }
+        }
+      ]
+    },
+    {
+      "name": "Siang",
+      "timeSlots": [
+        {
+          "time": "12:00 - 12:15",
+          "status": 1,
+          "data": {
+            "sm": 100,
+            "mp": 40,
+            "aup": 7,
+            "trMp": 3,
+            "tr": 6,
+            "bs": 5,
+            "ts": 4,
+            "bb": 3,
+            "tb": 1,
+            "gandengSemitrailer": 1,
+            "ktb": 3,
+            "total": 173
+          }
+        },
+        {
+          "time": "12:15 - 12:30",
+          "status": 0,
+          "data": {
+            "sm": 95,
+            "mp": 38,
+            "aup": 6,
+            "trMp": 2,
+            "tr": 5,
+            "bs": 4,
+            "ts": 3,
+            "bb": 2,
+            "tb": 1,
+            "gandengSemitrailer": 0,
+            "ktb": 4,
+            "total": 160
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sore",
+      "timeSlots": [
+        {
+          "time": "16:00 - 16:15",
+          "status": 1,
+          "data": {
+            "sm": 200,
+            "mp": 80,
+            "aup": 12,
+            "trMp": 4,
+            "tr": 8,
+            "bs": 5,
+            "ts": 3,
+            "bb": 2,
+            "tb": 1,
+            "gandengSemitrailer": 0,
+            "ktb": 6,
+            "total": 321
+          }
+        },
+        {
+          "time": "16:15 - 16:30",
+          "status": 1,
+          "data": {
+            "sm": 230,
+            "mp": 90,
+            "aup": 15,
+            "trMp": 5,
+            "tr": 7,
+            "bs": 4,
+            "ts": 2,
+            "bb": 1,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 8,
+            "total": 362
+          }
+        }
+      ]
+    },
+    {
+      "name": "Malam",
+      "timeSlots": [
+        {
+          "time": "19:00 - 19:15",
+          "status": 1,
+          "data": {
+            "sm": 150,
+            "mp": 60,
+            "aup": 8,
+            "trMp": 3,
+            "tr": 4,
+            "bs": 2,
+            "ts": 1,
+            "bb": 1,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 3,
+            "total": 232
+          }
+        },
+        {
+          "time": "19:15 - 19:30",
+          "status": 1,
+          "data": {
+            "sm": 130,
+            "mp": 50,
+            "aup": 7,
+            "trMp": 2,
+            "tr": 3,
+            "bs": 2,
+            "ts": 1,
+            "bb": 0,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 2,
+            "total": 197
+          }
+        }
+      ]
+    }
+  ]
+}

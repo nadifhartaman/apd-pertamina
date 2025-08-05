@@ -1,0 +1,124 @@
+{
+  "holidays": [
+    {
+      "tanggal": "1 Januari 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Tahun Baru 2025 Masehi"
+    },
+    {
+      "tanggal": "27 Januari 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Isra dan Mikraj Nabi Muhammad S.A.W."
+    },
+    {
+      "tanggal": "29 Januari 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Tahun Baru Imlek 2576 Kongzili"
+    },
+    {
+      "tanggal": "19 Februari 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Hari Raya Waisak 2569"
+    },
+    {
+      "tanggal": "7 Maret 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Maulid Nabi Muhammad S.A.W."
+    },
+    {
+      "tanggal": "29 Maret 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Hari Suci Nyepi (Tahun Baru Saka 1947)"
+    },
+    {
+      "tanggal": "18 April 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Wafat Isa Al Masih (Jumat Agung)"
+    },
+    {
+      "tanggal": "31 Maret 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Idul Fitri 1446 Hijriah (Hari Pertama)"
+    },
+    {
+      "tanggal": "1 April 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Idul Fitri 1446 Hijriah (Hari Kedua)"
+    },
+    {
+      "tanggal": "2 April 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Idul Fitri 1446 Hijriah"
+    },
+    {
+      "tanggal": "3 April 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Idul Fitri 1446 Hijriah"
+    },
+    {
+      "tanggal": "4 April 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Idul Fitri 1446 Hijriah"
+    },
+    {
+      "tanggal": "7 April 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Idul Fitri 1446 Hijriah"
+    },
+    {
+      "tanggal": "1 Mei 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Hari Buruh Internasional"
+    },
+    {
+      "tanggal": "15 Mei 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Hari Kenaikan Isa Al Masih"
+    },
+    {
+      "tanggal": "1 Juni 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Hari Lahir Pancasila"
+    },
+    {
+      "tanggal": "8 Juni 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Idul Adha 1446 Hijriah"
+    },
+    {
+      "tanggal": "9 Juni 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Idul Adha 1446 Hijriah"
+    },
+    {
+      "tanggal": "7 Juli 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Tahun Baru Islam 1447 Hijriah"
+    },
+    {
+      "tanggal": "17 Agustus 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Hari Kemerdekaan Republik Indonesia"
+    },
+    {
+      "tanggal": "26 Desember 2025",
+      "events": "Libur Nasional",
+      "keterangan": "Hari Raya Natal"
+    },
+    {
+      "tanggal": "29 Desember 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Hari Raya Natal"
+    },
+    {
+      "tanggal": "30 Desember 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Hari Raya Natal"
+    },
+    {
+      "tanggal": "31 Desember 2025",
+      "events": "Cuti Bersama",
+      "keterangan": "Tahun Baru 2026 Masehi"
+    }
+  ]
+}

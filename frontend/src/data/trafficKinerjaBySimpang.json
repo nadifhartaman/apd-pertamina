@@ -1,0 +1,129 @@
+{
+  "category": [
+    {
+      "name": "Arus Kendaraan Bermotor kend / jam",
+      "directions": {
+        "north": {
+          "row1": [{ "id": "n1-1", "content": 42 }],
+          "row2": [{ "id": "n2-1", "content": 15 }],
+          "row3": [{ "id": "n3-1", "content": 89 }]
+        },
+        "south": {
+          "row1": [{ "id": "s1-1", "content": 77 }],
+          "row2": [{ "id": "s2-1", "content": 64 }],
+          "row3": [{ "id": "s3-1", "content": 13 }]
+        },
+        "east": {
+          "row1": [{ "id": "e1-1", "content": 55 }],
+          "row2": [{ "id": "e2-1", "content": 98 }],
+          "row3": [{ "id": "e3-1", "content": 26 }]
+        },
+        "west": {
+          "row1": [{ "id": "w1-1", "content": 33 }],
+          "row2": [{ "id": "w2-1", "content": 71 }],
+          "row3": [{ "id": "w3-1", "content": 6 }]
+        }
+      }
+    },
+    {
+      "name": "Arus Kendaraan Bermotor Terlindung (P) SMP / jam",
+      "directions": {
+        "north": {
+          "row1": [{ "id": "n1-1", "content": 59 }],
+          "row2": [{ "id": "n2-1", "content": 82 }],
+          "row3": [{ "id": "n3-1", "content": 44 }]
+        },
+        "south": {
+          "row1": [{ "id": "s1-1", "content": 3 }],
+          "row2": [{ "id": "s2-1", "content": 67 }],
+          "row3": [{ "id": "s3-1", "content": 21 }]
+        },
+        "east": {
+          "row1": [{ "id": "e1-1", "content": 94 }],
+          "row2": [{ "id": "e2-1", "content": 30 }],
+          "row3": [{ "id": "e3-1", "content": 79 }]
+        },
+        "west": {
+          "row1": [{ "id": "w1-1", "content": 18 }],
+          "row2": [{ "id": "w2-1", "content": 48 }],
+          "row3": [{ "id": "w3-1", "content": 97 }]
+        }
+      }
+    },
+    {
+      "name": "Arus Kendaraan Bermotor Terlawan (O) SMP / jam",
+      "directions": {
+        "north": {
+          "row1": [{ "id": "n1-1", "content": 40 }],
+          "row2": [{ "id": "n2-1", "content": 5 }],
+          "row3": [{ "id": "n3-1", "content": 100 }]
+        },
+        "south": {
+          "row1": [{ "id": "s1-1", "content": 66 }],
+          "row2": [{ "id": "s2-1", "content": 81 }],
+          "row3": [{ "id": "s3-1", "content": 20 }]
+        },
+        "east": {
+          "row1": [{ "id": "e1-1", "content": 92 }],
+          "row2": [{ "id": "e2-1", "content": 16 }],
+          "row3": [{ "id": "e3-1", "content": 70 }]
+        },
+        "west": {
+          "row1": [{ "id": "w1-1", "content": 28 }],
+          "row2": [{ "id": "w2-1", "content": 43 }],
+          "row3": [{ "id": "w3-1", "content": 35 }]
+        }
+      }
+    },
+    {
+      "name": "Arus Kend.Tak Bermotor kend / jam",
+      "directions": {
+        "north": {
+          "row1": [{ "id": "n1-1", "content": 84 }],
+          "row2": [{ "id": "n2-1", "content": 25 }],
+          "row3": [{ "id": "n3-1", "content": 62 }]
+        },
+        "south": {
+          "row1": [{ "id": "s1-1", "content": 12 }],
+          "row2": [{ "id": "s2-1", "content": 76 }],
+          "row3": [{ "id": "s3-1", "content": 49 }]
+        },
+        "east": {
+          "row1": [{ "id": "e1-1", "content": 2 }],
+          "row2": [{ "id": "e2-1", "content": 87 }],
+          "row3": [{ "id": "e3-1", "content": 68 }]
+        },
+        "west": {
+          "row1": [{ "id": "w1-1", "content": 61 }],
+          "row2": [{ "id": "w2-1", "content": 8 }],
+          "row3": [{ "id": "w3-1", "content": 36 }]
+        }
+      }
+    },
+    {
+      "name": "Rasio Belok Kendaraan",
+      "directions": {
+        "north": {
+          "row1": [{ "id": "n1-1", "content": 85 }],
+          "row2": [{ "id": "n2-1", "content": 38 }],
+          "row3": [{ "id": "n3-1", "content": 56 }]
+        },
+        "south": {
+          "row1": [{ "id": "s1-1", "content": 23 }],
+          "row2": [{ "id": "s2-1", "content": 7 }],
+          "row3": [{ "id": "s3-1", "content": 73 }]
+        },
+        "east": {
+          "row1": [{ "id": "e1-1", "content": 91 }],
+          "row2": [{ "id": "e2-1", "content": 10 }],
+          "row3": [{ "id": "e3-1", "content": 60 }]
+        },
+        "west": {
+          "row1": [{ "id": "w1-1", "content": 17 }],
+          "row2": [{ "id": "w2-1", "content": 90 }],
+          "row3": [{ "id": "w3-1", "content": 53 }]
+        }
+      }
+    }
+  ]
+}

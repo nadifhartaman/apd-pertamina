@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 2,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 3,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 4,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 5,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 6,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 7,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 8,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 9,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 10,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 11,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  },
+  {
+    "id": 12,
+    "channel": "Patuk",
+    "time": "04/02/2025 11:08:23",
+    "triggerName": "Exit",
+    "type": "Crossed line",
+    "origin": "Vehicle car",
+    "objectId": "500"
+  }
+]

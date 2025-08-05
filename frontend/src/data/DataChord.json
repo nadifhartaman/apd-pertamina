@@ -1,0 +1,40 @@
+{
+  "chordDiagram": {
+    "title": "Distribusi Arah Lalu Lintas",
+    "matrix": [
+      [0, 10, 30, 15],
+      [25, 0, 5, 20],
+      [10, 15, 0, 10],
+      [20, 10, 15, 0]
+    ],
+    "categories": ["U", "T", "B", "S"]
+  },
+  "vehicleMatrix": {
+    "title": "Matriks Asal - Tujuan (kendaraan)",
+    "matrix": [
+      [0, 137, 4, 0],
+      [864, 0, 16, 0],
+      [950, 145, 0, 14],
+      [890, 121, 0, 0]
+    ],
+    "categories": ["barat", "selatan", "timur", "utara"],
+    "rowLabels": ["barat", "selatan", "timur", "utara"],
+    "colLabels": ["barat", "selatan", "timur", "utara"],
+    "totalsRow": [2704, 403, 20, 14],
+    "totalsCol": [141, 880, 1109, 1011],
+    "grandTotal": 3141
+  },
+  "movementMatrix": {
+    "title": "Matriks Arah Pergerakan (kendaraan)",
+    "matrix": [
+      [0, 137, 14, 0],
+      [950, 121, 16, 0],
+      [864, 145, 4, 0]
+    ],
+    "rowLabels": ["Belok Kiri", "Lurus", "Belok Kanan"],
+    "colLabels": ["barat", "selatan", "timur", "utara"],
+    "totalsRow": [2704, 403, 34, 0],
+    "totalsCol": [1041, 1087, 1013],
+    "grandTotal": 3141
+  }
+}

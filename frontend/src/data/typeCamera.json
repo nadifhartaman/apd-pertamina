@@ -1,0 +1,18 @@
+{
+  "data": {
+    "type": [
+      {
+        "id": 1,
+        "name": "Face Detection"
+      },
+      {
+        "id": 2,
+        "name": "Plate Detection"
+      }, 
+      {
+        "id": 3,
+        "name": "Suspicious Detection"
+      }
+    ]
+  }
+}

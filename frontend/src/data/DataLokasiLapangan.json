@@ -1,0 +1,65 @@
+{
+  "lokasi": "tempel",
+  "data": [
+    {
+      "kodePendekat": "U",
+      "tipeLingkunganJalan": "KOM",
+      "kelasHambatanSamping": "R",
+      "median": "Y",
+      "kelandaianPendekat": "0",
+      "bkjt": "T",
+      "jarakKeKendaraanParkir": "0",
+      "lebarPendekat": {
+        "awalLajur": "11,5",
+        "garisHenti": "11,5",
+        "lajurBki": "",
+        "lajurKeluar": "11,5"
+      }
+    },
+    {
+      "kodePendekat": "S",
+      "tipeLingkunganJalan": "KIM",
+      "kelasHambatanSamping": "R",
+      "median": "Y",
+      "kelandaianPendekat": "0",
+      "bkjt": "T",
+      "jarakKeKendaraanParkir": "0",
+      "lebarPendekat": {
+        "awalLajur": "11,0",
+        "garisHenti": "11,0",
+        "lajurBki": "",
+        "lajurKeluar": "11,0"
+      }
+    },
+    {
+      "kodePendekat": "T",
+      "tipeLingkunganJalan": "KIM",
+      "kelasHambatanSamping": "R",
+      "median": "T",
+      "kelandaianPendekat": "0",
+      "bkjt": "Y",
+      "jarakKeKendaraanParkir": "0",
+      "lebarPendekat": {
+        "awalLajur": "8,5",
+        "garisHenti": "6,0",
+        "lajurBki": "2,5",
+        "lajurKeluar": "5,0"
+      }
+    },
+    {
+      "kodePendekat": "B",
+      "tipeLingkunganJalan": "KIM",
+      "kelasHambatanSamping": "R",
+      "median": "T",
+      "kelandaianPendekat": "0",
+      "bkjt": "Y",
+      "jarakKeKendaraanParkir": "0",
+      "lebarPendekat": {
+        "awalLajur": "7,0",
+        "garisHenti": "7,0",
+        "lajurBki": "",
+        "lajurKeluar": "5,0"
+      }
+    }
+  ]
+}

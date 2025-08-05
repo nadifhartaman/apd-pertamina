@@ -1,0 +1,212 @@
+{
+  "dailyData": [
+    {
+      "month": "Januari",
+      "days": [
+        {
+          "date": "2025-01-01",
+          "data": {
+            "sm": 0,
+            "mp": 0,
+            "aup": 0,
+            "trMp": 0,
+            "tr": 0,
+            "bs": 0,
+            "ts": 0,
+            "bb": 0,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 0,
+            "total": 0
+          }
+        },
+        {
+          "date": "2025-01-02",
+          "data": {
+            "sm": 0,
+            "mp": 0,
+            "aup": 0,
+            "trMp": 0,
+            "tr": 0,
+            "bs": 0,
+            "ts": 0,
+            "bb": 0,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 0,
+            "total": 0
+          }
+        },
+        {
+          "date": "2025-01-03",
+          "data": {
+            "sm": 0,
+            "mp": 0,
+            "aup": 0,
+            "trMp": 0,
+            "tr": 0,
+            "bs": 0,
+            "ts": 0,
+            "bb": 0,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 0,
+            "total": 0
+          }
+        }
+      ],
+      "workDays": 22,
+      "monthlyTotal": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "trMp": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "month": "Februari",
+      "days": [
+        {
+          "date": "2025-02-03",
+          "data": {
+            "sm": 0,
+            "mp": 0,
+            "aup": 0,
+            "trMp": 0,
+            "tr": 0,
+            "bs": 0,
+            "ts": 0,
+            "bb": 0,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 0,
+            "total": 0
+          }
+        },
+        {
+          "date": "2025-02-04",
+          "data": {
+            "sm": 0,
+            "mp": 0,
+            "aup": 0,
+            "trMp": 0,
+            "tr": 0,
+            "bs": 0,
+            "ts": 0,
+            "bb": 0,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 0,
+            "total": 0
+          }
+        },
+        {
+          "date": "2025-02-05",
+          "data": {
+            "sm": 0,
+            "mp": 0,
+            "aup": 0,
+            "trMp": 0,
+            "tr": 0,
+            "bs": 0,
+            "ts": 0,
+            "bb": 0,
+            "tb": 0,
+            "gandengSemitrailer": 0,
+            "ktb": 0,
+            "total": 0
+          }
+        }
+      ],
+      "workDays": 20,
+      "monthlyTotal": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "trMp": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    }
+  ],
+  "lhrkData": [
+    {
+      "period": "LHRK Jan",
+      "daysInPeriod": 31,
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "trMp": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      },
+      "dailyAverage": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "trMp": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    },
+    {
+      "period": "LHRK Feb",
+      "daysInPeriod": 28,
+      "data": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "trMp": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      },
+      "dailyAverage": {
+        "sm": 0,
+        "mp": 0,
+        "aup": 0,
+        "trMp": 0,
+        "tr": 0,
+        "bs": 0,
+        "ts": 0,
+        "bb": 0,
+        "tb": 0,
+        "gandengSemitrailer": 0,
+        "ktb": 0,
+        "total": 0
+      }
+    }
+  ]
+}
