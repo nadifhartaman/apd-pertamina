@@ -9,7 +9,8 @@ export default function SocketConnection() {
 
   useEffect(() => {
     // Initialize socket connection
-    const socketInstance = io('https://sxe-data.layanancerdas.id');
+    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+    const socketInstance = io(baseURL);
     setSocket(socketInstance);
 
     // Connection event handlers

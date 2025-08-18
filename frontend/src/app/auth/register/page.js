@@ -11,7 +11,9 @@ export default function AuthRegister() {
   const router = useRouter();
   const { loading, setLoading, login } = useAuth();
 
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -28,6 +30,11 @@ export default function AuthRegister() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    if (!username || !email || !password) {
+      setErrorMessage('Username, email, dan password harus diisi.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage('Password dan konfirmasi tidak cocok.');
       return;
@@ -37,13 +44,31 @@ export default function AuthRegister() {
     setErrorMessage('');
 
     try {
-      const response = await authApi.register({ email, password });
-      const { token, user } = response.data.data;
-
-      login(token, user); // simpan token dan info user di context
+      const userData = {
+        username,
+        email,
+        full_name: fullName,
+        password,
+        is_active: true
+      };
+      
+      const response = await authApi.register(userData);
+      
+      // Setelah registrasi berhasil, login dengan kredensial yang sama
+      console.log('Registration successful, attempting login with:', { username, password });
+      const loginResponse = await authApi.login({
+        username: username,
+        password: password
+      });
+      
+      console.log('Login response after registration:', loginResponse);
+      const { access_token } = loginResponse.data;
+      
+      login(access_token); // simpan token di context
       router.push('/'); // redirect ke dashboard/home
     } catch (err) {
-      setErrorMessage(err.response?.data?.message || 'Gagal registrasi. Coba lagi.');
+      console.error('Registration error:', err);
+      setErrorMessage(err.response?.data?.detail || 'Gagal registrasi. Coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -92,6 +117,21 @@ export default function AuthRegister() {
             </div>
 
             <div>
+              <label htmlFor="username" className="label">
+                <span className="label-text">Username</span>
+              </label>
+              <input
+                id="username"
+                type="text"
+                className="input input-bordered w-full rounded-md"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
               <label htmlFor="email" className="label">
                 <span className="label-text">Email</span>
               </label>
@@ -103,6 +143,20 @@ export default function AuthRegister() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="fullName" className="label">
+                <span className="label-text">Nama Lengkap</span>
+              </label>
+              <input
+                id="fullName"
+                type="text"
+                className="input input-bordered w-full rounded-md"
+                placeholder="Nama Lengkap"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
 
