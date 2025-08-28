@@ -73,8 +73,8 @@ export default function AuthLogin () {
         />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute bottom-8 left-8 text-white">
-          <h3 className="text-2xl font-bold mb-2">Sistem Monitoring Kendaraan</h3>
-          <p className="text-lg opacity-90">Memantau performa dan keamanan armada Pertamina</p>
+          <h3 className="text-2xl font-bold mb-2">Sistem Deteksi APD Pertamina</h3>
+          <p className="text-lg opacity-90">Memantau performa dan kepatuhan pegawai Pertamina</p>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export default function AuthLogin () {
           <div className="text-center">
             <Image src="/image/pertamina-logo.png" alt="Pertamina Logo" width={200} height={80} className="mx-auto mb-8" />
             <h2 className="text-3xl font-bold text-gray-900">Selamat Datang</h2>
-            <p className="mt-2 text-gray-600">Masuk ke sistem monitoring kendaraan</p>
+            <p className="mt-2 text-gray-600">Masuk ke sistem monitoring APD Pertamina</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 p-6 border border-gray-200 bg-white/90 shadow-sm backdrop-blur-2xl rounded-lg gap-2 flex flex-col pt-5 pb-5 z-10"
