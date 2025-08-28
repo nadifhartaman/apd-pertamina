@@ -156,13 +156,13 @@ const Layout = ({ children }) => {
                   </li>
                 );
               })}
-              {/* <div className="lg:flex hidden absolute bottom-5">
+              <div className="lg:flex hidden absolute bottom-5">
                 <div className="flex flex-col items-start gap-2">
                   <div className="flex">
                     <Logout />
                   </div>
                 </div>
-              </div> */}
+              </div>
             </ul>
           </div>
         </div>
