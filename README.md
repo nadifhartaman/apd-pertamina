@@ -6,17 +6,21 @@ Sistem monitoring dan analitik rekap kepatuhan APD Pertamina.
 
 ```
 .
-├── backend/        # API server (ExpressJS + MySQL)
+├── backend/        # API server (FastAPI + SQLAlchemy)
 └── frontend/       # Dashboard web (NextJS + Tailwind)
 ```
 
 ## ⚙️ Teknologi yang Digunakan
 
-| Layer     | Stack                          |
-|-----------|--------------------------------|
-| Backend   | Node.js, Express, MySQL        |
-| Frontend  | Next.js, React, Tailwind CSS   |
-| Database  | MySQL (localhost/cloud)        |
+| Layer     | Stack                                  |
+|-----------|----------------------------------------|
+| Backend   | Python, FastAPI, SQLAlchemy, Socket.IO |
+| Frontend  | Next.js, React, Tailwind CSS           |
+| Database  | SQLite/PostgreSQL                      |
+
+## 🔄 Integrasi
+
+Untuk informasi lebih detail tentang integrasi antara frontend dan backend, silakan lihat [INTEGRATION.md](./INTEGRATION.md).
 
 ---
 
@@ -25,8 +29,8 @@ Sistem monitoring dan analitik rekap kepatuhan APD Pertamina.
 ### ✅ 1. Clone Repository
 
 ```bash
-git clone https://github.com/namamu/mobility-dishub.git
-cd mobility-dishub
+git clone https://github.com/sccicitb/pertamina-detection.git
+cd pertamina-detection
 ```
 
 ---

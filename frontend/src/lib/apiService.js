@@ -1,4 +1,9 @@
 import axiosInstance from "./apiClient";
+import axios from 'axios';
+
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL
+  ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`
+  : 'http://localhost:8000/api';
 
 // generic func to fetch data
 export const apiRequest = async (method, url, data = null) => {
@@ -26,8 +31,20 @@ export const authApi = {
   // (All Role)
   updateProfile: () => updateRequest(`/auth/profile/`),
   login: (data) => {
-    // console.log('Login data being sent:', data); // Debug log
-    return createRequest(`/auth/login/`, data);
+    // Menggunakan FormData untuk kompatibilitas dengan OAuth2PasswordRequestForm di FastAPI
+    const formData = new FormData();
+    formData.append('username', data.username);
+    formData.append('password', data.password);
+    
+    return axios.post(`${baseURL}/auth/login/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  register: (data) => {
+    // Menggunakan JSON untuk endpoint register
+    return createRequest(`/auth/register/`, data);
   },
   logout: () => createRequest(`/auth/logout/`),
 

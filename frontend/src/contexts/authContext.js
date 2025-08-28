@@ -121,15 +121,36 @@ useEffect(() => {
   }
 }, [statusPath]);
 
-const login = (newToken, user) => {
+const login = (newToken, user = null) => {
   if (validateToken(newToken)) {
     Cookies.set("token", newToken, { expires: 0.5, path: "/" });
-    Cookies.set("user", JSON.stringify(user), { expires: 0.5, path: "/" });
+    
+    // Jika user tidak disediakan, coba ekstrak dari token JWT
+    if (!user && newToken.includes(".")) {
+      try {
+        const decoded = parseJwt(newToken);
+        if (decoded) {
+          user = {
+            id: decoded.id || decoded.sub,
+            username: decoded.sub,
+            roles: decoded.roles || []
+          };
+        }
+      } catch (error) {
+        console.error("Error parsing JWT token:", error);
+      }
+    }
+    
+    if (user) {
+      Cookies.set("user", JSON.stringify(user), { expires: 0.5, path: "/" });
+      Cookies.set("id_user", user.id || user.sub, { expires: 0.5, path: "/" });
+      setUser(user);
+      setUserId(user.id || user.sub);
+    }
+    
     setToken(newToken);
     // Redirect akan ditangani oleh useEffect di atas
   } else {
-    // console.error("Invalid token provided to login function");
-    // setError("Invalid token provided to login function")
     toast.error("Invalid token provided to login function", { position: 'top-right' });
     // Bisa tambahkan error handling disini
   }

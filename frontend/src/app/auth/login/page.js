@@ -16,7 +16,7 @@ export default function AuthLogin () {
   const [loaded, setLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [email, setEmail] = useState('test@pertamina.go.id');
+  const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('password');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -36,21 +36,40 @@ export default function AuthLogin () {
   // test login fetch api login to dashboard
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    // Untuk testing dengan fake data
     if (
-      email === 'test@pertamina.go.id' &&
+      username === 'admin' &&
       password === 'password'
     ) {
       login(fakeToken, fakeUser)
       router.push('/');
       return;
-    } else {
-      toast.error("Password atau Username salah", {position: "top-center"})
     }
 
     setLoading(true);
     setErrorMessage('');
-
-    // try {
+    
+    try {
+      console.log('Attempting login with:', { username, password });
+      const response = await authApi.login({
+        username,
+        password
+      });
+      
+      console.log('Login response:', response);
+      const { access_token } = response.data;
+      
+      login(access_token); // simpan token di context
+      router.push('/'); // redirect ke dashboard/home
+    } catch (err) {
+      console.error('Login error:', err);
+      console.error('Error response:', err.response?.data);
+      setErrorMessage(err.response?.data?.detail || 'Gagal login. Coba lagi.');
+      toast.error("Password atau Username salah", {position: "top-center"});
+    } finally {
+      setLoading(false);
+    }
     //   const response = await authApi.login({ email: username, password });
     //   const { token, user } = response.data.data;
     //   login(token, user)
@@ -94,16 +113,16 @@ export default function AuthLogin () {
               <p className="mt-1 text-sm text-gray-600">Masukkan kredensial Anda untuk mengakses dashboard</p>
             </div>
             <div>
-              <label htmlFor="email" className="label">
-                <span className="label-text">Email</span>
+              <label htmlFor="username" className="label">
+                <span className="label-text">Username</span>
               </label>
               <input
-                id="email"
-                type="email"
+                id="username"
+                type="text"
                 className="input input-bordered w-full rounded-md"
-                placeholder="nama@pertamina.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
