@@ -13,3 +13,9 @@ websockets==12.0
 python-dateutil==2.8.2
 opencv-python==4.8.1.78
 numpy==1.26.1
+dotenv==0.21.0
+socketio==0.1.0
+sqlalchemy==2.0.43
+email-validator==2.3.0
+passlib[bcrypt]==4.3.0 
+python-jose[cryptography]==3.3.0

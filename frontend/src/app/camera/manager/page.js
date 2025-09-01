@@ -4,54 +4,24 @@ import { FaVideo, FaPlus, FaTrash, FaMapMarkerAlt, FaSave, FaTimes } from "react
 import { MdVideoSettings, MdLocationOn, MdDescription, MdLink } from "react-icons/md";
 import { IoInformationCircle, IoWarningOutline, IoEye } from "react-icons/io5";
 import { BiVideoRecording, BiSearchAlt } from "react-icons/bi";
+import CameraPreview from "@/components/dialog/cameraPreview";
 import { HiMiniPencil } from "react-icons/hi2";
+import { cameras } from '@/lib/apiService';
+import { toast } from 'react-toastify';
 
 const CCTVManager = () => {
-  const [cameras, setCameras] = useState([
-    {
-      id: 'camera1',
-      name: 'Kamera 1',
-      location: 'Area Produksi A',
-      channel: 'Channel 1',
-      description: 'Monitoring area produksi utama',
-      status: 'online',
-      link: 'rtsp://192.168.1.101:554/stream1',
-      resolution: '1920x1080',
-      fps: 30
-    },
-    {
-      id: 'camera2',
-      name: 'Kamera 2',
-      location: 'Gudang',
-      channel: 'Channel 2',
-      description: 'Monitoring area gudang penyimpanan',
-      status: 'online',
-      link: 'rtsp://192.168.1.102:554/stream1',
-      resolution: '1920x1080',
-      fps: 25
-    },
-    {
-      id: 'camera3',
-      name: 'Kamera 3',
-      location: 'Area Produksi B',
-      channel: 'Channel 3',
-      description: 'Monitoring area produksi sekunder',
-      status: 'online',
-      link: 'rtsp://192.168.1.103:554/stream1',
-      resolution: '1280x720',
-      fps: 30
-    },
-    {
-      id: 'camera4',
-      name: 'Kamera 4',
-      location: 'Kantor',
-      channel: 'Channel 4',
-      description: 'Monitoring area kantor',
-      status: 'offline',
-      link: 'rtsp://192.168.1.104:554/stream1',
-      resolution: '1920x1080',
-      fps: 30
-    },
+  const [dataCameras, setDataCameras] = useState([
+    // {
+    //   id: 'camera1',
+    //   name: 'Kamera 1',
+    //   location: 'Area Produksi A',
+    //   channel: 'Channel 1',
+    //   description: 'Monitoring area produksi utama',
+    //   status: 'online',
+    //   link: 'rtsp_url://192.168.1.101:554/stream1',
+    //   resolution: '1920x1080',
+    //   fps: 30
+    // },
   ]);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -60,13 +30,15 @@ const CCTVManager = () => {
   const [selectedCamera, setSelectedCamera] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-
+  const [selectedIdCam, setSelectedIdCam] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     location: '',
+    lat: '',
+    long: '',
     channel: '',
     description: '',
-    link: '',
+    rtsp_url: '',
     resolution: '1920x1080',
     fps: 30,
     status: 'online'
@@ -74,8 +46,8 @@ const CCTVManager = () => {
 
   const maxCameras = 4;
 
-  // Filter cameras based on search and status
-  const filteredCameras = cameras.filter(camera => {
+  // Filter dataCameras based on search and status
+  const filteredCameras = dataCameras.filter(camera => {
     const matchesSearch = camera.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       camera.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       camera.channel.toLowerCase().includes(searchTerm.toLowerCase());
@@ -87,17 +59,87 @@ const CCTVManager = () => {
     setFormData({
       name: '',
       location: '',
+      lat: '',
+      long: '',
       channel: '',
       description: '',
-      link: '',
+      rtsp_url: '',
       resolution: '1920x1080',
       fps: 30,
       status: 'online'
     });
   };
 
+  const deleteDataCamera = async (id) => {
+    await toast.promise(
+      cameras.deleteById(id, formData),
+      {
+        pending: "Menghapus kamera...",
+        success: "Kamera berhasil dihapus",
+        error: "Gagal menghapus kamera"
+      },
+      {
+        position: "top-right"
+      }
+    )
+      .then((response) => {
+        console.log("Camera data:", response.data);
+        getDataCameras();
+      })
+      .catch((error) => {
+        console.error("Error fetching camera data:", error);
+      });
+  }
+
+  const createDataCamera = async (id = 0) => {
+    // satukan lat & long ke dalam location
+    const payload = {
+      ...formData,
+      location: `${formData.lat},${formData.long}`, // gabung lat long
+    };
+
+    if (id === 0) {
+      await toast.promise(
+        cameras.createData(payload),
+        {
+          pending: "Menyimpan kamera...",
+          success: "Kamera berhasil ditambahkan",
+          error: "Gagal menambahkan kamera",
+        },
+        { position: "top-right" }
+      )
+        .then((response) => {
+          console.log("Camera data:", response.data);
+          getDataCameras();
+        })
+        .catch((error) => {
+          console.error("Error fetching camera data:", error);
+        });
+    } else {
+      await toast.promise(
+        cameras.updateById(id, payload),
+        {
+          pending: "Merubah data kamera...",
+          success: "Kamera berhasil dirubah",
+          error: "Gagal merubah data kamera",
+        },
+        { position: "top-right" }
+      )
+        .then((response) => {
+          console.log("Camera data:", response.data);
+          getDataCameras();
+        })
+        .catch((error) => {
+          console.error("Error fetching camera data:", error);
+        });
+    }
+    setSelectedIdCam(0);
+  };
+
+
+
   const handleAddCamera = () => {
-    if (cameras.length >= maxCameras) {
+    if (dataCameras.length >= maxCameras) {
       alert('Maksimal 4 kamera yang dapat ditambahkan');
       return;
     }
@@ -110,13 +152,17 @@ const CCTVManager = () => {
     setFormData({
       name: camera.name,
       location: camera.location,
+      lat: camera.lat,
+      long: camera.long,
       channel: camera.channel,
       description: camera.description,
-      link: camera.link,
+      rtsp_url: camera.rtsp_url,
       resolution: camera.resolution,
       fps: camera.fps,
       status: camera.status
     });
+    console.log(camera.id)
+    setSelectedIdCam(camera.id)
     setShowEditModal(true);
   };
 
@@ -126,22 +172,16 @@ const CCTVManager = () => {
   };
 
   const handleSaveCamera = () => {
-    if (!formData.name || !formData.location || !formData.channel || !formData.link) {
+    if (!formData.name || !formData.location || !formData.channel || !formData.rtsp_url) {
       alert('Mohon lengkapi semua field yang wajib diisi');
       return;
     }
 
     if (showAddModal) {
-      const newCamera = {
-        id: `camera${Date.now()}`,
-        ...formData
-      };
-      setCameras([...cameras, newCamera]);
+      createDataCamera();
       setShowAddModal(false);
     } else if (showEditModal) {
-      setCameras(cameras.map(cam =>
-        cam.id === selectedCamera.id ? { ...selectedCamera, ...formData } : cam
-      ));
+      createDataCamera(selectedIdCam);
       setShowEditModal(false);
     }
     resetForm();
@@ -150,7 +190,7 @@ const CCTVManager = () => {
 
   const handleDeleteCamera = (cameraId) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus kamera ini?')) {
-      setCameras(cameras.filter(cam => cam.id !== cameraId));
+      deleteDataCamera(cameraId)
     }
   };
 
@@ -161,6 +201,50 @@ const CCTVManager = () => {
     setSelectedCamera(null);
     resetForm();
   };
+
+  const getDataCameras = async () => {
+    try {
+      const response = await cameras.getAll();
+      console.log("Camera data:", response.data);
+
+      const formatted = response.data.map((cam) => {
+        let lat = "";
+        let long = "";
+
+        if (cam.location) {
+          const parts = cam.location.split(",").map((val) => val.trim());
+          if (parts.length === 2) {
+            lat = parts[0];
+            long = parts[1];
+          }
+        }
+
+        return {
+          id: cam.id,
+          name: cam.name || `Camera ${cam.id}`,
+          location: cam.location,
+          lat,
+          long,
+          description: cam.description || "Camera location",
+          status: cam.status || "offline",
+          channel: cam.channel || "N/A",
+          rtsp_url: cam.rtsp_url || "",
+          resolution: cam.resolution || "1920x1080",
+          fps: cam.fps || 30,
+        };
+      });
+
+      setDataCameras(formatted);
+      console.log("Formatted camera locations:", formatted);
+    } catch (error) {
+      console.error("Error fetching camera data:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    getDataCameras();
+  }, []);
 
   return (
     <div className="min-h-fit w-full p-6">
@@ -205,7 +289,7 @@ const CCTVManager = () => {
                 <button
                   className="btn btn-sm btn-primary"
                   onClick={handleAddCamera}
-                  disabled={cameras.length >= maxCameras}
+                  disabled={dataCameras.length >= maxCameras}
                 >
                   <FaPlus size={16} />
                   Tambah Kamera
@@ -217,18 +301,18 @@ const CCTVManager = () => {
                   <div className="stats stats-horizontal bg-base-100 border">
                     <div className="stat py-2 px-4">
                       <div className="stat-title text-xs">Total Kamera</div>
-                      <div className="stat-value text-lg">{cameras.length}/{maxCameras}</div>
+                      <div className="stat-value text-lg">{dataCameras.length}/{maxCameras}</div>
                     </div>
                     <div className="stat py-2 px-4">
                       <div className="stat-title text-xs">Online</div>
                       <div className="stat-value text-lg text-green-600">
-                        {cameras.filter(c => c.status === 'online').length}
+                        {dataCameras.filter(c => c.status === 'online').length}
                       </div>
                     </div>
                     <div className="stat py-2 px-4">
                       <div className="stat-title text-xs">Offline</div>
                       <div className="stat-value text-lg text-red-600">
-                        {cameras.filter(c => c.status === 'offline').length}
+                        {dataCameras.filter(c => c.status === 'offline').length}
                       </div>
                     </div>
                   </div>
@@ -237,7 +321,7 @@ const CCTVManager = () => {
             </div>
 
 
-            {cameras.length >= maxCameras && (
+            {dataCameras.length >= maxCameras && (
               <div className="alert alert-warning mt-4">
                 <IoWarningOutline size={20} />
                 <span>Maksimal 4 kamera telah tercapai. Hapus kamera yang tidak digunakan untuk menambah yang baru.</span>
@@ -247,7 +331,7 @@ const CCTVManager = () => {
         </div>
 
         {/* Camera Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-5">
           {filteredCameras.map((camera) => (
             <div key={camera.id} className="card bg-white border-gray-100 border hover:shadow-lg transition-all">
               <div className="card-body">
@@ -260,15 +344,19 @@ const CCTVManager = () => {
                 </div>
 
                 {/* Camera Preview Placeholder */}
-                <div className="bg-gray-100 rounded-lg mb-4 aspect-video flex items-center justify-center">
-                  <BiVideoRecording size={48} className="text-gray-400" />
+                <div className="bg-gray-100 rounded-lg mb-4 aspect-video flex items-center justify-center overflow-hidden">
+                  {camera.rtsp_url ? (
+                    <CameraPreview url={camera.rtsp_url} />
+                  ) : (
+                    <BiVideoRecording size={48} className="text-gray-400" />
+                  )}
                 </div>
 
                 {/* Camera Info */}
                 <div className="space-y-2 text-sm text-gray-600 mb-4">
                   <div className="flex items-center gap-2">
                     <MdLocationOn size={16} />
-                    <span>{camera.location}</span>
+                    <span className='overflow-hidden text-ellipsis'>{camera.location}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <MdVideoSettings size={16} />
@@ -292,7 +380,7 @@ const CCTVManager = () => {
                     </button>
                     <button
                       className="btn btn-sm btn-ghost"
-                      onClick={() => handleEditCamera(camera)}
+                      onClick={() => { handleEditCamera(camera), setSelectedIdCam(camera.id) }}
                       title="Edit Kamera"
                     >
                       <HiMiniPencil size={16} />
@@ -329,19 +417,19 @@ const CCTVManager = () => {
         {/* Add/Edit Modal */}
         {(showAddModal || showEditModal) && (
           <div className="modal modal-open">
-            <div className="modal-box max-w-2xl">
+            <div className="modal-box max-w-3xl">
               <h3 className="font-bold text-lg mb-4">
                 {showAddModal ? 'Tambah Kamera Baru' : 'Edit Kamera'}
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="form-control flex flex-col">
                   <label className="label">
                     <span className="label-text">Nama Kamera *</span>
                   </label>
                   <input
                     type="text"
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Contoh: Kamera 1"
@@ -354,7 +442,7 @@ const CCTVManager = () => {
                   </label>
                   <input
                     type="text"
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     value={formData.channel}
                     onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
                     placeholder="Contoh: Channel 1"
@@ -363,13 +451,25 @@ const CCTVManager = () => {
 
                 <div className="form-control flex flex-col">
                   <label className="label">
-                    <span className="label-text">Lokasi *</span>
+                    <span className="label-text">Lat *</span>
                   </label>
                   <input
                     type="text"
-                    className="input input-bordered"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    className="input input-bordered w-full"
+                    value={formData.lat}
+                    onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
+                    placeholder="Contoh: Area Produksi A"
+                  />
+                </div>
+                <div className="form-control flex flex-col">
+                  <label className="label">
+                    <span className="label-text">Long *</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full"
+                    value={formData.long}
+                    onChange={(e) => setFormData({ ...formData, long: e.target.value })}
                     placeholder="Contoh: Area Produksi A"
                   />
                 </div>
@@ -380,9 +480,9 @@ const CCTVManager = () => {
                   </label>
                   <input
                     type="text"
-                    className="input input-bordered"
-                    value={formData.link}
-                    onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                    className="input input-bordered w-full"
+                    value={formData.rtsp_url}
+                    onChange={(e) => setFormData({ ...formData, rtsp_url: e.target.value })}
                     placeholder="rtsp://192.168.1.100:554/stream1"
                   />
                 </div>
@@ -392,7 +492,7 @@ const CCTVManager = () => {
                     <span className="label-text">Resolusi</span>
                   </label>
                   <select
-                    className="select select-bordered"
+                    className="select select-bordered w-full"
                     value={formData.resolution}
                     onChange={(e) => setFormData({ ...formData, resolution: e.target.value })}
                   >
@@ -408,7 +508,7 @@ const CCTVManager = () => {
                   </label>
                   <input
                     type="number"
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     value={formData.fps}
                     onChange={(e) => setFormData({ ...formData, fps: parseInt(e.target.value) })}
                     min="15"
@@ -421,7 +521,7 @@ const CCTVManager = () => {
                     <span className="label-text">Status</span>
                   </label>
                   <select
-                    className="select select-bordered"
+                    className="select select-bordered w-full"
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   >
@@ -435,7 +535,7 @@ const CCTVManager = () => {
                     <span className="label-text">Deskripsi</span>
                   </label>
                   <textarea
-                    className="textarea textarea-bordered"
+                    className="textarea textarea-bordered w-full"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Deskripsi kamera..."
@@ -493,7 +593,7 @@ const CCTVManager = () => {
                   <label className="label">
                     <span className="label-text font-semibold">Link Stream</span>
                   </label>
-                  <div className="input input-bordered bg-gray-50 font-mono text-sm">{selectedCamera.link}</div>
+                  <div className="input input-bordered bg-gray-50 font-mono text-sm overflow-x-auto">{selectedCamera.rtsp_url}</div>
                 </div>
 
                 <div className="form-control flex flex-col">

@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import * as Icons from "react-icons/ai";
 import * as FaIcons from "react-icons/fa";
@@ -12,7 +13,6 @@ import Breadcrumbs from "@/components/ui/breadcrumbs";
 import ProfileDropdown from "@/components/dialog/dialogProfile"
 import PageWrapper from "../layout/wrapper";
 import { Logout } from '@/app/auth/logout';
-
 // import { redirect } from "next/navigation";
 
 import { ToastContainer } from 'react-toastify';
@@ -33,7 +33,7 @@ const Layout = ({ children }) => {
     // Jika user belum ter-load, return false untuk safety
     if (!user) return false;
 
-    const userRoles = user.roles?.map(item => item.name.toLowerCase()) || [];
+    const userRoles = user.roles?.map(item => item?.name?.toLowerCase() ?? '') || [];
     // console.log(userRoles)
     const menuUrl = menuItem.url;
 

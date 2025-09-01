@@ -76,7 +76,7 @@ export default function AuthRegister() {
 
   return (
     <div className="min-h-screen flex flex-row-reverse">
-      <div className="flex-1 relative">
+      <div className="lg:flex-1 lg:relative hidden lg:flex">
         <Image
           src="/image/pertamina-workers.jpg"
           alt="Background"
