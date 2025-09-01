@@ -1,16 +1,39 @@
-"use client"
+"use client"; // <--- WAJIB kalau pakai hooks di Next.js App Router
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
-import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { BiVideoRecording, BiCurrentLocation, BiTime } from "react-icons/bi";
+import React, { useState, useEffect } from "react";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  LineElement,
+  PointElement,
+} from "chart.js";
+import { Bar, Doughnut, Line } from "react-chartjs-2";
+import {
+  BiVideoRecording,
+  BiTime,
+} from "react-icons/bi";
 import { SlGraph } from "react-icons/sl";
 import { SiSpeedtest } from "react-icons/si";
 import { FaCheck, FaVideo, FaMapMarkerAlt } from "react-icons/fa";
-import { IoWarningOutline, IoDocumentTextOutline, IoInformationCircle } from "react-icons/io5";
+import {
+  IoWarningOutline,
+  IoDocumentTextOutline,
+  IoInformationCircle,
+} from "react-icons/io5";
 import { MdVideoSettings, MdLocationOn } from "react-icons/md";
+import { cameras } from "@/lib/apiService";
 
-// Register Chart.js components
+// PDF
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
+// Register Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,104 +47,136 @@ ChartJS.register(
 );
 
 const DashboardPerKamera = () => {
-  const [selectedCamera, setSelectedCamera] = useState('');
-  const [selectedTimeFilter, setSelectedTimeFilter] = useState('today');
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [dataCameras, setDataCameras] = useState([]);
+  const [selectedCamera, setSelectedCamera] = useState("");
+  const [selectedTimeFilter, setSelectedTimeFilter] = useState("today");
+  const [activeTab, setActiveTab] = useState("analytics");
 
-  // Mock camera data
-  const cameras = [
-    { id: 'camera1', name: 'Kamera 1', location: 'Area Produksi A', channel: 'Channel 1', description: 'Monitoring area produksi utama', status: 'online' },
-    { id: 'camera2', name: 'Kamera 2', location: 'Gudang', channel: 'Channel 2', description: 'Monitoring area gudang penyimpanan', status: 'online' },
-    { id: 'camera3', name: 'Kamera 3', location: 'Area Produksi B', channel: 'Channel 3', description: 'Monitoring area produksi sekunder', status: 'online' },
-    { id: 'camera4', name: 'Kamera 4', location: 'Kantor', channel: 'Channel 4', description: 'Monitoring area kantor', status: 'offline' },
-    { id: 'camera5', name: 'Kamera 5', location: 'Pintu Masuk', channel: 'Channel 5', description: 'Monitoring pintu masuk utama', status: 'online' },
-  ];
+  // ambil data kamera dari API
+  const getDataCameras = async () => {
+    try {
+      const response = await cameras.getAll();
+      const formatted = response.data.map((cam) => {
+        let lat = "";
+        let long = "";
+        if (cam.location) {
+          const parts = cam.location.split(",").map((val) => val.trim());
+          if (parts.length === 2) {
+            lat = parts[0];
+            long = parts[1];
+          }
+        }
+        return {
+          id: cam.id,
+          name: cam.name || `Camera ${cam.id}`,
+          location: cam.location,
+          lat,
+          long,
+          description: cam.description || "Camera location",
+          status: cam.status || "offline",
+          channel: cam.channel || "N/A",
+          rtsp_url: cam.rtsp_url || "",
+          resolution: cam.resolution || "1920x1080",
+          fps: cam.fps || 30,
+        };
+      });
+      setDataCameras(formatted);
+    } catch (error) {
+      console.error("Error fetching camera data:", error);
+    }
+  };
 
-  // Get selected camera data
-  const selectedCameraData = cameras.find(cam => cam.id === selectedCamera);
+  useEffect(() => {
+    getDataCameras();
+  }, []);
 
-  // Sample data for selected camera charts
+  const selectedCameraData = dataCameras.find(
+    (cam) => cam.id === selectedCamera
+  );
+
+  // Dummy Chart Data & Options
+  const chartOptions = {
+    responsive: true,
+    plugins: { legend: { position: "top" } },
+  };
+
+  const doughnutOptions = { responsive: true };
+
   const getHourlyDetectionData = () => ({
-    labels: ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
-    datasets: [{
-      label: 'Deteksi APD',
-      data: selectedCamera ? [3, 7, 12, 15, 18, 14, 8, 5] : [],
-      borderColor: '#006db7',
-      backgroundColor: 'rgba(0, 109, 183, 0.1)',
-      tension: 0.4
-    }]
+    labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+    datasets: [
+      {
+        label: "Deteksi",
+        data: Array.from({ length: 24 }, () => Math.floor(Math.random() * 20)),
+        borderColor: "#006db7",
+        backgroundColor: 'oklch(70% 0.2 250)',
+      },
+    ],
   });
 
   const getComplianceData = () => ({
-    labels: ['Sesuai APD', 'Tidak Sesuai APD'],
-    datasets: [{
-      data: selectedCamera ? [82, 18] : [0, 0],
-      backgroundColor: [
-        '#abc62b',
-        '#ed1b2f'
-      ],
-      borderWidth: 2
-    }]
+    labels: ["Patuh", "Tidak Patuh"],
+    datasets: [
+      {
+        data: [82, 18],
+        backgroundColor: ["#abc62b", "#ed1b2f"],
+      },
+    ],
   });
 
   const getWeeklyTrendData = () => ({
-    labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
-    datasets: [{
-      label: 'Total Deteksi',
-      data: selectedCamera ? [45, 52, 38, 61, 48, 33, 28] : [],
-      backgroundColor: '#FCB700',
-    }]
+    labels: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"],
+    datasets: [
+      {
+        label: "Deteksi",
+        data: Array.from({ length: 7 }, () => Math.floor(Math.random() * 100)),
+        backgroundColor: "#006db7",
+      },
+    ],
   });
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
+  const getDetectionResults = () => [
+    {
+      id: 1,
+      timestamp: "2025-08-29 08:00",
+      type: "Pelanggaran APD",
+      confidence: "92%",
+      helmet: false,
+      vest: true,
+      boots: false,
     },
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  };
-
-  const doughnutOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom',
-      },
+    {
+      id: 2,
+      timestamp: "2025-08-29 09:15",
+      type: "Patuh",
+      confidence: "88%",
+      helmet: true,
+      vest: true,
+      boots: true,
     },
-  };
+  ];
 
-  // Mock detection results for selected camera
-  const getDetectionResults = () => {
-    if (!selectedCamera) return [];
-
-    return [
-      { id: 1, timestamp: '2024-08-04 15:30:00', type: 'Pelanggaran APD', confidence: '95%', helmet: false, vest: true, boots: true },
-      { id: 2, timestamp: '2024-08-04 15:15:00', type: 'Normal', confidence: '87%', helmet: true, vest: true, boots: true },
-      { id: 3, timestamp: '2024-08-04 15:00:00', type: 'Pelanggaran APD', confidence: '92%', helmet: true, vest: false, boots: true },
-      { id: 4, timestamp: '2024-08-04 14:45:00', type: 'Normal', confidence: '89%', helmet: true, vest: true, boots: true },
-      { id: 5, timestamp: '2024-08-04 14:30:00', type: 'Pelanggaran APD', confidence: '91%', helmet: false, vest: false, boots: true },
-    ];
-  };
-
-  const downloadPDF = () => {
-    if (!selectedCamera) {
-      alert('Pilih kamera terlebih dahulu');
+  // Download PDF
+  const downloadPDF = async () => {
+    if (!selectedCameraData) {
+      alert("Pilih kamera terlebih dahulu");
       return;
     }
+    const element = document.querySelector("#camera-report");
+    if (!element) return;
 
-    const element = document.createElement('a');
-    const file = new Blob([`Laporan ${selectedCameraData?.name} - ${new Date().toISOString()}`], { type: 'application/pdf' });
-    element.href = URL.createObjectURL(file);
-    element.download = `laporan-${selectedCamera}-${new Date().toISOString().split('T')[0]}.pdf`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(
+      `laporan-${selectedCameraData.name}-${new Date()
+        .toISOString()
+        .split("T")[0]}.pdf`
+    );
   };
 
   return (
@@ -129,8 +184,12 @@ const DashboardPerKamera = () => {
       <div className="w-full h-fit overflow-y-hidden">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Per Kamera</h1>
-          <p className="text-gray-600">Monitoring detail sistem kepatuhan APD per kamera</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Dashboard Per Kamera
+          </h1>
+          <p className="text-gray-600">
+            Monitoring detail sistem kepatuhan APD per kamera
+          </p>
         </div>
 
         {/* Camera Selection */}
@@ -141,25 +200,33 @@ const DashboardPerKamera = () => {
               Pilih Kamera
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cameras.map((camera) => (
+              {dataCameras.map((camera) => (
                 <div
                   key={camera.id}
-                  className={`card border cursor-pointer transition-all hover:shadow-md ${selectedCamera === camera.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                  className={`card border cursor-pointer transition-all hover:shadow-md ${
+                    selectedCamera === camera.id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
                   onClick={() => setSelectedCamera(camera.id)}
                 >
                   <div className="card-body p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{camera.name}</h4>
-                      <div className={`w-3 h-3 rounded-full ${camera.status === 'online' ? 'bg-green-500' : 'bg-red-500'
-                        }`}></div>
+                      <h4 className="font-semibold text-gray-900">
+                        {camera.name}
+                      </h4>
+                      <div
+                        className={`w-3 h-3 rounded-full ${
+                          camera.status === "online"
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      ></div>
                     </div>
                     <div className="space-y-1 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <MdLocationOn size={14} />
-                        <span>{camera.location}</span>
+                        <span className="truncate">{camera.location}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MdVideoSettings size={14} />
@@ -176,17 +243,17 @@ const DashboardPerKamera = () => {
 
         {/* Camera Info & Filters */}
         {selectedCamera && (
-          <div className="card bg-white border-gray-100 border mb-6">
+          <div id="camera-report" className="card bg-white border-gray-100 border mb-6">
             <div className="card-body">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="avatar placeholder">
-                    <div className="text-[#006db7]">
-                      <BiVideoRecording size={24} />
-                    </div>
+                  <div className="text-[#006db7]">
+                    <BiVideoRecording size={24} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-gray-900">{selectedCameraData?.name}</h3>
+                    <h3 className="font-bold text-lg text-gray-900">
+                      {selectedCameraData?.name}
+                    </h3>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <span className="flex items-center gap-1">
                         <FaMapMarkerAlt size={12} />
@@ -196,11 +263,23 @@ const DashboardPerKamera = () => {
                         <MdVideoSettings size={12} />
                         {selectedCameraData?.channel}
                       </span>
-                      <span className={`flex items-center gap-1 ${selectedCameraData?.status === 'online' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full ${selectedCameraData?.status === 'online' ? 'bg-green-500' : 'bg-red-500'
-                          }`}></div>
-                        {selectedCameraData?.status === 'online' ? 'Online' : 'Offline'}
+                      <span
+                        className={`flex items-center gap-1 ${
+                          selectedCameraData?.status === "online"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            selectedCameraData?.status === "online"
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }`}
+                        ></div>
+                        {selectedCameraData?.status === "online"
+                          ? "Online"
+                          : "Offline"}
                       </span>
                     </div>
                   </div>
@@ -239,20 +318,26 @@ const DashboardPerKamera = () => {
         {selectedCamera && (
           <div className="tabs tabs-lifted mb-6">
             <button
-              className={`tab items-center flex gap-1 tab-lg ${activeTab === 'analytics' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('analytics')}
+              className={`tab items-center flex gap-1 tab-lg ${
+                activeTab === "analytics" ? "tab-active" : ""
+              }`}
+              onClick={() => setActiveTab("analytics")}
             >
               <SlGraph size={18} /> Grafik Analitik
             </button>
             <button
-              className={`tab items-center flex gap-1 tab-lg ${activeTab === 'deteksi' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('deteksi')}
+              className={`tab items-center flex gap-1 tab-lg ${
+                activeTab === "deteksi" ? "tab-active" : ""
+              }`}
+              onClick={() => setActiveTab("deteksi")}
             >
               <IoInformationCircle size={18} /> Hasil Deteksi
             </button>
             <button
-              className={`tab items-center flex gap-1 tab-lg ${activeTab === 'camera' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('camera')}
+              className={`tab items-center flex gap-1 tab-lg ${
+                activeTab === "camera" ? "tab-active" : ""
+              }`}
+              onClick={() => setActiveTab("camera")}
             >
               <FaVideo size={18} /> Video Camera
             </button>
@@ -263,57 +348,26 @@ const DashboardPerKamera = () => {
         {!selectedCamera ? (
           <div className="card bg-white border-gray-100 border">
             <div className="card-body text-center py-16">
-              <BiVideoRecording size={64} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">Pilih Kamera</h3>
-              <p className="text-gray-500">Silakan pilih kamera dari daftar di atas untuk melihat dashboard analitik</p>
+              <BiVideoRecording
+                size={64}
+                className="mx-auto text-gray-400 mb-4"
+              />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                Pilih Kamera
+              </h3>
+              <p className="text-gray-500">
+                Silakan pilih kamera dari daftar di atas untuk melihat dashboard
+                analitik
+              </p>
             </div>
           </div>
         ) : (
           <>
-            {activeTab === 'analytics' && (
+            {activeTab === "analytics" && (
               <div className="space-y-6">
                 {/* Statistics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="stat bg-white border-gray-100 border rounded-lg">
-                    <div className="stat-figure text-[#006db7]">
-                      <SiSpeedtest size={32} />
-                    </div>
-                    <div className="stat-title">Total Deteksi Hari Ini</div>
-                    <div className="stat-value text-[#006db7]">82</div>
-                    <div className="stat-desc">↗︎ 15% dari kemarin</div>
-                  </div>
-
-                  <div className="stat bg-white border-gray-100 border rounded-lg">
-                    <div className="stat-figure text-[#abc62b]">
-                      <FaCheck size={32} />
-                    </div>
-                    <div className="stat-title">Tingkat Kepatuhan</div>
-                    <div className="stat-value text-[#abc62b]">82%</div>
-                    <div className="stat-desc">↗︎ 8% dari kemarin</div>
-                  </div>
-
-                  <div className="stat bg-white border-gray-100 border rounded-lg">
-                    <div className="stat-figure text-[#ed1b2f]">
-                      <IoWarningOutline size={32} />
-                    </div>
-                    <div className="stat-title">Pelanggaran</div>
-                    <div className="stat-value text-[#ed1b2f]">15</div>
-                    <div className="stat-desc">↘︎ 3% dari kemarin</div>
-                  </div>
-
-                  <div className="stat bg-white border-gray-100 border rounded-lg">
-                    <div className="stat-figure text-[#FCB700]">
-                      <BiTime size={32} />
-                    </div>
-                    <div className="stat-title">Rata-rata per Jam</div>
-                    <div className="stat-value text-[#FCB700]">10.2</div>
-                    <div className="stat-desc">Deteksi per jam</div>
-                  </div>
-                </div>
-
                 {/* Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {/* Hourly Detection Chart */}
                   <div className="card bg-white border-gray-100 border xl:col-span-2">
                     <div className="card-body">
                       <h3 className="card-title text-lg mb-4">
@@ -326,17 +380,18 @@ const DashboardPerKamera = () => {
                     </div>
                   </div>
 
-                  {/* Compliance Chart */}
                   <div className="card bg-white border-gray-100 border">
                     <div className="card-body">
                       <h3 className="card-title text-lg mb-4">Tingkat Kepatuhan</h3>
                       <div className="h-64">
-                        <Doughnut data={getComplianceData()} options={doughnutOptions} />
+                        <Doughnut
+                          data={getComplianceData()}
+                          options={doughnutOptions}
+                        />
                       </div>
                     </div>
                   </div>
 
-                  {/* Weekly Trend Chart */}
                   <div className="card bg-white border-gray-100 border xl:col-span-3">
                     <div className="card-body">
                       <h3 className="card-title text-lg mb-4">
@@ -352,11 +407,10 @@ const DashboardPerKamera = () => {
               </div>
             )}
 
-            {activeTab === 'deteksi' && (
+            {activeTab === "deteksi" && (
               <div className="card bg-white border-gray-100 border">
                 <div className="card-body">
                   <h3 className="card-title text-lg mb-4">Hasil Deteksi Terbaru</h3>
-
                   <div className="overflow-x-auto">
                     <table className="table table-md table-zebra w-full">
                       <thead>
@@ -373,34 +427,46 @@ const DashboardPerKamera = () => {
                       <tbody>
                         {getDetectionResults().map((result) => (
                           <tr key={result.id} className="text-sm">
+                            <td className="text-center">{result.timestamp}</td>
                             <td className="text-center">
-                              <span className="text-sm">{result.timestamp}</span>
-                            </td>
-                            <td className="text-center">
-                              <span className={`badge text-xs ${result.type === 'Pelanggaran APD' ? 'badge-error' : 'badge-success'
-                                }`}>
+                              <span
+                                className={`badge text-xs ${
+                                  result.type === "Pelanggaran APD"
+                                    ? "badge-error"
+                                    : "badge-success"
+                                }`}
+                              >
                                 {result.type}
                               </span>
                             </td>
+                            <td className="text-center">{result.confidence}</td>
                             <td className="text-center">
-                              <span className="font-mono text-xs">{result.confidence}</span>
+                              <div
+                                className={`w-4 h-4 rounded-full mx-auto ${
+                                  result.helmet ? "bg-green-500" : "bg-red-500"
+                                }`}
+                              ></div>
                             </td>
                             <td className="text-center">
-                              <div className={`w-4 h-4 rounded-full mx-auto ${result.helmet ? 'bg-green-500' : 'bg-red-500'
-                                }`}></div>
+                              <div
+                                className={`w-4 h-4 rounded-full mx-auto ${
+                                  result.vest ? "bg-green-500" : "bg-red-500"
+                                }`}
+                              ></div>
                             </td>
                             <td className="text-center">
-                              <div className={`w-4 h-4 rounded-full mx-auto ${result.vest ? 'bg-green-500' : 'bg-red-500'
-                                }`}></div>
-                            </td>
-                            <td className="text-center">
-                              <div className={`w-4 h-4 rounded-full mx-auto ${result.boots ? 'bg-green-500' : 'bg-red-500'
-                                }`}></div>
+                              <div
+                                className={`w-4 h-4 rounded-full mx-auto ${
+                                  result.boots ? "bg-green-500" : "bg-red-500"
+                                }`}
+                              ></div>
                             </td>
                             <td className="text-center">
                               <div className="flex justify-center items-center">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                                <span className="text-green-600 text-xs">Recorded</span>
+                                <span className="text-green-600 text-xs">
+                                  Recorded
+                                </span>
                               </div>
                             </td>
                           </tr>
@@ -408,28 +474,23 @@ const DashboardPerKamera = () => {
                       </tbody>
                     </table>
                   </div>
-
-                  <div className="flex justify-between items-center mt-4">
-                    <div className="text-sm text-gray-500">
-                      Menampilkan 5 dari 24 hasil deteksi
-                    </div>
-                    <div className="btn-group">
-                      <button className="btn btn-sm">«</button>
-                      <button className="btn btn-sm btn-active">1</button>
-                      <button className="btn btn-sm">2</button>
-                      <button className="btn btn-sm">3</button>
-                      <button className="btn btn-sm">»</button>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
+
             {activeTab === "camera" && (
               <div className="card bg-white border-gray-100 border">
                 <div className="card-body text-center py-16">
-                  <BiVideoRecording size={64} className="mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-600 mb-2">Kamera</h3>
-                  <p className="text-gray-500">Kamera bermasalah atau tidak ada silahkan menunggu</p>
+                  <BiVideoRecording
+                    size={64}
+                    className="mx-auto text-gray-400 mb-4"
+                  />
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                    Kamera
+                  </h3>
+                  <p className="text-gray-500">
+                    Kamera bermasalah atau tidak ada silahkan menunggu
+                  </p>
                 </div>
               </div>
             )}

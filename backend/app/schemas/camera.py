@@ -8,6 +8,9 @@ class CameraBase(BaseModel):
     description: Optional[str] = None
     ip_address: Optional[str] = None
     rtsp_url: Optional[str] = None
+    resolution: Optional[str] = None   # NEW
+    channel: Optional[str] = None      # NEW
+    status: Optional[str] = None
 
 class CameraCreate(CameraBase):
     pass
@@ -18,7 +21,10 @@ class CameraUpdate(BaseModel):
     description: Optional[str] = None
     ip_address: Optional[str] = None
     rtsp_url: Optional[str] = None
+    resolution: Optional[str] = None   # NEW
+    channel: Optional[str] = None      # NEW
     status: Optional[str] = None
+
 
 class Camera(CameraBase):
     id: int

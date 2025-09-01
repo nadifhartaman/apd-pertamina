@@ -18,6 +18,11 @@ from app.socket.socket_manager import socket_manager
 
 router = APIRouter()
 
+# route public
+@router.get("/public", response_model=List[CameraSchema], tags=["Public Cameras"])
+async def get_all_cameras_public(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(Camera).offset(skip).limit(limit).all()
+
 @router.get("/", response_model=List[CameraSchema])
 async def get_all_cameras(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
     cameras = db.query(Camera).offset(skip).limit(limit).all()

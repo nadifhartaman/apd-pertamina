@@ -1,4 +1,7 @@
+"use client"
+
 import React, { useEffect, useState } from 'react';
+import { cameras } from '@/lib/apiService'
 
 const MapComponent = () => {
   const [isClient, setIsClient] = useState(false);
@@ -14,7 +17,7 @@ const MapComponent = () => {
       if (typeof window !== 'undefined') {
         const leaflet = await import('leaflet');
         const reactLeaflet = await import('react-leaflet');
-        
+
         // Fix for default markers
         delete leaflet.default.Icon.Default.prototype._getIconUrl;
         leaflet.default.Icon.Default.mergeOptions({
@@ -31,32 +34,59 @@ const MapComponent = () => {
     loadLeaflet();
   }, []);
 
-  const locations = [
-    {
-      id: 1,
-      name: "Bandung City Center",
-      position: [-6.9175, 107.6191],
-      description: "Pusat kota Bandung"
-    },
-    {
-      id: 2,
-      name: "Gedung Sate",
-      position: [-6.9020, 107.6181],
-      description: "Landmark terkenal di Bandung"
-    },
-    {
-      id: 3,
-      name: "ITB Ganesha",
-      position: [-6.8915, 107.6107],
-      description: "Institut Teknologi Bandung"
-    },
-     {
-      id: 4,
-      name: "Baltos",
-      position: [-6.9000, 107.6107],
-      description: "Baltos Lt 1"
-    }
-  ];
+  const [locations, setLocation] = useState([
+    // {
+    //   id: 1,
+    //   name: "Bandung City Center",
+    //   position: [-6.9175, 107.6191],
+    //   description: "Pusat kota Bandung"
+    // },
+    // {
+    //   id: 2,
+    //   name: "Gedung Sate",
+    //   position: [-6.9020, 107.6181],
+    //   description: "Landmark terkenal di Bandung"
+    // },
+    // {
+    //   id: 3,
+    //   name: "ITB Ganesha",
+    //   position: [-6.8915, 107.6107],
+    //   description: "Institut Teknologi Bandung"
+    // },
+    // {
+    //   id: 4,
+    //   name: "Baltos",
+    //   position: [-6.9000, 107.6107],
+    //   description: "Baltos Lt 1"
+    // }
+  ]);
+
+const getDataCameras = async () => {
+  try {
+    const response = await cameras.getAll(); 
+    console.log("Camera data:", response.data);
+
+    const formatted = response.data.map((cam) => {
+      const [lat, lon] = cam.location.split(",").map(Number);
+      return {
+        id: cam.id,
+        name: cam.name || `Camera ${cam.id}`,
+        position: [lat, lon],
+        description: cam.description || "Camera location"
+      };
+    });
+
+    setLocation((prev) => [...prev, ...formatted]);
+    // setLocation(formatted);
+    console.log("Formatted camera locations:", formatted);
+  } catch (error) {
+    console.error("Error fetching camera data:", error);
+  }
+};
+
+useEffect(() => {
+  getDataCameras();
+}, []);
 
   // Don't render on server-side
   if (!isClient || !ReactLeaflet) {
@@ -66,6 +96,7 @@ const MapComponent = () => {
       </div>
     );
   }
+
 
   const { MapContainer, TileLayer, Marker, Popup } = ReactLeaflet;
 
@@ -87,7 +118,7 @@ const MapComponent = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          
+
           {locations.map((location) => (
             <Marker key={location.id} position={location.position}>
               <Popup>

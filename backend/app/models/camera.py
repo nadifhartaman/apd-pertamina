@@ -11,6 +11,8 @@ class Camera(Base):
     location = Column(String)
     description = Column(String, nullable=True)
     ip_address = Column(String, nullable=True)
+    resolution = Column(String)   # NEW
+    channel = Column(String)      # NEW
     rtsp_url = Column(String, nullable=True)
     status = Column(String, default="offline")  # online, offline, error
     last_online = Column(DateTime, nullable=True)

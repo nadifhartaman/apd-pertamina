@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL
   ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`
-  : 'http://localhost:8000/api';
+  : 'http://127.0.0.1:8000/api';
 
 // generic func to fetch data
 export const apiRequest = async (method, url, data = null) => {
@@ -73,9 +73,8 @@ export const maps = {
 export const cameras = {
   getAll: () => getRequest(`/cameras/`),
   updateById: (id, data) => updateRequest(`/cameras/${id}`, data),
-  createData: (data) => createRequest(`/cameras`, data),
+  createData: (data) => createRequest(`/cameras/`, data),
   deleteById: (id) => deleteRequest(`/cameras/${id}`)
-
 }
 
 export const calendar = {

@@ -16,15 +16,9 @@ export default function AuthLogin () {
   const [loaded, setLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('password');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  // const handleLogin = (e) => {
-  //   e.preventDefault();
-  //   console.log('Login attempt:', { email, password });
-  //   // Handle login logic here
-  // };
 
   useEffect(() => {
     const storedToken = Cookies.get('token');
