@@ -8,21 +8,10 @@ import CameraPreview from "@/components/dialog/cameraPreview";
 import { HiMiniPencil } from "react-icons/hi2";
 import { cameras } from '@/lib/apiService';
 import { toast } from 'react-toastify';
+import { useCameraAPD } from '@/hooks/useCameraAPD';
 
 const CCTVManager = () => {
-  const [dataCameras, setDataCameras] = useState([
-    // {
-    //   id: 'camera1',
-    //   name: 'Kamera 1',
-    //   location: 'Area Produksi A',
-    //   channel: 'Channel 1',
-    //   description: 'Monitoring area produksi utama',
-    //   status: 'online',
-    //   link: 'rtsp_url://192.168.1.101:554/stream1',
-    //   resolution: '1920x1080',
-    //   fps: 30
-    // },
-  ]);
+  const { dataCamAPD, fetchCamAPD, createCamAPD, updateCamAPD, deleteCamAPD } = useCameraAPD();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -46,8 +35,8 @@ const CCTVManager = () => {
 
   const maxCameras = 4;
 
-  // Filter dataCameras based on search and status
-  const filteredCameras = dataCameras.filter(camera => {
+  // Filter dataCamAPD based on search and status
+  const filteredCameras = dataCamAPD.filter(camera => {
     const matchesSearch = camera.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       camera.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       camera.channel.toLowerCase().includes(searchTerm.toLowerCase());
@@ -70,76 +59,8 @@ const CCTVManager = () => {
     });
   };
 
-  const deleteDataCamera = async (id) => {
-    await toast.promise(
-      cameras.deleteById(id, formData),
-      {
-        pending: "Menghapus kamera...",
-        success: "Kamera berhasil dihapus",
-        error: "Gagal menghapus kamera"
-      },
-      {
-        position: "top-right"
-      }
-    )
-      .then((response) => {
-        console.log("Camera data:", response.data);
-        getDataCameras();
-      })
-      .catch((error) => {
-        console.error("Error fetching camera data:", error);
-      });
-  }
-
-  const createDataCamera = async (id = 0) => {
-    // satukan lat & long ke dalam location
-    const payload = {
-      ...formData,
-      location: `${formData.lat},${formData.long}`, // gabung lat long
-    };
-
-    if (id === 0) {
-      await toast.promise(
-        cameras.createData(payload),
-        {
-          pending: "Menyimpan kamera...",
-          success: "Kamera berhasil ditambahkan",
-          error: "Gagal menambahkan kamera",
-        },
-        { position: "top-right" }
-      )
-        .then((response) => {
-          console.log("Camera data:", response.data);
-          getDataCameras();
-        })
-        .catch((error) => {
-          console.error("Error fetching camera data:", error);
-        });
-    } else {
-      await toast.promise(
-        cameras.updateById(id, payload),
-        {
-          pending: "Merubah data kamera...",
-          success: "Kamera berhasil dirubah",
-          error: "Gagal merubah data kamera",
-        },
-        { position: "top-right" }
-      )
-        .then((response) => {
-          console.log("Camera data:", response.data);
-          getDataCameras();
-        })
-        .catch((error) => {
-          console.error("Error fetching camera data:", error);
-        });
-    }
-    setSelectedIdCam(0);
-  };
-
-
-
   const handleAddCamera = () => {
-    if (dataCameras.length >= maxCameras) {
+    if (dataCamAPD.length >= maxCameras) {
       alert('Maksimal 4 kamera yang dapat ditambahkan');
       return;
     }
@@ -171,26 +92,38 @@ const CCTVManager = () => {
     setShowMetadataModal(true);
   };
 
-  const handleSaveCamera = () => {
-    if (!formData.name || !formData.location || !formData.channel || !formData.rtsp_url) {
+  const handleSaveCamera = async () => {
+    if (!formData.name || (!formData.lat && !formData.long) || !formData.channel || !formData.rtsp_url) {
       alert('Mohon lengkapi semua field yang wajib diisi');
       return;
     }
-
     if (showAddModal) {
-      createDataCamera();
+      const res = await createCamAPD(formData);
+      if (res.success) {
+        toast.success("Camera berhasil ditambahkan ✅");
+        fetchCamAPD(); // refresh list
+      } else {
+        toast.error(`Gagal tambah camera: ${res.error}`);
+      }
       setShowAddModal(false);
     } else if (showEditModal) {
-      createDataCamera(selectedIdCam);
+      const res = await updateCamAPD(selectedIdCam, formData);
+      if (res.success) {
+        toast.success("Camera berhasil diperbarui ✨");
+        fetchCamAPD();
+      } else {
+        toast.error(`Gagal update camera: ${res.error}`);
+      }
       setShowEditModal(false);
     }
     resetForm();
     setSelectedCamera(null);
   };
 
-  const handleDeleteCamera = (cameraId) => {
+  const handleDeleteCamera = (camera) => {
+    console.log(camera)
     if (window.confirm('Apakah Anda yakin ingin menghapus kamera ini?')) {
-      deleteDataCamera(cameraId)
+      deleteCamAPD(camera)
     }
   };
 
@@ -201,50 +134,6 @@ const CCTVManager = () => {
     setSelectedCamera(null);
     resetForm();
   };
-
-  const getDataCameras = async () => {
-    try {
-      const response = await cameras.getAll();
-      console.log("Camera data:", response.data);
-
-      const formatted = response.data.map((cam) => {
-        let lat = "";
-        let long = "";
-
-        if (cam.location) {
-          const parts = cam.location.split(",").map((val) => val.trim());
-          if (parts.length === 2) {
-            lat = parts[0];
-            long = parts[1];
-          }
-        }
-
-        return {
-          id: cam.id,
-          name: cam.name || `Camera ${cam.id}`,
-          location: cam.location,
-          lat,
-          long,
-          description: cam.description || "Camera location",
-          status: cam.status || "offline",
-          channel: cam.channel || "N/A",
-          rtsp_url: cam.rtsp_url || "",
-          resolution: cam.resolution || "1920x1080",
-          fps: cam.fps || 30,
-        };
-      });
-
-      setDataCameras(formatted);
-      console.log("Formatted camera locations:", formatted);
-    } catch (error) {
-      console.error("Error fetching camera data:", error);
-    }
-  };
-
-
-  useEffect(() => {
-    getDataCameras();
-  }, []);
 
   return (
     <div className="min-h-fit w-full p-6">
@@ -287,9 +176,9 @@ const CCTVManager = () => {
                   </select>
                 </div>
                 <button
-                  className="btn btn-sm btn-primary"
+                  className="btn btn-sm bg-blue-100/80 text-blue-800 hover:bg-blue-200/90 border-0"
                   onClick={handleAddCamera}
-                  disabled={dataCameras.length >= maxCameras}
+                  disabled={dataCamAPD.length >= maxCameras}
                 >
                   <FaPlus size={16} />
                   Tambah Kamera
@@ -301,18 +190,18 @@ const CCTVManager = () => {
                   <div className="stats stats-horizontal bg-base-100 border">
                     <div className="stat py-2 px-4">
                       <div className="stat-title text-xs">Total Kamera</div>
-                      <div className="stat-value text-lg">{dataCameras.length}/{maxCameras}</div>
+                      <div className="stat-value text-lg">{dataCamAPD.length}/{maxCameras}</div>
                     </div>
                     <div className="stat py-2 px-4">
                       <div className="stat-title text-xs">Online</div>
                       <div className="stat-value text-lg text-green-600">
-                        {dataCameras.filter(c => c.status === 'online').length}
+                        {dataCamAPD.filter(c => c.status === 'online').length}
                       </div>
                     </div>
                     <div className="stat py-2 px-4">
                       <div className="stat-title text-xs">Offline</div>
                       <div className="stat-value text-lg text-red-600">
-                        {dataCameras.filter(c => c.status === 'offline').length}
+                        {dataCamAPD.filter(c => c.status === 'offline').length}
                       </div>
                     </div>
                   </div>
@@ -321,7 +210,7 @@ const CCTVManager = () => {
             </div>
 
 
-            {dataCameras.length >= maxCameras && (
+            {dataCamAPD.length >= maxCameras && (
               <div className="alert alert-warning mt-4">
                 <IoWarningOutline size={20} />
                 <span>Maksimal 4 kamera telah tercapai. Hapus kamera yang tidak digunakan untuk menambah yang baru.</span>
@@ -387,7 +276,7 @@ const CCTVManager = () => {
                     </button>
                     <button
                       className="btn btn-sm btn-ghost text-red-600"
-                      onClick={() => handleDeleteCamera(camera.id)}
+                      onClick={() => handleDeleteCamera(camera)}
                       title="Hapus Kamera"
                     >
                       <FaTrash size={16} />
@@ -500,20 +389,6 @@ const CCTVManager = () => {
                     <option value="1280x720">1280x720 (HD)</option>
                     <option value="854x480">854x480 (SD)</option>
                   </select>
-                </div>
-
-                <div className="form-control flex flex-col">
-                  <label className="label">
-                    <span className="label-text">FPS</span>
-                  </label>
-                  <input
-                    type="number"
-                    className="input input-bordered w-full"
-                    value={formData.fps}
-                    onChange={(e) => setFormData({ ...formData, fps: parseInt(e.target.value) })}
-                    min="15"
-                    max="60"
-                  />
                 </div>
 
                 <div className="form-control flex flex-col">

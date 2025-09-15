@@ -5,6 +5,10 @@ const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL
   ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`
   : 'http://127.0.0.1:8000/api';
 
+const baseURLPertamina = process.env.NEXT_PUBLIC_API_PERTAMINA
+  ? `${process.env.NEXT_PUBLIC_API_PERTAMINA}/api`
+  : 'http://127.0.0.1:8000/api';
+
 // generic func to fetch data
 export const apiRequest = async (method, url, data = null) => {
   try {
@@ -27,6 +31,16 @@ export const deleteRequest = (url) => apiRequest('delete', url)
 export const updateRequest = (url, data) => apiRequest('put', url, data)
 export const createRequest = (url, data) => apiRequest('post', url, data)
 
+export const pertamina = {
+  getAllCamera: () => {
+
+    return axios.get(`${baseURLPertamina}/cameras/public`, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+}
 export const authApi = {
   // (All Role)
   updateProfile: () => updateRequest(`/auth/profile/`),
@@ -35,7 +49,7 @@ export const authApi = {
     const formData = new FormData();
     formData.append('username', data.username);
     formData.append('password', data.password);
-    
+
     return axios.post(`${baseURL}/auth/login/`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

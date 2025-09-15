@@ -1,24 +1,31 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from 'react';
-import { cameras } from '@/lib/apiService'
+import { motion } from "framer-motion";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useCameraAPD } from '@/hooks/useCameraAPD';
+import { pertamina } from '@/lib/apiService'
+import CameraPreview from "@/components/manager/cameraPreview";
+import UniversalCameraPreview from "@/components/manager/universalCheck"
 
 const MapComponent = () => {
+  const { dataCamAPD, fetchCamAPD } = useCameraAPD();
   const [isClient, setIsClient] = useState(false);
   const [L, setL] = useState(null);
   const [ReactLeaflet, setReactLeaflet] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // Pagination settings
+  const camerasPerPage = 6;
 
   useEffect(() => {
-    // Set CSR
     setIsClient(true);
 
-    // Dynamically import Leaflet and React-Leaflet to avoid SSR issues
     const loadLeaflet = async () => {
       if (typeof window !== 'undefined') {
         const leaflet = await import('leaflet');
         const reactLeaflet = await import('react-leaflet');
 
-        // Fix for default markers
         delete leaflet.default.Icon.Default.prototype._getIconUrl;
         leaflet.default.Icon.Default.mergeOptions({
           iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -32,63 +39,32 @@ const MapComponent = () => {
     };
 
     loadLeaflet();
+    fetchCamAPD(); // ambil data kamera saat mount
   }, []);
 
-  const [locations, setLocation] = useState([
-    // {
-    //   id: 1,
-    //   name: "Bandung City Center",
-    //   position: [-6.9175, 107.6191],
-    //   description: "Pusat kota Bandung"
-    // },
-    // {
-    //   id: 2,
-    //   name: "Gedung Sate",
-    //   position: [-6.9020, 107.6181],
-    //   description: "Landmark terkenal di Bandung"
-    // },
-    // {
-    //   id: 3,
-    //   name: "ITB Ganesha",
-    //   position: [-6.8915, 107.6107],
-    //   description: "Institut Teknologi Bandung"
-    // },
-    // {
-    //   id: 4,
-    //   name: "Baltos",
-    //   position: [-6.9000, 107.6107],
-    //   description: "Baltos Lt 1"
-    // }
-  ]);
+  // Format locations dari dataCamAPD
+  const locations = dataCamAPD.map((cam) => ({
+    id: cam.id,
+    name: cam.name || `Camera ${cam.id}`,
+    position: [parseFloat(cam.lat), parseFloat(cam.long)],
+    description: cam.description || "Camera location",
+    rtsp_url: cam.rtsp_url,
+  }));
 
-const getDataCameras = async () => {
-  try {
-    const response = await cameras.getAll(); 
-    console.log("Camera data:", response.data);
+  // Pagination
+  const totalPages = Math.ceil(locations.length / camerasPerPage);
+  const startIndex = currentPage * camerasPerPage;
+  const endIndex = startIndex + camerasPerPage;
+  const currentCameras = locations.slice(startIndex, endIndex);
 
-    const formatted = response.data.map((cam) => {
-      const [lat, lon] = cam.location.split(",").map(Number);
-      return {
-        id: cam.id,
-        name: cam.name || `Camera ${cam.id}`,
-        position: [lat, lon],
-        description: cam.description || "Camera location"
-      };
-    });
+  const goToNextPage = () => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  };
 
-    setLocation((prev) => [...prev, ...formatted]);
-    // setLocation(formatted);
-    console.log("Formatted camera locations:", formatted);
-  } catch (error) {
-    console.error("Error fetching camera data:", error);
-  }
-};
+  const goToPrevPage = () => {
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  };
 
-useEffect(() => {
-  getDataCameras();
-}, []);
-
-  // Don't render on server-side
   if (!isClient || !ReactLeaflet) {
     return (
       <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -96,7 +72,6 @@ useEffect(() => {
       </div>
     );
   }
-
 
   const { MapContainer, TileLayer, Marker, Popup } = ReactLeaflet;
 
@@ -133,28 +108,123 @@ useEffect(() => {
       </div>
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {locations.map((location) => (
-          <div key={location.id} className="bg-white p-4 rounded-lg shadow border border-gray-200">
+        {locations.map((location, index) => (
+          <motion.div
+            key={location.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              delay: index * 0.1
+            }}
+            whileHover={{ scale: 1.02 }}
+            className="cursor-pointer bg-white p-4 rounded-lg shadow border border-gray-200">
             <h3 className="font-semibold text-gray-800">{location.name}</h3>
             <p className="text-gray-600 text-sm mt-1">{location.description}</p>
             <div className="text-xs text-gray-500 mt-2">
               Lat: {location.position[0]}, Lng: {location.position[1]}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      {/* <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-blue-800 mb-2">Fitur Map Component:</h3>
-        <ul className="text-blue-700 text-sm space-y-1">
-          <li>• Interactive zoom dan pan</li>
-          <li>• Multiple markers dengan popup</li>
-          <li>• Responsive design dengan Tailwind CSS</li>
-          <li>• SSR-safe (tidak error saat server-side rendering)</li>
-          <li>• Menggunakan OpenStreetMap tiles (gratis)</li>
-        </ul>
-      </div> */}
-    </div>
+      {/* Camera Grid Section */}
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800">Live Camera Feed</h3>
+            <p className="text-sm text-gray-600">
+              Halaman {currentPage + 1} dari {totalPages} • {locations.length} kamera total
+            </p>
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToPrevPage}
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={totalPages <= 1}
+              >
+                <FaChevronLeft className="w-5 h-5" />
+              </button>
+
+              <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                {currentPage + 1} / {totalPages}
+              </span>
+
+              <button
+                onClick={goToNextPage}
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={totalPages <= 1}
+              >
+                <FaChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Camera Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {currentCameras.map((location, index) => (
+            <motion.div
+              key={location.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                delay: index * 0.1
+              }}
+              whileHover={{ scale: 1.02 }}
+              className="rounded-lg relative shadow-md border border-gray-200 overflow-hidden bg-white"
+            >
+              <div className="aspect-video">
+                <UniversalCameraPreview
+                  url={location?.rtsp_url}
+                  customcss={"w-full h-full object-cover"}
+                  cameraId={location?.id}
+                />
+              </div>
+              <div className="absolute top-0 right-0 z-10 p-2">
+                <h4 className="font-semibold text-[9px] bg-black/90 p-1 rounded-sm text-white truncate">{location.name}</h4>
+                {/* <p className="text-sm text-white mt-1 truncate">{location.description}</p> */}
+                {/* <div className="text-xs text-white mt-2">
+                  {location.position[0].toFixed(4)}, {location.position[1].toFixed(4)}
+                </div> */}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Empty state when no cameras */}
+        {locations.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-lg mb-2">Tidak ada kamera tersedia</div>
+            <p className="text-gray-500 text-sm">Silakan periksa koneksi atau coba lagi nanti</p>
+          </div>
+        )}
+
+        {/* Page indicator dots */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i)}
+                  className={`w-3 h-3 rounded-full transition-colors duration-200 ${i === currentPage
+                    ? 'bg-blue-600'
+                    : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div >
   );
 };
 

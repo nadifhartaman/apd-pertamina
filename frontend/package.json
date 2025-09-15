@@ -1,9 +1,9 @@
 {
-  "name": "mobility-frontend",
+  "name": "pertamina-frontend",
   "version": "1.0.0",
   "private": true,
   "author": "Indismart",
-  "description": "Dishub Jogja Frontend",
+  "description": "Pertamina APD Frontend",
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
@@ -23,6 +23,7 @@
     "daisyui": "^5.0.0",
     "file-saver": "^2.0.5",
     "formidable": "^3.5.2",
+    "framer-motion": "^12.23.12",
     "hls.js": "^1.6.11",
     "html2canvas": "^1.4.1",
     "html2canvas-pro": "^1.5.11",

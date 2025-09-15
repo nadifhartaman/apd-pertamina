@@ -10,7 +10,8 @@ import { SiSpeedtest } from "react-icons/si";
 import { FaCheck } from "react-icons/fa";
 import { IoWarningOutline, IoDocumentTextOutline } from "react-icons/io5";
 import MapComponent from '@/components/map/mapComponent';
-
+import { useAPD } from '@/hooks/useAPD';
+import CRecapComponent from '@/components/dashboard/cctvRecap'
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
@@ -25,6 +26,8 @@ ChartJS.register(
 );
 
 const DashboardSummary = () => {
+  const { dataApd, lastRecord, pagination, page, setPage, loading, todayPerHour } = useAPD();
+  const [activeTabCCTV, setActiveTabCCTV] = useState('detail');
   const [selectedTimeFilter, setSelectedTimeFilter] = useState('today');
   const [selectedLocationFilter, setSelectedLocationFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('analytics');
@@ -261,77 +264,7 @@ const DashboardSummary = () => {
         )}
 
         {activeTab === 'cctv' && (
-          <div className="card bg-white border-gray-100 border">
-            <div className="card-body">
-              <h3 className="card-title text-lg mb-4">📹 Rekap CCTV yang Diaktifkan</h3>
-
-              <div className="overflow-x-auto">
-                <table className="table table-md table-zebra w-full">
-                  <thead>
-                    <tr>
-                      <th className='text-center'>Kamera</th>
-                      <th className='text-center'>Waktu</th>
-                      <th className='text-center'>Jenis Deteksi</th>
-                      <th className='text-center'>Lokasi</th>
-                      <th className='text-center'>Status</th>
-                      <th className='text-center'>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cctvRecordings.map((record) => (
-                      <tr key={record.id} className='text-sm'>
-                        <td className='text-center place-items-center'>
-                          <div className="flex items-center space-x-3">
-                            <div className="avatar placeholder">
-                              <BiVideoRecording size={18} />
-                            </div>
-                            <div>
-                              <div className="font-semibold">{record.camera}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className='text-center'>
-                          <span className="text-sm">{record.timestamp}</span>
-                        </td>
-                        <td className='text-center'>
-                          <span className={`badge text-xs ${record.type === 'Pelanggaran APD' ? 'badge-error' : 'badge-success'}`}>
-                            {record.type}
-                          </span>
-                        </td>
-                        <td className='text-center'>
-                          {record.location}</td>
-                        <td className='text-center'>
-                          <div className="flex justify-center items-center">
-                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                            <span className="text-green-600">Online</span>
-                          </div>
-                        </td>
-                        <td className='text-center'>
-                          <div className="flex justify-center space-x-2">
-                            <button className="btn btn-ghost btn-sm">Lihat</button>
-                            <button className="btn btn-ghost btn-sm">Simpan</button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-gray-500">
-                  Menampilkan 4 dari 24 rekaman
-                </div>
-                <div className="btn-group">
-                  <button className="btn btn-sm">«</button>
-                  <button className="btn btn-sm btn-active">1</button>
-                  <button className="btn btn-sm">2</button>
-                  <button className="btn btn-sm">3</button>
-                  <button className="btn btn-sm">»</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CRecapComponent  dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV}/>
         )}
       </div>
       <MapComponent/>
