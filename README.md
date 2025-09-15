@@ -6,21 +6,28 @@ Sistem monitoring dan analitik rekap kepatuhan APD Pertamina.
 
 ```
 .
-├── backend/        # API server (FastAPI + SQLAlchemy)
-└── frontend/       # Dashboard web (NextJS + Tailwind)
+├── backend/        # API server (Node.js + Express + MySQL Raw Query)
+└── frontend/       # Dashboard web (Next.js + Tailwind CSS)
 ```
+
+---
 
 ## ⚙️ Teknologi yang Digunakan
 
-| Layer     | Stack                                  |
-|-----------|----------------------------------------|
-| Backend   | Python, FastAPI, SQLAlchemy, Socket.IO |
-| Frontend  | Next.js, React, Tailwind CSS           |
-| Database  | SQLite/PostgreSQL                      |
+| Layer    | Stack                                          |
+| -------- | ---------------------------------------------- |
+| Backend  | Node.js, Express, MySQL (Raw Query), Socket.IO |
+| Frontend | Next.js (React, App Router), Tailwind CSS      |
+| Database | MySQL / MariaDB                                |
+
+---
 
 ## 🔄 Integrasi
 
-Untuk informasi lebih detail tentang integrasi antara frontend dan backend, silakan lihat [INTEGRATION.md](./INTEGRATION.md).
+Frontend berkomunikasi dengan backend melalui REST API berbasis Express.
+Socket.IO digunakan untuk komunikasi real-time (contoh: notifikasi & update kamera).
+
+Detail integrasi lebih lanjut bisa dilihat di [INTEGRATION.md](./INTEGRATION.md).
 
 ---
 
@@ -57,7 +64,7 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=your_password
-DB_NAME=
+DB_NAME=pertamina_apd
 PORT=3001
 ```
 
@@ -104,13 +111,14 @@ Akses frontend: [http://localhost:3000](http://localhost:3000)
 
 ## 📊 Fitur Utama
 
-- Register & Login (username/email, password valid)
-- Ganti password (via email)
-- Grafik Analitik Rekap kepatuhan APD (>80% akurasi)
-- Rekap CCTV
-- Filter (waktu, lokasi) & Unduh rekap (PDF)
-- Object Detection & Tracking
-- CCTV Manager
+* Autentikasi (Register, Login, Logout, Reset Password via Email)
+* CCTV Manager (tambah, edit, hapus, preview)
+* Monitoring Real-time (CCTV streaming + status APD)
+* Grafik Analitik Rekap Kepatuhan APD (>80% akurasi)
+* Filter (waktu, lokasi, kamera)
+* Export Rekap (PDF / Excel)
+* Dashboard dengan statistik harian/bulanan
+* Integrasi Socket.IO untuk notifikasi real-time
 
 ---
 
@@ -127,10 +135,14 @@ npm run test
 ## 👨‍💻 Developer
 
 Proyek dikembangkan oleh:
-- **Smart City & Community Innovation Center (SCCIC)** — Institut Teknologi Bandung
-- Bekerja sama dengan **Pertamina**
+
+* **Smart City & Community Innovation Center (SCCIC)** — Institut Teknologi Bandung
+* Bekerja sama dengan **Pertamina**
 
 ---
 
 > Untuk kontribusi atau pertanyaan, silakan kontak tim SCCIC atau open issue di GitHub.
 
+---
+
+⚡Pertanyaan: mau aku bikinin juga **contoh struktur folder backend (routes, controllers, db, raw query)** biar README makin jelas, atau cukup high-level kayak di atas?
