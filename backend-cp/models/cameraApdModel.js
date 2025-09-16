@@ -1,5 +1,25 @@
 const { dbApd } = require("../db");
 
+async function getAllCameraStatus() {
+  const [[{ total }]] = await dbApd.query(
+    "SELECT COUNT(*) as total FROM cameras"
+  );
+
+  const [[{ online }]] = await dbApd.query(
+    "SELECT COUNT(*) as online FROM cameras WHERE status = 'online'"
+  );
+
+  const [[{ offline }]] = await dbApd.query(
+    "SELECT COUNT(*) as offline FROM cameras WHERE status = 'offline'"
+  );
+
+  return {
+    total,
+    online,
+    offline,
+  };
+}
+
 async function getAllCamera (page = 1, limit = 10) {
   const offset = (page - 1) * limit;
 
@@ -11,13 +31,16 @@ async function getAllCamera (page = 1, limit = 10) {
   const [[{ total }]] = await dbApd.query(
     "SELECT COUNT(*) as total FROM cameras"
   );
-
+  
+  const statusSummary = await getAllCameraStatus();
+  
   return {
     data: rows,
     pagination: {
       total,
       page,
       limit,
+      statusSummary,
       totalPages: Math.ceil(total / limit),
     },
   };

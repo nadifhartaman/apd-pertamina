@@ -8,6 +8,7 @@ export const useAPD = () => {
   const [todayPerHour, setTodayPerHour] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
+  const [dailyStats, setDailyStats] = useState({ total: 0, hourly: [] });
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,6 +49,25 @@ export const useAPD = () => {
     }
   };
 
+  const fetchDailyStats = async () => {
+    try {
+      const result = await apdService.getDailyStats(today);
+      if (result.success) {
+        setDailyStats({
+          hourly: result.hourly,
+          // yesterday: result.yesterday,
+          totalChange: result.totalChange,
+          violationSummary: result.violationSummary,
+        });
+      } else {
+        console.error("Gagal ambil daily stats:", result.error);
+      }
+    } catch (err) {
+      console.error("Error fetching daily stats:", err);
+    }
+  };
+
+
   // Fetch today per hour
   const fetchTodayPerHour = async () => {
     try {
@@ -69,18 +89,20 @@ export const useAPD = () => {
     fetchApd(page);
     fetchLastApd();
     fetchTodayPerHour();
+    fetchDailyStats();
 
     // auto-refresh 8 detik
     const interval = setInterval(() => {
       fetchApd(page);
       fetchLastApd();
       fetchTodayPerHour();
+      fetchDailyStats();
     }, 8000);
 
     // clear interval
     return () => clearInterval(interval);
   }, [page]);
-  
+
   return {
     dataApd,
     lastRecord,
@@ -91,6 +113,8 @@ export const useAPD = () => {
     loading,
     error,
     fetchApd,
+    dailyStats,
+    fetchDailyStats,
     fetchLastApd,
     fetchTodayPerHour,
   };

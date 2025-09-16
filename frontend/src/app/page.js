@@ -11,7 +11,12 @@ import { FaCheck } from "react-icons/fa";
 import { IoWarningOutline, IoDocumentTextOutline } from "react-icons/io5";
 import MapComponent from '@/components/map/mapComponent';
 import { useAPD } from '@/hooks/useAPD';
+import { useCameraAPD } from '@/hooks/useCameraAPD';
 import CRecapComponent from '@/components/dashboard/cctvRecap'
+import TimeSeriesCard from '@/components/dashboard/timeSeries';
+import StatsCardGrid from '@/components/dashboard/statsCard';
+import ComplianceCard from '@/components/dashboard/compliance';
+
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
@@ -26,12 +31,19 @@ ChartJS.register(
 );
 
 const DashboardSummary = () => {
-  const { dataApd, lastRecord, pagination, page, setPage, loading, todayPerHour } = useAPD();
+  const { dataApd, lastRecord, pagination, page, setPage, loading, todayPerHour, dailyStats } = useAPD();
+  const { dataCamAPD, pagination : paginationCAM } = useCameraAPD()
   const [activeTabCCTV, setActiveTabCCTV] = useState('detail');
   const [selectedTimeFilter, setSelectedTimeFilter] = useState('today');
   const [selectedLocationFilter, setSelectedLocationFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('analytics');
-
+  const [timeSeriesRaw, setTimeSeriesRaw] = useState([
+    { hour: 0, count: 2 },
+    { hour: 1, count: 0 },
+    { hour: 2, count: 1 },
+    { hour: 3, count: 4 },
+    { hour: 23, count: 5 },
+  ]);
   // Sample data for charts
   const cameraData = {
     labels: ['Kamera 1', 'Kamera 2', 'Kamera 3', 'Kamera 4', 'Kamera 5'],
@@ -46,17 +58,50 @@ const DashboardSummary = () => {
       ],
     }]
   };
+  const [statsData, setStatsData] = useState([]);
+  const [complianceRaw, setComplianceRaw] = useState([]);
 
-  const timeSeriesData = {
-    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-    datasets: [{
-      label: 'Deteksi Pelanggaran',
-      data: [5, 8, 15, 22, 18, 12],
-      borderColor: 'rgb(239, 68, 68)',
-      backgroundColor: 'rgba(239, 68, 68, 0.1)',
-      tension: 0.4
-    }]
-  };
+  useEffect(() => {
+    if (!dailyStats || !dataCamAPD) return;
+    console.log(dailyStats);
+    // console.log(dailyStats);
+    setStatsData([
+      {
+        title: "Total Deteksi",
+        value: dailyStats?.totalChange?.total ?? 0,
+        desc: `${dailyStats?.totalChange?.percentage} dari kemarin`,
+        color: "text-[#abc62b]",
+        icon: SiSpeedtest,
+      },
+      {
+        title: "Kepatuhan APD",
+        value: `${dailyStats?.violationSummary?.percentages?.nonViolation}`,
+        desc: "↗︎ 5% dari kemarin",
+        color: "text-[#FCB700]",
+        icon: FaCheck,
+      },
+      {
+        title: "Pelanggaran",
+        value: `${dailyStats?.violationSummary?.percentages?.violation}`,
+        desc: "↘︎ 2% dari kemarin",
+        color: "text-[#ed1b2f]",
+        icon: IoWarningOutline,
+      },
+      {
+        title: "Kamera Aktif",
+        value: `${paginationCAM?.statusSummary?.online} / ${paginationCAM?.total || 0}`,
+        desc: `${paginationCAM?.total == paginationCAM.statusSummary?.online ? "Semua Online" : `${paginationCAM?.statusSummary?.offline} Camera Offline`}`,
+        color: "text-[#006db7]",
+        icon: BiVideoRecording,
+      },
+    ]);
+
+    setComplianceRaw([
+      { label: "Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.violation || 1}` },
+      { label: "Tidak Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.nonViolation || 1}` },
+    ]);
+
+  }, [dailyStats, dataCamAPD]);
 
   const complianceData = {
     labels: ['Sesuai APD', 'Tidak Sesuai APD'],
@@ -92,14 +137,6 @@ const DashboardSummary = () => {
       },
     },
   };
-
-  // Mock CCTV recordings data
-  const cctvRecordings = [
-    { id: 1, camera: 'Kamera 1', timestamp: '2024-08-04 14:30:00', type: 'Pelanggaran APD', location: 'Area Produksi A' },
-    { id: 2, camera: 'Kamera 3', timestamp: '2024-08-04 14:15:00', type: 'Normal', location: 'Area Produksi B' },
-    { id: 3, camera: 'Kamera 2', timestamp: '2024-08-04 14:00:00', type: 'Pelanggaran APD', location: 'Gudang' },
-    { id: 4, camera: 'Kamera 4', timestamp: '2024-08-04 13:45:00', type: 'Normal', location: 'Kantor' },
-  ];
 
   const downloadPDF = () => {
     // Mock PDF download functionality
@@ -205,7 +242,8 @@ const DashboardSummary = () => {
               <div className="card-body">
                 <h3 className="card-title text-lg mb-4">Tingkat Kepatuhan</h3>
                 <div className="h-64">
-                  <Doughnut data={complianceData} options={doughnutOptions} />
+                  {/* <Doughnut data={complianceData} options={doughnutOptions} /> */}
+                  <ComplianceCard rawData={complianceRaw}/>
                 </div>
               </div>
             </div>
@@ -215,59 +253,21 @@ const DashboardSummary = () => {
               <div className="card-body">
                 <h3 className="card-title text-lg mb-4"><SlGraph size={18} /> Tren Waktu</h3>
                 <div className="h-64">
-                  <Line data={timeSeriesData} options={chartOptions} />
+                  <TimeSeriesCard rawData={dailyStats.hourly ? dailyStats.hourly : timeSeriesRaw} />
                 </div>
               </div>
             </div>
 
             {/* Statistics Cards */}
-            <div className="lg:col-span-2 xl:col-span-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="stat bg-white border-gray-100 border rounded-lg">
-                  <div className="stat-figure text-[#abc62b]">
-                    <SiSpeedtest size={32} />
-                  </div>
-                  <div className="stat-title">Total Deteksi</div>
-                  <div className="stat-value text-[#abc62b]">117</div>
-                  <div className="stat-desc">↗︎ 12% dari kemarin</div>
-                </div>
-
-                <div className="stat bg-white border-gray-100 border rounded-lg">
-                  <div className="stat-figure text-[#FCB700]">
-                    <FaCheck size={32} />
-                  </div>
-                  <div className="stat-title">Kepatuhan APD</div>
-                  <div className="stat-value text-[#FCB700]">75%</div>
-                  <div className="stat-desc">↗︎ 5% dari kemarin</div>
-                </div>
-
-                <div className="stat bg-white border-gray-100 border rounded-lg">
-                  <div className="stat-figure text-[#ed1b2f]">
-                    <IoWarningOutline size={32} />
-                  </div>
-                  <div className="stat-title">Pelanggaran</div>
-                  <div className="stat-value text-[#ed1b2f]">29</div>
-                  <div className="stat-desc">↘︎ 2% dari kemarin</div>
-                </div>
-
-                <div className="stat bg-white border-gray-100 border rounded-lg">
-                  <div className="stat-figure text-[#006db7]">
-                    <BiVideoRecording size={32} />
-                  </div>
-                  <div className="stat-title">Kamera Aktif</div>
-                  <div className="stat-value text-[#006db7]">5/5</div>
-                  <div className="stat-desc">Semua online</div>
-                </div>
-              </div>
-            </div>
+            <StatsCardGrid stats={statsData} />
           </div>
         )}
 
         {activeTab === 'cctv' && (
-          <CRecapComponent  dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV}/>
+          <CRecapComponent dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV} />
         )}
       </div>
-      <MapComponent/>
+      <MapComponent />
     </div>
   );
 };

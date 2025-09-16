@@ -128,6 +128,28 @@ export const apdService = {
       };
     }
   },
+
+  async getDailyStats (date) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/apd/daily-stats`, {
+        params: date ? { date } : {},
+      });
+      return {
+        success: true,
+        hourly: response.data.hourly,
+        date: response.data.date,
+        // yesterday: response.data.yesterday,
+        totalChange: response.data.totalChange,
+        violationSummary: response.data.violationSummary,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
+    }
+  },
+
   // Get last record
   async getLastApd () {
     try {
