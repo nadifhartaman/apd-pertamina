@@ -50,6 +50,31 @@ export const useCameraAPD = () => {
     }
   };
 
+  // Fetch Camera by ID
+  const fetchCamAPDById = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await cameraService.getCameraById(id);
+
+      if (result.success) {
+        return {
+          ...result.data,
+          ...parseLocation(result.data.location),
+        };
+      } else {
+        setError(`Gagal memuat camera id ${id}: ${result.error}`);
+        return null;
+      }
+    } catch (err) {
+      setError(`Gagal memuat camera id ${id}: ${err.message}`);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Create Camera
   const createCamAPD = async (formData) => {
     const location = formatLocation(formData.lat, formData.long);
@@ -85,6 +110,7 @@ export const useCameraAPD = () => {
     setPage,
     loading,
     error,
+    fetchCamAPDById,
     fetchCamAPD,
     createCamAPD,
     updateCamAPD,
