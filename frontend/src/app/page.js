@@ -16,6 +16,7 @@ import CRecapComponent from '@/components/dashboard/cctvRecap'
 import TimeSeriesCard from '@/components/dashboard/timeSeries';
 import StatsCardGrid from '@/components/dashboard/statsCard';
 import ComplianceCard from '@/components/dashboard/compliance';
+import CameraDetectionChart from '@/components/dashboard/cameraDetection'
 
 // Register Chart.js components
 ChartJS.register(
@@ -31,8 +32,8 @@ ChartJS.register(
 );
 
 const DashboardSummary = () => {
-  const { dataApd, lastRecord, pagination, page, setPage, loading, todayPerHour, dailyStats } = useAPD();
-  const { dataCamAPD, pagination : paginationCAM } = useCameraAPD()
+  const { dataApd, lastRecord, pagination, page, setPage, loading, todayPerHour, dailyStats, summaryViolation } = useAPD();
+  const { dataCamAPD, pagination: paginationCAM } = useCameraAPD()
   const [activeTabCCTV, setActiveTabCCTV] = useState('detail');
   const [selectedTimeFilter, setSelectedTimeFilter] = useState('today');
   const [selectedLocationFilter, setSelectedLocationFilter] = useState('all');
@@ -44,26 +45,14 @@ const DashboardSummary = () => {
     { hour: 3, count: 4 },
     { hour: 23, count: 5 },
   ]);
-  // Sample data for charts
-  const cameraData = {
-    labels: ['Kamera 1', 'Kamera 2', 'Kamera 3', 'Kamera 4', 'Kamera 5'],
-    datasets: [{
-      label: 'Deteksi APD',
-      data: [25, 19, 30, 15, 28],
-      backgroundColor: [
-        '#ed1b2f',
-        '#FCB700',
-        '#006db7',
-        '#abc62b',
-      ],
-    }]
-  };
+
   const [statsData, setStatsData] = useState([]);
   const [complianceRaw, setComplianceRaw] = useState([]);
+  const [dataViolation, setDataViolation] = useState([]);
 
   useEffect(() => {
-    if (!dailyStats || !dataCamAPD) return;
-    console.log(dailyStats);
+    if (!dailyStats || !dataCamAPD || !summaryViolation) return;
+    console.log(summaryViolation);
     // console.log(dailyStats);
     setStatsData([
       {
@@ -75,68 +64,44 @@ const DashboardSummary = () => {
       },
       {
         title: "Kepatuhan APD",
-        value: `${dailyStats?.violationSummary?.percentages?.nonViolation}`,
-        desc: "↗︎ 5% dari kemarin",
+        value: `${dailyStats?.violationSummary?.totals?.nonViolation}`,
+        desc: `${dailyStats?.violationSummary?.totals?.violation >= dailyStats?.violationSummary?.totals?.nonViolation ? "↘︎" : "↗︎"}  ${dailyStats?.violationSummary?.percentages?.nonViolation} dari kemarin`,
         color: "text-[#FCB700]",
         icon: FaCheck,
       },
       {
         title: "Pelanggaran",
-        value: `${dailyStats?.violationSummary?.percentages?.violation}`,
-        desc: "↘︎ 2% dari kemarin",
+        value: `${dailyStats?.violationSummary?.totals?.violation}`,
+        desc: `${dailyStats?.violationSummary?.totals?.violation <= dailyStats?.violationSummary?.totals?.nonViolation ? "↘︎" : "↗︎"} ${dailyStats?.violationSummary?.percentages?.violation} dari kemarin`,
         color: "text-[#ed1b2f]",
         icon: IoWarningOutline,
       },
       {
         title: "Kamera Aktif",
-        value: `${paginationCAM?.statusSummary?.online} / ${paginationCAM?.total || 0}`,
-        desc: `${paginationCAM?.total == paginationCAM.statusSummary?.online ? "Semua Online" : `${paginationCAM?.statusSummary?.offline} Camera Offline`}`,
+        value: `${paginationCAM?.statusSummary?.online || 0} / ${paginationCAM?.total || 0}`,
+        desc: `${paginationCAM?.total == paginationCAM?.statusSummary?.online ? "Semua Online" : `${paginationCAM?.statusSummary?.offline} Camera Offline`}`,
         color: "text-[#006db7]",
         icon: BiVideoRecording,
       },
     ]);
 
     setComplianceRaw([
-      { label: "Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.violation || 1}` },
-      { label: "Tidak Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.nonViolation || 1}` },
+      { label: "Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.nonViolation ? dailyStats?.violationSummary?.totals?.nonViolation : dailyStats?.violationSummary?.totals?.violation ? 0 : 0}` },
+      { label: "Tidak Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.violation ? dailyStats?.violationSummary?.totals?.violation : dailyStats?.violationSummary?.totals?.nonViolation ? 0 : 0}` },
     ]);
 
-  }, [dailyStats, dataCamAPD]);
+    const mappedData = Object.entries(summaryViolation).map(([id, data]) => {
+      return {
+        label: `Kamera ${id}`,
+        value: data.totals.violation // atau bisa pakai percentage
+          ? parseFloat(data.percentages.violation) // misal ambil persen
+          : 0,
+      };
+    });
 
-  const complianceData = {
-    labels: ['Sesuai APD', 'Tidak Sesuai APD'],
-    datasets: [{
-      data: [75, 25],
-      backgroundColor: [
-        '#abc62b',
-        '#ed1b2f'
-      ],
-      borderWidth: 2
-    }]
-  };
+    setDataViolation(mappedData);
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  };
-
-  const doughnutOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom',
-      },
-    },
-  };
+  }, [dailyStats, dataCamAPD, summaryViolation]);
 
   const downloadPDF = () => {
     // Mock PDF download functionality
@@ -232,7 +197,9 @@ const DashboardSummary = () => {
               <div className="card-body">
                 <h3 className="card-title text-lg mb-4"><BiVideoRecording size={18} /> Deteksi per Kamera</h3>
                 <div className="h-64">
-                  <Bar data={cameraData} options={chartOptions} />
+                  <CameraDetectionChart
+                    data={dataViolation}
+                  />
                 </div>
               </div>
             </div>
@@ -243,7 +210,7 @@ const DashboardSummary = () => {
                 <h3 className="card-title text-lg mb-4">Tingkat Kepatuhan</h3>
                 <div className="h-64">
                   {/* <Doughnut data={complianceData} options={doughnutOptions} /> */}
-                  <ComplianceCard rawData={complianceRaw}/>
+                  <ComplianceCard rawData={complianceRaw} />
                 </div>
               </div>
             </div>

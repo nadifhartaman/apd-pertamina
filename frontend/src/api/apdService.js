@@ -150,6 +150,25 @@ export const apdService = {
     }
   },
 
+  async getSummaryViolation(date) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/apd/summary-violation`, {
+        params: date ? { date } : {},
+      });
+  
+      return {
+        success: true,
+        date: response.data.date,
+        summary: response.data.summary,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
+    }
+  },  
+
   // Get last record
   async getLastApd () {
     try {

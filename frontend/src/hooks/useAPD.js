@@ -12,6 +12,7 @@ export const useAPD = () => {
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [summaryViolation, setSummaryViolation] = useState(null);
 
   // Fetch APD data
   const fetchApd = async (currentPage = page) => {
@@ -32,6 +33,19 @@ export const useAPD = () => {
       console.error("Error fetching dataApd:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSummaryViolation = async () => {
+    try {
+      const result = await apdService.getSummaryViolation(today);
+      if (result.success) {
+        setSummaryViolation(result.summary);
+      } else {
+        console.error("Gagal ambil summary violation:", result.error);
+      }
+    } catch (err) {
+      console.error("Error fetching summary violation:", err);
     }
   };
 
@@ -90,11 +104,13 @@ export const useAPD = () => {
     fetchLastApd();
     fetchTodayPerHour();
     fetchDailyStats();
+    fetchSummaryViolation();
 
     // auto-refresh 8 detik
     const interval = setInterval(() => {
       fetchApd(page);
       fetchLastApd();
+      fetchSummaryViolation();
       fetchTodayPerHour();
       fetchDailyStats();
     }, 8000);
@@ -116,6 +132,7 @@ export const useAPD = () => {
     dailyStats,
     fetchDailyStats,
     fetchLastApd,
+    summaryViolation,
     fetchTodayPerHour,
   };
 };

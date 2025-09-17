@@ -72,7 +72,6 @@ async function getViolationSummary(date = null) {
     [targetDate]
   );
 
-  // master list
   const masterLabels = [
     "Person",
     "No Hardhat",
@@ -83,8 +82,8 @@ async function getViolationSummary(date = null) {
     "Glove"
   ];
 
-  // kriteria pelanggaran
   const violationCriteria = ["No Hardhat", "No Mask", "No Glove"];
+  const ignoreLabels = ["Person"]; // <-- abaikan person
 
   const counts = {};
   masterLabels.forEach(l => (counts[l] = 0));
@@ -101,15 +100,14 @@ async function getViolationSummary(date = null) {
       .filter(l => l.length > 0);
 
     labels.forEach(label => {
-      // tambah ke counter label
+      if (ignoreLabels.includes(label)) return; // skip Person
+
       if (counts[label] !== undefined) {
         counts[label] += 1;
       } else {
-        // kalau label baru muncul
         counts[label] = 1;
       }
 
-      // cek apakah label termasuk pelanggaran
       if (violationCriteria.includes(label)) {
         violationTotal += 1;
       } else {
@@ -118,23 +116,19 @@ async function getViolationSummary(date = null) {
     });
   });
 
-  // label yang tidak muncul sama sekali
-  const notDetected = Object.entries(counts)
-    .filter(([_, v]) => v === 0)
-    .map(([k]) => k);
-
   const totalDetections = violationTotal + nonViolationTotal;
 
   const violationPercentage =
-    totalDetections > 0 ? ((violationTotal / totalDetections) * 100).toFixed(2) : "0.00";
+    totalDetections > 0
+      ? ((violationTotal / totalDetections) * 100).toFixed(2)
+      : "0.00";
 
   const nonViolationPercentage =
-    totalDetections > 0 ? ((nonViolationTotal / totalDetections) * 100).toFixed(2) : "0.00";
+    totalDetections > 0
+      ? ((nonViolationTotal / totalDetections) * 100).toFixed(2)
+      : "0.00";
 
   return {
-    // totalLabels: Object.keys(counts).length,
-    // counts,
-    // notDetected,
     totals: {
       violation: violationTotal,
       nonViolation: nonViolationTotal,
@@ -147,6 +141,72 @@ async function getViolationSummary(date = null) {
   };
 }
 
+async function getViolationByCamera(date = null) {
+  const targetDate = date || new Date().toISOString().slice(0, 10);
+
+  const [cameras] = await dbApd.query("SELECT id FROM cameras");
+
+  const summary = {};
+  cameras.forEach(cam => {
+    summary[cam.id] = {
+      totals: { violation: 0, nonViolation: 0, totalDetections: 0 },
+      percentages: { violation: "0.00%", nonViolation: "0.00%" }
+    };
+  });
+
+  const [rows] = await dbApd.query(
+    `
+      SELECT id_camera, detected_container_id
+      FROM container
+      WHERE DATE(timestamp) = ?
+    `,
+    [targetDate]
+  );
+
+  const violationCriteria = ["No Hardhat", "No Mask", "No Glove"];
+  const ignoreLabels = ["Person"]; // <-- abaikan person
+
+  rows.forEach(row => {
+    if (!row.detected_container_id) return;
+
+    const cameraSummary = summary[row.id_camera];
+    if (!cameraSummary) return;
+
+    const labels = row.detected_container_id
+      .split(",")
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
+
+    labels.forEach(label => {
+      if (ignoreLabels.includes(label)) return; // skip Person
+
+      if (violationCriteria.includes(label)) {
+        cameraSummary.totals.violation += 1;
+      } else {
+        cameraSummary.totals.nonViolation += 1;
+      }
+      cameraSummary.totals.totalDetections += 1;
+    });
+  });
+
+  Object.values(summary).forEach(cam => {
+    const { violation, nonViolation, totalDetections } = cam.totals;
+
+    cam.percentages.violation =
+      totalDetections > 0
+        ? ((violation / totalDetections) * 100).toFixed(2) + "%"
+        : "0.00%";
+
+    cam.percentages.nonViolation =
+      totalDetections > 0
+        ? ((nonViolation / totalDetections) * 100).toFixed(2) + "%"
+        : "0.00%";
+  });
+
+  return summary;
+}
+
+
 
 
 module.exports = {
@@ -154,5 +214,6 @@ module.exports = {
   getLastContainer,
   getCountPerHour,
   getTotalDetection,
-  getViolationSummary
+  getViolationSummary,
+  getViolationByCamera
 };

@@ -26,6 +26,7 @@ async function getContainers (req, res) {
       .json({ success: false, message: "failed to fetch containers", error: err.message });
   }
 }
+
 async function getTodayCountPerHour(req, res) {
   try {
     const { date } = req.query; // ?date=2025-09-03
@@ -108,9 +109,30 @@ async function getDailyStats(req, res) {
   }
 }
 
+async function getViolationSummaryByCamera(req, res) {
+  try {
+    const date = req.query.date || new Date().toISOString().slice(0, 10);
+    const summary = await apdModel.getViolationByCamera(date);
+
+    res.status(200).json({
+      success: true,
+      date,
+      summary, // { camera_id: { totals, percentages }, ... }
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch violation summary per camera",
+      error: err.message,
+    });
+  }
+}
+
+
 module.exports = {
   getContainers,
   getLastContainer,
   getTodayCountPerHour,
-  getDailyStats
+  getDailyStats,
+  getViolationSummaryByCamera
 };
