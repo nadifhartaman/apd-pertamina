@@ -7,7 +7,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const cameraService = {
   // Get paginated camera data
-  async getAllCameras(page = 1, limit = 10) {
+  async getAllCameras (page = 1, limit = 10) {
     try {
       const response = await axios.get(`${API_BASE_URL}/apd/camera/`, {
         params: { page, limit },
@@ -24,9 +24,24 @@ export const cameraService = {
       };
     }
   },
+  // Get camera by ID
+  async getCameraById (id) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/apd/camera/${id}`);
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
+    }
+  },
 
   // Add new camera
-  async createCamera(cameraData) {
+  async createCamera (cameraData) {
     try {
       const response = await axios.post(`${API_BASE_URL}/apd/camera`, cameraData);
       return {
@@ -43,7 +58,7 @@ export const cameraService = {
   },
 
   // Update camera
-  async updateCamera(id, cameraData) {
+  async updateCamera (id, cameraData) {
     try {
       const response = await axios.put(`${API_BASE_URL}/apd/camera/${id}`, cameraData);
       return {
@@ -60,7 +75,7 @@ export const cameraService = {
   },
 
   // Delete camera
-  async deleteCamera(id) {
+  async deleteCamera (id) {
     try {
       const response = await axios.delete(`${API_BASE_URL}/apd/camera/${id}`);
       return {
@@ -113,6 +128,47 @@ export const apdService = {
       };
     }
   },
+
+  async getDailyStats (date) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/apd/daily-stats`, {
+        params: date ? { date } : {},
+      });
+      return {
+        success: true,
+        hourly: response.data.hourly,
+        date: response.data.date,
+        // yesterday: response.data.yesterday,
+        totalChange: response.data.totalChange,
+        violationSummary: response.data.violationSummary,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
+    }
+  },
+
+  async getSummaryViolation(date) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/apd/summary-violation`, {
+        params: date ? { date } : {},
+      });
+  
+      return {
+        success: true,
+        date: response.data.date,
+        summary: response.data.summary,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
+    }
+  },  
+
   // Get last record
   async getLastApd () {
     try {

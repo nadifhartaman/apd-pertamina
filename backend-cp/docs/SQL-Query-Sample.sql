@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS cameras (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  link TEXT NOT NULL,
+  location VARCHAR(255),
+  status ENUM('active', 'inactive') DEFAULT 'inactive',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS people_counts (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  camera_id INT NOT NULL,
+  recorded_at DATETIME NOT NULL,
+  person_count INT NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_recorded_at (recorded_at),
+  CONSTRAINT fk_people_camera FOREIGN KEY (camera_id) REFERENCES cameras(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

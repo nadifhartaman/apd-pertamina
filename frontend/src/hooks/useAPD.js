@@ -8,9 +8,11 @@ export const useAPD = () => {
   const [todayPerHour, setTodayPerHour] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
+  const [dailyStats, setDailyStats] = useState({ total: 0, hourly: [] });
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [summaryViolation, setSummaryViolation] = useState(null);
 
   // Fetch APD data
   const fetchApd = async (currentPage = page) => {
@@ -34,6 +36,19 @@ export const useAPD = () => {
     }
   };
 
+  const fetchSummaryViolation = async () => {
+    try {
+      const result = await apdService.getSummaryViolation(today);
+      if (result.success) {
+        setSummaryViolation(result.summary);
+      } else {
+        console.error("Gagal ambil summary violation:", result.error);
+      }
+    } catch (err) {
+      console.error("Error fetching summary violation:", err);
+    }
+  };
+
   // Fetch last record
   const fetchLastApd = async () => {
     try {
@@ -47,6 +62,25 @@ export const useAPD = () => {
       console.error("Error fetching last record:", err);
     }
   };
+
+  const fetchDailyStats = async () => {
+    try {
+      const result = await apdService.getDailyStats(today);
+      if (result.success) {
+        setDailyStats({
+          hourly: result.hourly,
+          // yesterday: result.yesterday,
+          totalChange: result.totalChange,
+          violationSummary: result.violationSummary,
+        });
+      } else {
+        console.error("Gagal ambil daily stats:", result.error);
+      }
+    } catch (err) {
+      console.error("Error fetching daily stats:", err);
+    }
+  };
+
 
   // Fetch today per hour
   const fetchTodayPerHour = async () => {
@@ -69,18 +103,22 @@ export const useAPD = () => {
     fetchApd(page);
     fetchLastApd();
     fetchTodayPerHour();
+    fetchDailyStats();
+    fetchSummaryViolation();
 
     // auto-refresh 8 detik
     const interval = setInterval(() => {
       fetchApd(page);
       fetchLastApd();
+      fetchSummaryViolation();
       fetchTodayPerHour();
+      fetchDailyStats();
     }, 8000);
 
     // clear interval
     return () => clearInterval(interval);
   }, [page]);
-  
+
   return {
     dataApd,
     lastRecord,
@@ -91,7 +129,10 @@ export const useAPD = () => {
     loading,
     error,
     fetchApd,
+    dailyStats,
+    fetchDailyStats,
     fetchLastApd,
+    summaryViolation,
     fetchTodayPerHour,
   };
 };
