@@ -86,8 +86,8 @@ const DashboardSummary = () => {
     ]);
 
     setComplianceRaw([
-      { label: "Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.nonViolation ? dailyStats?.violationSummary?.totals?.nonViolation : dailyStats?.violationSummary?.totals?.violation ? 0 : 0}` },
-      { label: "Tidak Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.violation ? dailyStats?.violationSummary?.totals?.violation : dailyStats?.violationSummary?.totals?.nonViolation ? 0 : 0}` },
+      { label: "Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.nonViolation}` },
+      { label: "Tidak Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.violation}` },
     ]);
 
     const mappedData = Object.entries(summaryViolation).map(([id, data]) => {
@@ -208,7 +208,7 @@ const DashboardSummary = () => {
             <div className="card bg-white border-gray-100 border">
               <div className="card-body">
                 <h3 className="card-title text-lg mb-4">Tingkat Kepatuhan</h3>
-                <div className="h-64">
+                <div className="h-64 m-auto">
                   {/* <Doughnut data={complianceData} options={doughnutOptions} /> */}
                   <ComplianceCard rawData={complianceRaw} />
                 </div>
