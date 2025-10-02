@@ -10,7 +10,7 @@ export function middleware (req) {
   }
 
   const protectedRoutes = ["/", "/camera", "/camera/manager"];
-  const validRoutes = ["/", "/auth/login", "/camera", "/not-found", "/auth/register", "/camera/manager"];
+  const validRoutes = ["/", "/auth/login", "/camera", "/not-found", "/auth/register", "/camera/manager", "/auth/reset-password", "/auth/forgot-password"];
   const isRouteValid = (path) => validRoutes.includes(path);
 
   // Jika halaman bukan valid route, redirect ke not-found

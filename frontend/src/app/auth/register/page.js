@@ -7,11 +7,10 @@ import Cookies from 'js-cookie';
 import { authApi } from '@/lib/apiService';
 import { useAuth } from '@/contexts/authContext';
 
-export default function AuthRegister() {
+export default function AuthRegister () {
   const router = useRouter();
   const { loading, setLoading, login } = useAuth();
 
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +18,7 @@ export default function AuthRegister() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     const storedToken = Cookies.get('token');
@@ -30,8 +30,8 @@ export default function AuthRegister() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!username || !email || !password) {
-      setErrorMessage('Username, email, dan password harus diisi.');
+    if (!email || !password) {
+      setErrorMessage('Email dan password harus diisi.');
       return;
     }
 
@@ -44,37 +44,52 @@ export default function AuthRegister() {
     setErrorMessage('');
 
     try {
+      // data untuk register sesuai backend
       const userData = {
-        username,
         email,
         full_name: fullName,
         password,
         is_active: true
       };
-      
-      const response = await authApi.register(userData);
-      
-      // Setelah registrasi berhasil, login dengan kredensial yang sama
-      console.log('Registration successful, attempting login with:', { username, password });
-      const loginResponse = await authApi.login({
-        username: username,
-        password: password
-      });
-      
+
+      // register
+      await authApi.register(userData);
+
+      // langsung login
+      console.log('Registration successful, attempting login with:', { email, password });
+      const loginResponse = await authApi.login({ email, password });
+
       console.log('Login response after registration:', loginResponse);
-      const { access_token } = loginResponse.data;
-      
-      login(access_token); // simpan token di context
-      router.push('/'); // redirect ke dashboard/home
+      const { token, user } = loginResponse.data;
+
+      if (!token) throw new Error("Token tidak ditemukan di response");
+
+      login(token, user); // simpan token di context
+
+      // kasih loading redirect biar smooth
+      setRedirecting(true);
+      setTimeout(() => {
+        router.push('/');
+      }, 1500); // delay 1.5 detik
     } catch (err) {
       console.error('Registration error:', err);
-      setErrorMessage(err.response?.data?.detail || 'Gagal registrasi. Coba lagi.');
+      setErrorMessage(err.response?.data?.message || 'Gagal registrasi. Coba lagi.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (redirecting) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-base-100">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <p className="ml-3 text-lg font-medium">Mengalihkan ke dashboard...</p>
+      </div>
+    );
+  }
+
   return (
+
     <div className="min-h-screen flex flex-row-reverse">
       <div className="lg:flex-1 lg:relative hidden lg:flex">
         <Image
@@ -117,17 +132,16 @@ export default function AuthRegister() {
             </div>
 
             <div>
-              <label htmlFor="username" className="label">
-                <span className="label-text">Username</span>
+              <label htmlFor="fullName" className="label">
+                <span className="label-text">Nama Lengkap</span>
               </label>
               <input
-                id="username"
+                id="fullName"
                 type="text"
                 className="input input-bordered w-full rounded-md"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
+                placeholder="Nama Lengkap"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
 
@@ -143,20 +157,6 @@ export default function AuthRegister() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="fullName" className="label">
-                <span className="label-text">Nama Lengkap</span>
-              </label>
-              <input
-                id="fullName"
-                type="text"
-                className="input input-bordered w-full rounded-md"
-                placeholder="Nama Lengkap"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
 

@@ -71,7 +71,7 @@ const Layout = ({ children }) => {
   //   return <div>{children}</div>;
   // }
 
-  if (!token && pathname !== "/dashboard/mobility" || pathname === "/auth/login" || pathname === "/not-found") {
+  if (!token && pathname !== "/dashboard/mobility" || pathname === "/auth/login" || pathname === "/not-found" || pathname === "/auth/register" || pathname === "/auth/reset-password" || pathname === "/forgot-password") {
     return (
       <div>
         <ToastContainer />

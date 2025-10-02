@@ -13,12 +13,12 @@ import { fakeToken, fakeUser } from '@/lib/fake';
 export default function AuthLogin () {
   const router = useRouter();
   const { loading, setLoading, setUserId, login, error } = useAuth();
-  const [loaded, setLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     const storedToken = Cookies.get('token');
@@ -27,52 +27,61 @@ export default function AuthLogin () {
     }
   }, []);
 
-  // test login fetch api login to dashboard
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
+    setLoading(true);
+    setErrorMessage('');
+
     // Untuk testing dengan fake data
     if (
-      username === 'admin' &&
+      email === 'admin' &&
       password === 'password'
     ) {
       login(fakeToken, fakeUser)
       router.push('/');
       return;
     }
-
-    setLoading(true);
-    setErrorMessage('');
-    
     try {
-      console.log('Attempting login with:', { username, password });
+      console.log('Attempting login with:', { email, password });
       const response = await authApi.login({
-        username,
+        email,
         password
       });
-      
+
       console.log('Login response:', response);
-      const { access_token } = response.data;
-      
-      login(access_token); // simpan token di context
-      router.push('/'); // redirect ke dashboard/home
+
+      const { token } = response.data;
+
+      if (!token) {
+        throw new Error("Token tidak ditemukan di response");
+      }
+      login(token);
+      setRedirecting(true);
+      setTimeout(() => {
+        router.push('/');
+      }, 1200);
+
     } catch (err) {
       console.error('Login error:', err);
       console.error('Error response:', err.response?.data);
-      setErrorMessage(err.response?.data?.detail || 'Gagal login. Coba lagi.');
-      toast.error("Password atau Username salah", {position: "top-center"});
+      setErrorMessage(err.response?.data?.message || 'Gagal login. Coba lagi.');
+      toast.error("Email atau Password salah", { position: "top-center" });
     } finally {
       setLoading(false);
     }
-    //   const response = await authApi.login({ email: username, password });
-    //   const { token, user } = response.data.data;
-    //   login(token, user)
-    //   router.push("/");
-    // } catch (error) {
-    //   setErrorMessage("Invalid username or password");
-    // }
   };
-  
+
+  if (redirecting) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-3">
+          <span className="loading loading-spinner loading-lg text-red-600"></span>
+          <p className="text-gray-700 font-medium">Mengalihkan ke dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen md:flex md:flex-row-reverse">
@@ -107,16 +116,16 @@ export default function AuthLogin () {
               <p className="mt-1 text-sm text-gray-600">Masukkan kredensial Anda untuk mengakses dashboard</p>
             </div>
             <div>
-              <label htmlFor="username" className="label">
-                <span className="label-text">Username</span>
+              <label htmlFor="email" className="label">
+                <span className="label-text">email</span>
               </label>
               <input
-                id="username"
+                id="email"
                 type="text"
                 className="input input-bordered w-full rounded-md"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -148,7 +157,10 @@ export default function AuthLogin () {
             {errorMessage && (
               <div className="text-red-600 text-sm">{errorMessage}</div>
             )}
-            <a href='/auth/register' className='text-sm underline'>Register</a>
+            <div className='w-full flex justify-between'>
+              <a href='/auth/register' className='text-sm underline'>Register</a>
+              <a href='/auth/forgot-password' className='text-sm underline'>Forgot Password</a>
+            </div>
             <button
               type="submit"
               className="btn w-full bg-red-600 hover:bg-red-700 border-none text-white"

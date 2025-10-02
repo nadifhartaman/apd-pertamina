@@ -1,5 +1,4 @@
-// api/apdService.js
-import axios from 'axios';
+import api from "./apiInstance";
 
 export const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
 
@@ -9,7 +8,7 @@ export const cameraService = {
   // Get paginated camera data
   async getAllCameras (page = 1, limit = 10) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/apd/camera/`, {
+      const response = await api.get(`${API_BASE_URL}/apd/camera/`, {
         params: { page, limit },
       });
       return {
@@ -27,7 +26,7 @@ export const cameraService = {
   // Get camera by ID
   async getCameraById (id) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/apd/camera/${id}`);
+      const response = await api.get(`${API_BASE_URL}/apd/camera/${id}`);
       return {
         success: true,
         data: response.data.data,
@@ -43,7 +42,7 @@ export const cameraService = {
   // Add new camera
   async createCamera (cameraData) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/apd/camera`, cameraData);
+      const response = await api.post(`${API_BASE_URL}/apd/camera`, cameraData);
       return {
         success: true,
         data: response.data.data,
@@ -60,7 +59,7 @@ export const cameraService = {
   // Update camera
   async updateCamera (id, cameraData) {
     try {
-      const response = await axios.put(`${API_BASE_URL}/apd/camera/${id}`, cameraData);
+      const response = await api.put(`${API_BASE_URL}/apd/camera/${id}`, cameraData);
       return {
         success: true,
         data: response.data.data,
@@ -77,7 +76,7 @@ export const cameraService = {
   // Delete camera
   async deleteCamera (id) {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/apd/camera/${id}`);
+      const response = await api.delete(`${API_BASE_URL}/apd/camera/${id}`);
       return {
         success: true,
         data: response.data.data,
@@ -96,7 +95,7 @@ export const apdService = {
   // Get paginated APD data
   async getAllApd (page = 1, limit = 10) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/apd`, {
+      const response = await api.get(`${API_BASE_URL}/apd`, {
         params: { page, limit },
       });
       return {
@@ -114,7 +113,7 @@ export const apdService = {
   // Get today count per hour (optional date)
   async getTodayCountPerHour (date) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/apd/today-per-hour`, {
+      const response = await api.get(`${API_BASE_URL}/apd/today-per-hour`, {
         params: date ? { date } : {}, // kalau ada date → kirim, kalau tidak → kosong (default hari ini di backend)
       });
       return {
@@ -131,7 +130,7 @@ export const apdService = {
 
   async getDailyStats (date) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/apd/daily-stats`, {
+      const response = await api.get(`${API_BASE_URL}/apd/daily-stats`, {
         params: date ? { date } : {},
       });
       return {
@@ -152,7 +151,7 @@ export const apdService = {
 
   async getSummaryViolation(date) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/apd/summary-violation`, {
+      const response = await api.get(`${API_BASE_URL}/apd/summary-violation`, {
         params: date ? { date } : {},
       });
   
@@ -172,7 +171,7 @@ export const apdService = {
   // Get last record
   async getLastApd () {
     try {
-      const response = await axios.get(`${API_BASE_URL}/apd/last`);
+      const response = await api.get(`${API_BASE_URL}/apd/last`);
       return {
         success: true,
         data: response.data.data || null,

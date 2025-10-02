@@ -1,14 +1,11 @@
 import axiosInstance from "./apiClient";
 import axios from 'axios';
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL
-  ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`
-  : 'http://127.0.0.1:8000/api';
+// const baseURLPertamina = process.env.NEXT_PUBLIC_API_PERTAMINA
+//   ? `${process.env.NEXT_PUBLIC_API_PERTAMINA}/api`
+//   : 'http://localhost:3001/api';
 
-const baseURLPertamina = process.env.NEXT_PUBLIC_API_PERTAMINA
-  ? `${process.env.NEXT_PUBLIC_API_PERTAMINA}/api`
-  : 'http://127.0.0.1:8000/api';
-
+const baseURLPertamina = process.env.NEXT_PUBLIC_API_URL
 // generic func to fetch data
 export const apiRequest = async (method, url, data = null) => {
   try {
@@ -41,112 +38,20 @@ export const pertamina = {
     });
   }
 }
+
 export const authApi = {
-  // (All Role)
-  updateProfile: () => updateRequest(`/auth/profile/`),
-  login: (data) => {
-    // Menggunakan FormData untuk kompatibilitas dengan OAuth2PasswordRequestForm di FastAPI
-    const formData = new FormData();
-    formData.append('username', data.username);
-    formData.append('password', data.password);
-
-    return axios.post(`${baseURL}/auth/login/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  },
-  register: (data) => {
-    // Menggunakan JSON untuk endpoint register
-    return createRequest(`/auth/register/`, data);
-  },
+  login: (data) => axios.post(`${baseURLPertamina}/auth/login`, data),
+  register: (data) => axios.post(`${baseURLPertamina}/auth/register`, data),
   logout: () => createRequest(`/auth/logout/`),
-
+  
   // User Management Endpoints (Admin Only)
   getAllUser: () => getRequest(`/users`),
   createNewUser: (data) => createRequest(`/users`, data),
   updateUser: (id, data) => updateRequest(`/users/${id}`, data),
   getByIdUser: () => getRequest(`/users`),
   deleteByIdUser: (id) => deleteRequest(`/users/${id}`),
-
+  
   // Assign role to user
   addUserRole: (id, data) => createRequest(`/users/${id}/role`, data),
   deleteUserRole: (id, role_id) => deleteRequest(`/users/${id}/role/${role_id}`, { role_id: role_id }),
-}
-
-export const maps = {
-  getAll: () => getRequest(`/maps/buildings`),
-  getAllFull: () => getRequest(`/maps/buildings-full`),
-  getById: (id) => getRequest(`/simpang/${id}`),
-  getAllSimpang: () => getRequest(`/simpang`),
-  updateById: (id, data) => updateRequest(`/simpang/${id}`, data),
-  createData: (data) => createRequest(`/simpang`, data),
-  deleteById: (id) => deleteRequest(`/simpang/${id}`)
-}
-
-export const cameras = {
-  getAll: () => getRequest(`/cameras/`),
-  updateById: (id, data) => updateRequest(`/cameras/${id}`, data),
-  createData: (data) => createRequest(`/cameras/`, data),
-  deleteById: (id) => deleteRequest(`/cameras/${id}`)
-}
-
-export const calendar = {
-  getAll: (page, limit) => getRequest(`/holidays?page=${page}&limit=${limit}`),
-  // Upload Excel FormData
-  uploadFile: (file, mode = 'append') => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('mode', mode);
-
-    return axiosInstance.post('/holidays/import', formData);
-  },
-  createData: (data) => createRequest(`/holidays`, data),
-  updateById: (id, data) => updateRequest(`/holidays/${id}`, data),
-  deleteById: (id) => deleteRequest(`/holidays/${id}`)
 };
-
-export const logCamera = {
-  getById: (id) => getRequest(`/cameras/${id}/status-log`)
-}
-
-export const survey = {
-  //daillyRange, dailyMonth, monthly, yearly
-  getAll: (camera_id, date, interval, approach, classification, reportType, direction, month, year, startDate, endDate) => {
-    // let params = [`camera_id=${camera_id}`, `date=${date}`];
-    let params = [`simpang_id=${camera_id}`, `date=${date}`];
-
-    if (interval) params.push(`interval=${interval}`);
-    if (approach) params.push(`approach=${approach}`);
-    if (direction) params.push(`direction=${direction}`);
-    if (classification) params.push(`classification=${classification}`);
-    if (reportType) params.push(`reportType=${reportType}`);
-    if (reportType === 'dailyRange' && startDate && endDate) {
-      params.push(`startDate=${startDate}`);
-      params.push(`endDate=${endDate}`);
-    }
-    if (reportType === 'dailyMonth' && month && year) {
-      params.push(`month=${month}`);
-      params.push(`year=${year}`);
-    }
-    if (reportType === 'monthly' && year) {
-      params.push(`year=${year}`);
-    }
-    if (reportType === 'yearly' && startDate) {
-      params.push(`startDate=${startDate}`);
-    }
-
-    return getRequest(`/surveys/data-summary?${params.join('&')}`);
-  },
-
-  getAllKM: (simpang_id, date, interval, approach) => {
-    // let params = [`simpang_id=${simpang_id}`, `date=${date}`];
-    let params = [`simpang_id=${simpang_id}`, `date=${date}`];
-
-    if (interval) params.push(`interval=${interval}`);
-    if (approach) params.push(`approach=${approach}`);
-
-    return getRequest(`/surveys/km-tabel?${params.join('&')}`);
-  },
-  getProporsi: (simpang_id, type, date) => getRequest(`/survey-proporsi?ID_Simpang=${simpang_id}${type ? '&type=' + type + '' : ''}&date=${date}`)
-}
