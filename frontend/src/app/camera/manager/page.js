@@ -274,13 +274,13 @@ const CCTVManager = () => {
                     >
                       <HiMiniPencil size={16} />
                     </button>
-                    <button
+                    {/* <button
                       className="btn btn-sm btn-ghost text-red-600"
                       onClick={() => handleDeleteCamera(camera)}
                       title="Hapus Kamera"
                     >
                       <FaTrash size={16} />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>
