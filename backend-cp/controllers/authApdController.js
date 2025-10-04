@@ -44,7 +44,10 @@ async function forgotPassword (req, res) {
 
     // kirim email
     const transporter = nodemailer.createTransport({
-      service: "gmail", // atau SMTP server lain
+      // service: "gmail", // atau SMTP server lain
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       // host: "sandbox.smtp.mailtrap.io",
       // port: 587,
       auth: {
