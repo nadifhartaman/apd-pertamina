@@ -302,19 +302,29 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
                           <span className="text-sm text-nowrap">{record.timestamp}</span>
                         </td>
                         <td className='text-center'>
-                          <span
-                            className={`badge text-xs text-nowrap p-1 font-semibold truncate overflow-hidden rounded-full badge-sm 
-                              ${["No Mask", "No Hardhat", "Person"].some(item =>
-                              record?.detected_container_id?.includes(item)
-                            )
-                                ? "text-error bg-red-100/90"
-                                : "text-warning bg-yellow-100/90"
-                              }
-                            `}
-                          >
-                            {record.detected_container_id}
-                          </span>
-                          {/* {record.detected_container_id} */}
+                          {record?.detected_container_id &&
+                            record.detected_container_id
+                              .split(",")
+                              .map(rawItem => rawItem.trim())
+                              .filter(item => !item.toLowerCase().includes("person"))
+                              .map((item, idx) => {
+                                return (
+                                  <span
+                                    key={idx}
+                                    className={`badge text-xs text-nowrap p-1 font-semibold truncate overflow-hidden rounded-full badge-sm mr-1
+                                      ${item.toLowerCase().includes("no")
+                                        ? "text-error bg-red-100/90"
+                                        : "text-success bg-green-100/90"
+                                      }
+                                    `}
+                                  >
+                                    <div className="flex justify-center items-center">
+                                      <div className={`w-2 h-2 ${item.toLowerCase().includes("no") ? 'bg-red-500/80' : 'bg-green-500/80'} rounded-full mr-2`}></div>
+                                    </div>
+                                    {item}
+                                  </span>
+                                );
+                              })}
                         </td>
                         <td className='text-center'>
                           <div className="flex justify-center items-center">

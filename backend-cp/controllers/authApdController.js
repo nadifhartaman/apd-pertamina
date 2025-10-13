@@ -45,7 +45,7 @@ async function forgotPassword (req, res) {
     // kirim email
     const transporter = nodemailer.createTransport({
       // service: "gmail", // atau SMTP server lain
-      host: "smtp.gmail.com", 
+      host: "smtp.gmail.com",
       port: 465,
       secure: true,
       // host: "sandbox.smtp.mailtrap.io",
@@ -62,7 +62,7 @@ async function forgotPassword (req, res) {
       if (err) console.error("SMTP Error:", err);
       else console.log("SMTP Ready");
     });
-    
+
     await transporter.sendMail({
       from: `"Admin" <${process.env.EMAIL_USER}>`,
       to: email,
@@ -92,7 +92,7 @@ async function forgotPassword (req, res) {
             </div>
             `,
     });
-    
+
     res.json({ message: "Reset email sent" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -123,7 +123,6 @@ async function resetPassword (req, res) {
 async function login (req, res) {
   try {
     const { email, password } = req.body;
-
     const user = await User.findByEmail(email);
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -145,7 +144,7 @@ async function login (req, res) {
       { expiresIn: "1d" }
     );
 
-    res.json({ token });
+    res.json({ token, user: { email: user.email, full_name: user.full_name, role: user.role, username: user.username } });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
