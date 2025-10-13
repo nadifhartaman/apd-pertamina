@@ -30,6 +30,135 @@ const options = {
   },
 };
 
+export const CRecapTableComponent = ({ dataApd = [] }) => {
+  // const [selectedImage, setSelectedImage] = useState(null);
+
+  return (
+    <div className='w-full'>
+      <h3 className="card-title text-sm my-2 flex items-center gap-2">Rekap Deteksi APD</h3>
+      <table className="table table-sm w-full">
+        <thead>
+          <tr>
+            <th className='text-center text-sm'>No</th>
+            <th className='text-center text-sm'>Kamera</th>
+            <th className='text-center text-sm'>Tanggal</th>
+            <th className='text-center text-sm'>Informasi</th>
+            <th className='text-center text-sm'>Status</th>
+            <th className='text-center text-sm'>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dataApd.length > 0 ? (
+            dataApd.map((record, index) => {
+              const number = (0 - 1) * 0 + (index + 1);
+              const datePart = record.timestamp?.split('T')[0];
+              const timePart = record.timestamp?.split('T')[1]?.split('.')[0];
+              const info = record?.detected_container_id || '-';
+
+              return (
+                <tr key={record.id} className='text-xs'>
+                  <td className='text-center'>{number}</td>
+                  <td className='text-center'>Kamera {record?.id_camera}</td>
+                  <td className='text-center whitespace-nowrap'>{datePart} {timePart}</td>
+                  <td className='text-center'>
+                    <span
+                      className={`text-xs
+                            ${["No Mask", "No Hardhat", "Person"].some(item =>
+                        info.includes(item)
+                      )
+                          ? "text-error"
+                          : "text-warning"
+                        }`}
+                    >
+                      {info}
+                    </span>
+                  </td>
+                  <td className='text-center'>
+                    <div className="flex justify-center items-center">
+                      <span className="text-green-600">Online</span>
+                    </div>
+                  </td>
+                  <td className='text-center'>
+                    <a
+                      href={`data:image/jpeg;base64,${record.image_frame}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      link
+                    </a>
+                  </td>
+                  {/* <td className="text-center">
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() =>
+                            setSelectedImage(`data:image/jpeg;base64,${record.image_frame}`)
+                          }
+                        >
+                          Lihat
+                        </button>
+                      </td> */}
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="6" className="text-center text-gray-400 py-4">
+                Tidak ada data tersedia
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export const CRecapImageComponent = ({ dataApd = [] }) => {
+  return (
+    <div className='my-5 h-fit'>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-fit">
+        {dataApd.map((record, index) => {
+
+          const number = (0 - 1) * 0 + (index + 1);
+          return (
+            <motion.div
+              key={record.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                delay: index * 0.1
+              }}
+              whileHover={{ scale: 1.02 }}
+              className="rounded-lg relative shadow-md border border-gray-200 overflow-hidden bg-white"
+            >
+              <div className="absolute bottom-0 left-0 z-10 p-2">
+                <div className="font-bold text-xs bg-blue-500/60 text-white h-5 w-5 align-center text-center items-center justify-center flex rounded-full">
+                  {number}
+                </div>
+              </div>
+              <div className="aspect-video relative">
+                <Image
+                  src={`data:image/jpeg;base64,${record.image_frame}`}
+                  alt="Capture"
+                  fill
+                  className="object-cover rounded-lg"
+                  unoptimized
+                />
+              </div>
+
+              <div className="absolute top-0 right-0 z-10 p-2">
+                <h4 className="font-semibold text-[9px] bg-black/90 p-1 rounded-sm text-white truncate">{record.timestamp.split('T')[0]} - {record.timestamp.split('T')[1].split('.')[0]} - {record.id_camera ? `Kamera ${record.id_camera}` : ''}</h4>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+    </div>
+  );
+};
+
 const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, todayPerHour, activeTabCCTV, setActiveTabCCTV }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const chartData = {

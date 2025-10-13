@@ -8,7 +8,7 @@ export const useCameraAPD = () => {
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [listCameraAPD, setListCameraAPD] = useState([]); // untuk dropdown
   // --- helper: pisah location string jadi { lat, long } ---
   const parseLocation = (location) => {
     if (!location) return { lat: "", long: "" };
@@ -39,6 +39,34 @@ export const useCameraAPD = () => {
 
         setDataCameraAPD(parsed);
         setPagination(result.pagination);
+      } else {
+        setError(`Gagal memuat data camera: ${result.error}`);
+      }
+    } catch (err) {
+      setError(`Gagal memuat data camera: ${err.message}`);
+      console.error("Error fetching dataCamAPD:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchForListAPD = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await cameraService.getAllCameras(1, 5);
+
+      if (result.success) {
+        // map data → pisah location
+        const parsed = result.data.map((cam) => ({
+          id: cam.id,
+          name: cam.name,
+          ...parseLocation(cam.location),
+        }));
+
+        setListCameraAPD(parsed);
+        console.log("dataCamAPD for list:", parsed);
       } else {
         setError(`Gagal memuat data camera: ${result.error}`);
       }
@@ -94,6 +122,7 @@ export const useCameraAPD = () => {
 
   useEffect(() => {
     fetchCamAPD(page);
+    fetchForListAPD();
 
     // auto-refresh tiap 8 detik
     const interval = setInterval(() => {
@@ -110,10 +139,11 @@ export const useCameraAPD = () => {
     setPage,
     loading,
     error,
+    listCameraAPD,
     fetchCamAPDById,
     fetchCamAPD,
     createCamAPD,
     updateCamAPD,
-    deleteCamAPD,
+    deleteCamAPD
   };
 };

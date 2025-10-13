@@ -92,95 +92,76 @@ export const cameraService = {
 };
 
 export const apdService = {
-  // Get paginated APD data
-  async getAllApd (page = 1, limit = 10) {
+  async getAllApd(page = 1, limit = 10, filterType = "today", startDate, endDate, idCamera) {
     try {
       const response = await api.get(`${API_BASE_URL}/apd`, {
-        params: { page, limit },
+        params: { page, limit, type: filterType, startDate, endDate, id_camera: idCamera },
       });
-      return {
-        success: true,
-        data: response.data.data || [],
-        pagination: response.data.pagination,
-      };
+      return { success: true, data: response.data.data, pagination: response.data.pagination };
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || error.message,
-      };
-    }
-  },
-  // Get today count per hour (optional date)
-  async getTodayCountPerHour (date) {
-    try {
-      const response = await api.get(`${API_BASE_URL}/apd/today-per-hour`, {
-        params: date ? { date } : {}, // kalau ada date → kirim, kalau tidak → kosong (default hari ini di backend)
-      });
-      return {
-        success: true,
-        data: response.data.data || [],
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || error.message,
-      };
+      return { success: false, error: error.response?.data?.message || error.message };
     }
   },
 
-  async getDailyStats (date) {
+  async getTodayCountPerHour(filterType = "today", startDate, endDate, idCamera) {
+    try {
+      const response = await api.get(`${API_BASE_URL}/apd/today-per-hour`, {
+        params: { type: filterType, startDate, endDate, id_camera: idCamera },
+      });
+      return { success: true, data: response.data.data };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  },
+
+  async getTodayCountPerWeek(filterType = "today", startDate, endDate, idCamera) {
+    try {
+      const response = await api.get(`${API_BASE_URL}/apd/count-per-week`, {
+        params: { type: filterType, startDate, endDate, id_camera: idCamera },
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  },
+
+
+  async getDailyStats(filterType = "today", startDate, endDate, idCamera) {
     try {
       const response = await api.get(`${API_BASE_URL}/apd/daily-stats`, {
-        params: date ? { date } : {},
+        params: { type: filterType, startDate, endDate, id_camera: idCamera },
       });
       return {
         success: true,
         hourly: response.data.hourly,
         date: response.data.date,
-        // yesterday: response.data.yesterday,
         totalChange: response.data.totalChange,
         violationSummary: response.data.violationSummary,
       };
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || error.message,
-      };
+      return { success: false, error: error.response?.data?.message || error.message };
     }
   },
 
-  async getSummaryViolation(date) {
+  async getSummaryViolation(filterType = "today", startDate, endDate, idCamera) {
     try {
       const response = await api.get(`${API_BASE_URL}/apd/summary-violation`, {
-        params: date ? { date } : {},
+        params: { type: filterType, startDate, endDate, id_camera: idCamera },
       });
-  
-      return {
-        success: true,
-        date: response.data.date,
-        summary: response.data.summary,
-      };
+      return { success: true, summary: response.data.summary };
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || error.message,
-      };
+      return { success: false, error: error.response?.data?.message || error.message };
     }
-  },  
+  },
 
-  // Get last record
-  async getLastApd () {
+  async getLastApd(filterType = "today", startDate, endDate, idCamera) {
     try {
-      const response = await api.get(`${API_BASE_URL}/apd/last`);
-      return {
-        success: true,
-        data: response.data.data || null,
-      };
+      const response = await api.get(`${API_BASE_URL}/apd/last`, {
+        params: { type: filterType, startDate, endDate, id_camera: idCamera },
+      });
+      return { success: true, data: response.data.data };
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || error.message,
-      };
+      return { success: false, error: error.response?.data?.message || error.message };
     }
   },
 };
