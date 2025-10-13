@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getContainers, getLastContainer, getTodayCountPerHour, getDailyStats, getViolationSummaryByCamera } = require("../controllers/apdController");
+const { getContainers, getLastContainer, getTodayCountPerHour, getDailyStats, getViolationSummaryByCamera, getCountPerWeek } = require("../controllers/apdController");
 const { getCameras, getByCamera, addCamera, editCamera, removeCamera } = require("../controllers/cameraApdController");
 
 // Route Camera
@@ -17,6 +17,8 @@ router.delete("/camera/:id", removeCamera);
 // Route Container
 router.get("/", getContainers);
 
+router.get("/count-per-week", getCountPerWeek)
+ 
 router.get("/summary-violation", getViolationSummaryByCamera)
 
 router.get("/last", getLastContainer);

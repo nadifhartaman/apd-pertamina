@@ -27,6 +27,15 @@ import {
 import { MdVideoSettings, MdLocationOn } from "react-icons/md";
 import CameraPreview from "@/components/dialog/cameraPreview";
 import { useCameraAPD } from '@/hooks/useCameraAPD';
+import TimeSeriesCard from '@/components/dashboard/timeSeries';
+import { useAPD } from "@/hooks/useAPD";
+import ComplianceCard from '@/components/dashboard/compliance';
+import { BsFileEarmarkBarGraph } from "react-icons/bs";
+import { SiSpeedtest } from "react-icons/si";
+import ExportPdfComponent from '@/components/dashboard/exportReport';
+import { StatsCardGridReport } from '@/components/dashboard/statsCard';
+import CameraDetectionChart from '@/components/dashboard/cameraDetection'
+import CRecapComponent, { CRecapTableComponent, CRecapImageComponent } from '@/components/dashboard/cctvRecap'
 
 // Register Chart.js
 ChartJS.register(
@@ -42,15 +51,23 @@ ChartJS.register(
 );
 
 const DashboardPerKamera = () => {
-  const {
-    dataCamAPD,
-    fetchCamAPDById
-  } = useCameraAPD();
-
+  const { dataApd, lastRecord, pagination, page, setPage, loading, todayPerHour, dailyStats, summaryViolation, setFilterType, filterType, setStartDate, setEndDate, startDate, endDate, selectedLocationFilter, setSelectedLocationFilter, dataReportApd, loadData, today, todayPerWeek } = useAPD();
+  const { dataCamAPD, pagination: paginationCAM, listCameraAPD, fetchCamAPDById } = useCameraAPD()
   const [selectedCamera, setSelectedCamera] = useState("");
   const [camDetail, setCamDet] = useState({})
   const [selectedTimeFilter, setSelectedTimeFilter] = useState("today");
   const [activeTab, setActiveTab] = useState("analytics");
+  const [statsData, setStatsData] = useState([]);
+  const [complianceRaw, setComplianceRaw] = useState([]);
+  const [dataViolation, setDataViolation] = useState([]);
+  const [timeSeriesRaw, setTimeSeriesRaw] = useState([
+    { hour: 0, count: 2 },
+    { hour: 1, count: 0 },
+    { hour: 2, count: 1 },
+    { hour: 3, count: 4 },
+    { hour: 23, count: 5 },
+  ]);
+  const [activeTabCCTV, setActiveTabCCTV] = useState('detail');
 
   useEffect(() => {
     if (selectedCamera !== 0) {
@@ -60,7 +77,62 @@ const DashboardPerKamera = () => {
       };
       loadCamera();
     }
+    setSelectedLocationFilter(selectedCamera)
   }, [selectedCamera]);
+
+
+  useEffect(() => {
+    if (!dailyStats || !dataCamAPD || !summaryViolation) return;
+    console.log(summaryViolation);
+    // console.log(dailyStats);
+    setStatsData([
+      {
+        title: "Total Deteksi",
+        value: dailyStats?.totalChange?.total ?? 0,
+        desc: `${dailyStats?.totalChange?.percentage} dari kemarin`,
+        color: "text-[#abc62b]",
+        icon: SiSpeedtest,
+      },
+      {
+        title: "Kepatuhan APD",
+        value: `${dailyStats?.violationSummary?.totals?.nonViolation}`,
+        desc: `${dailyStats?.violationSummary?.totals?.violation >= dailyStats?.violationSummary?.totals?.nonViolation ? "↘︎" : "↗︎"}  ${dailyStats?.violationSummary?.percentages?.nonViolation} dari kemarin`,
+        color: "text-[#FCB700]",
+        icon: FaCheck,
+      },
+      {
+        title: "Pelanggaran",
+        value: `${dailyStats?.violationSummary?.totals?.violation}`,
+        desc: `${dailyStats?.violationSummary?.totals?.violation <= dailyStats?.violationSummary?.totals?.nonViolation ? "↘︎" : "↗︎"} ${dailyStats?.violationSummary?.percentages?.violation} dari kemarin`,
+        color: "text-[#ed1b2f]",
+        icon: IoWarningOutline,
+      },
+      {
+        title: "Kamera Aktif",
+        value: `${paginationCAM?.statusSummary?.online || 0} / ${paginationCAM?.total || 0}`,
+        desc: `${paginationCAM?.total == paginationCAM?.statusSummary?.online ? "Semua Online" : `${paginationCAM?.statusSummary?.offline} Camera Offline`}`,
+        color: "text-[#006db7]",
+        icon: BiVideoRecording,
+      },
+    ]);
+
+    setComplianceRaw([
+      { label: "Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.nonViolation}` },
+      { label: "Tidak Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.violation}` },
+    ]);
+
+    const mappedData = Object.entries(summaryViolation).map(([id, data]) => {
+      return {
+        label: `Kamera ${id}`,
+        value: data.totals.violation // atau bisa pakai percentage
+          ? parseFloat(data.totals.violation) // misal ambil persen
+          : 0,
+      };
+    });
+
+    setDataViolation(mappedData);
+
+  }, [dailyStats, dataCamAPD, summaryViolation]);
 
   const formattedCameras = dataCamAPD.map((cam) => {
     let lat = "";
@@ -176,6 +248,17 @@ const DashboardPerKamera = () => {
         .split("T")[0]}.pdf`
     );
   };
+
+  const chunkArray = (arr, size) => {
+    const result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const pages1 = chunkArray(dataReportApd, 40);
+  const pages2 = chunkArray(dataReportApd, 21);
   return (
     <div className="min-h-fit w-full p-6">
       <div className="w-full h-fit overflow-y-hidden">
@@ -284,9 +367,9 @@ const DashboardPerKamera = () => {
                       <span className="label-text font-medium">Rentang Waktu</span>
                     </label>
                     <select
-                      className="select select-sm select-bordered"
-                      value={selectedTimeFilter}
-                      onChange={(e) => setSelectedTimeFilter(e.target.value)}
+                      className="select select-sm select-bordered w-full max-w-xs"
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
                     >
                       <option value="today">Hari Ini</option>
                       <option value="week">Minggu Ini</option>
@@ -294,12 +377,136 @@ const DashboardPerKamera = () => {
                       <option value="custom">Custom Range</option>
                     </select>
                   </div>
+                  {filterType === 'custom' && (
+                    <>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-medium">Start Date</span>
+                        </label>
+                        <input
+                          type="date"
+                          className="input input-sm input-bordered w-full max-w-xs"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-medium">End Date</span>
+                        </label>
+                        <input
+                          type="date"
+                          className="input input-sm input-bordered w-full max-w-xs"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                        />
+                      </div>
+                    </>
+                  )}
+                  {/* <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Lokasi Kamera</span>
+                    </label>
+                    <select
+                      className="select select-sm select-bordered w-full max-w-xs"
+                      value={selectedLocationFilter}
+                      onChange={(e) => setSelectedLocationFilter(e.target.value)}
+                    >
+                      <option value="all">Semua Lokasi</option>
+                      {
+                        listCameraAPD.map((cam) => (<option key={cam.id} value={cam.id}>{cam.name}</option>))
+                      }
+                    </select>
+                  </div> */}
 
                   <div className="form-control flex items-end">
-                    <button className="btn btn-sm" onClick={downloadPDF}>
-                      <IoDocumentTextOutline size={16} />
-                      Unduh PDF
-                    </button>
+                    <ExportPdfComponent fileName="Laporan_Survey">
+                      <div data-page-break>
+                        <div className='flex flex-col gap-5'>
+                          <div className="w-full text-center border-b-1 border-gray-700 gap-0 p-5 mb-4">
+                            <div className="text-lg font-bold uppercase">
+                              Pertamina Patra Niaga Regional Jawa Bagian Barat
+                            </div>
+                            <div className="text-md font-semibold">
+                              Laporan Rekapitulasi Kepatuhan APD
+                            </div>
+                            <div className="text-sm mb-2">
+                              Jl. Raya Soreang No. 15, Bandung – Telp. (022) 1234567
+                            </div>
+                          </div>
+                        </div>
+                        <div className='pt-8 px-10 w-1/2'>
+                          <table className="w-full">
+                            <tbody>
+                              <tr>
+                                <td className='w-1/4 align-top text-xs'>Periode Laporan</td>
+                                <td className='w-1/2 align-top text-xs'>: {filterType === 'custom' ? `${startDate} s/d ${endDate}` : filterType === 'today' ? 'Hari Ini' : filterType === 'week' ? 'Minggu Ini' : filterType === 'month' ? 'Bulan Ini' : ''} {(() => {
+                                  if (filterType === "today") {
+                                    return today;
+                                  }
+                                  if (filterType === "week") {
+                                    const day = parseInt(today.split("-")[2], 10);
+                                    const weekNumber = Math.ceil(day / 7);
+                                    return `Minggu ke-${weekNumber}`;
+                                  }
+                                  if (filterType === "month") {
+                                    return new Date().toLocaleDateString('id-ID', { month: 'long' })
+                                  }
+                                  return "";
+                                })()}</td>
+                              </tr>
+                              <tr>
+                                <td className='w-1/4 align-top text-xs'>Lokasi Kamera</td>
+                                <td className='w-1/2 align-top text-xs'>: {selectedLocationFilter === 'all' ? 'Semua Lokasi' : listCameraAPD.find(cam => cam.id === selectedLocationFilter)?.name || 'Unknown'}</td>
+                              </tr>
+                              <tr>
+                                <td className='w-1/4 align-top text-xs'>Tanggal Cetak</td>
+                                <td className='w-1/2 align-top text-xs'>: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className='p-8'>
+                          <div className='my-5'>
+                            <StatsCardGridReport stats={statsData} />
+                          </div>
+                          <div className="h-72 my-5 flex gap-5 w-full justify-center">
+                            <div className='w-1/2 h-full align-middle m-auto'>
+                              <CameraDetectionChart data={dataViolation} />
+                            </div>
+                            <div className='w-1/2 align-middle m-auto'>
+                              <div className='h-64 m-auto'>
+                                <ComplianceCard rawData={complianceRaw} />
+                              </div>
+                            </div>
+                          </div>
+                          <div className='w-full my-5 h-80 mt-5'>
+                            <TimeSeriesCard rawData={dailyStats.hourly ? dailyStats.hourly : timeSeriesRaw} />
+                          </div>
+                        </div>
+                      </div>
+                      <div data-page-break>
+                        <div className='p-8'>
+                          <div className="h-80 my-5 flex gap-5 w-full justify-center">
+                            <TimeSeriesCard rawData={todayPerWeek.data ? todayPerWeek.data : timeSeriesRaw} filterType={filterType} type={"week"} maxRotation chartType="Bar" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="pt-8 px-10">
+                        {pages1.map((page, i) => (
+                          <div data-page-break key={i}>
+                            <CRecapTableComponent dataApd={page} />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="pt-8 px-10">
+                        {pages2.map((page, i) => (
+                          <div data-page-break key={i}>
+                            <CRecapImageComponent dataApd={page} />
+                          </div>
+                        ))}
+                      </div>
+                    </ExportPdfComponent>
                   </div>
                 </div>
               </div>
@@ -365,7 +572,8 @@ const DashboardPerKamera = () => {
                         Deteksi per Jam
                       </h3>
                       <div className="h-64">
-                        <Line data={getHourlyDetectionData()} options={chartOptions} />
+                        <TimeSeriesCard rawData={dailyStats.hourly ? dailyStats.hourly : timeSeriesRaw} maxRotation />
+                        {/* <Line data={getHourlyDetectionData()} options={chartOptions} /> */}
                       </div>
                     </div>
                   </div>
@@ -374,23 +582,25 @@ const DashboardPerKamera = () => {
                     <div className="card-body">
                       <h3 className="card-title text-lg mb-4">Tingkat Kepatuhan</h3>
                       <div className="h-64">
-                        <Doughnut
+                        {/* <Doughnut
                           data={getComplianceData()}
                           options={doughnutOptions}
-                        />
+                        /> */}
+                        <ComplianceCard rawData={complianceRaw} />
                       </div>
                     </div>
                   </div>
 
-                  <div className="card bg-white border-gray-100 border xl:col-span-3">
-                    <div className="card-body">
-                      <h3 className="card-title text-lg mb-4">
-                        <SlGraph size={18} />
-                        Tren Mingguan
-                      </h3>
-                      <div className="h-64">
-                        <Bar data={getWeeklyTrendData()} options={chartOptions} />
-                      </div>
+                </div>
+                <div className="card bg-white border-gray-100 border w-full">
+                  <div className="card-body">
+                    <h3 className="card-title text-lg mb-4">
+                      <SlGraph size={18} />
+                      Tren Mingguan
+                    </h3>
+                    <div className="h-64 lg:h-92 w-full">
+                      <TimeSeriesCard rawData={todayPerWeek.data ? todayPerWeek.data : timeSeriesRaw} filterType={filterType} type={"week"} maxRotation chartType="Bar" />
+                      {/* <Bar data={getWeeklyTrendData()} options={chartOptions} /> */}
                     </div>
                   </div>
                 </div>
@@ -398,76 +608,77 @@ const DashboardPerKamera = () => {
             )}
 
             {activeTab === "deteksi" && (
-              <div className="card bg-white border-gray-100 border">
-                <div className="card-body">
-                  <h3 className="card-title text-lg mb-4">Hasil Deteksi Terbaru</h3>
-                  <div className="overflow-x-auto">
-                    <table className="table table-md table-zebra w-full">
-                      <thead>
-                        <tr>
-                          <th className="text-center">Waktu</th>
-                          <th className="text-center">Jenis Deteksi</th>
-                          <th className="text-center">Confidence</th>
-                          <th className="text-center">Helm</th>
-                          <th className="text-center">Rompi</th>
-                          <th className="text-center">Sepatu</th>
-                          <th className="text-center">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {getDetectionResults().map((result) => (
-                          <tr key={result.id} className="text-sm">
-                            <td className="text-center">{result.timestamp}</td>
-                            <td className="text-center">
-                              <span
-                                className={`badge text-xs ${result.type === "Pelanggaran APD"
-                                  ? "badge-error"
-                                  : "badge-success"
-                                  }`}
-                              >
-                                {result.type}
-                              </span>
-                            </td>
-                            <td className="text-center">{result.confidence}</td>
-                            <td className="text-center">
-                              <div
-                                className={`w-4 h-4 rounded-full mx-auto ${result.helmet ? "bg-green-500" : "bg-red-500"
-                                  }`}
-                              ></div>
-                            </td>
-                            <td className="text-center">
-                              <div
-                                className={`w-4 h-4 rounded-full mx-auto ${result.vest ? "bg-green-500" : "bg-red-500"
-                                  }`}
-                              ></div>
-                            </td>
-                            <td className="text-center">
-                              <div
-                                className={`w-4 h-4 rounded-full mx-auto ${result.boots ? "bg-green-500" : "bg-red-500"
-                                  }`}
-                              ></div>
-                            </td>
-                            <td className="text-center">
-                              <div className="flex justify-center items-center">
-                                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                                <span className="text-green-600 text-xs">
-                                  Recorded
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+              // <div className="card bg-white border-gray-100 border">
+              //   <div className="card-body">
+              //     <h3 className="card-title text-lg mb-4">Hasil Deteksi Terbaru</h3>
+              //     <div className="overflow-x-auto">
+              //       <table className="table table-md table-zebra w-full">
+              //         <thead>
+              //           <tr>
+              //             <th className="text-center">Waktu</th>
+              //             <th className="text-center">Jenis Deteksi</th>
+              //             <th className="text-center">Confidence</th>
+              //             <th className="text-center">Helm</th>
+              //             <th className="text-center">Rompi</th>
+              //             <th className="text-center">Sepatu</th>
+              //             <th className="text-center">Status</th>
+              //           </tr>
+              //         </thead>
+              //         <tbody>
+              //           {getDetectionResults().map((result) => (
+              //             <tr key={result.id} className="text-sm">
+              //               <td className="text-center">{result.timestamp}</td>
+              //               <td className="text-center">
+              //                 <span
+              //                   className={`badge text-xs ${result.type === "Pelanggaran APD"
+              //                     ? "badge-error"
+              //                     : "badge-success"
+              //                     }`}
+              //                 >
+              //                   {result.type}
+              //                 </span>
+              //               </td>
+              //               <td className="text-center">{result.confidence}</td>
+              //               <td className="text-center">
+              //                 <div
+              //                   className={`w-4 h-4 rounded-full mx-auto ${result.helmet ? "bg-green-500" : "bg-red-500"
+              //                     }`}
+              //                 ></div>
+              //               </td>
+              //               <td className="text-center">
+              //                 <div
+              //                   className={`w-4 h-4 rounded-full mx-auto ${result.vest ? "bg-green-500" : "bg-red-500"
+              //                     }`}
+              //                 ></div>
+              //               </td>
+              //               <td className="text-center">
+              //                 <div
+              //                   className={`w-4 h-4 rounded-full mx-auto ${result.boots ? "bg-green-500" : "bg-red-500"
+              //                     }`}
+              //                 ></div>
+              //               </td>
+              //               <td className="text-center">
+              //                 <div className="flex justify-center items-center">
+              //                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+              //                   <span className="text-green-600 text-xs">
+              //                     Recorded
+              //                   </span>
+              //                 </div>
+              //               </td>
+              //             </tr>
+              //           ))}
+              //         </tbody>
+              //       </table>
+              //     </div>
+              //   </div>
+              // </div>
+              <CRecapComponent dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV} />
             )}
 
             {activeTab === "camera" && (
               <div className="card bg-white border-gray-100 border min-h-96">
                 {camDetail.rtsp_url ? (
-                  <CameraPreview url={camDetail.rtsp_url} customcss={'min-h-[500px]'}/>
+                  <CameraPreview url={camDetail.rtsp_url} customcss={'min-h-[500px]'} />
                 ) : (
                   // <BiVideoRecording size={48} className="text-gray-400" />
                   <div className="card-body text-center py-16">

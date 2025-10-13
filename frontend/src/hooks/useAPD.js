@@ -1,138 +1,171 @@
-// hooks/useAPD.js
 import { useState, useEffect } from "react";
-import { apdService, today } from "./../api/apdService";
+import { apdService } from "./../api/apdService";
 
 export const useAPD = () => {
+  const [filterType, setFilterType] = useState("today");
+  const today = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
+  const [selectedLocationFilter, setSelectedLocationFilter] = useState("all");
+  const [loadData, setLoadData] = useState(false);
   const [dataApd, setDataApd] = useState([]);
-  const [lastRecord, setLastRecord] = useState(null);
-  const [todayPerHour, setTodayPerHour] = useState([]);
   const [pagination, setPagination] = useState(null);
+  const [dailyStats, setDailyStats] = useState({ totalChange: 0, hourly: [] });
+  const [summaryViolation, setSummaryViolation] = useState(null);
+  const [todayPerHour, setTodayPerHour] = useState([]);
+  const [lastRecord, setLastRecord] = useState(null);
+  const [dataReportApd, setDataReportApd] = useState([]);
+  const [todayPerWeek ,setTodayPerWeek] = useState([]);
   const [page, setPage] = useState(1);
-  const [dailyStats, setDailyStats] = useState({ total: 0, hourly: [] });
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [summaryViolation, setSummaryViolation] = useState(null);
 
-  // Fetch APD data
-  const fetchApd = async (currentPage = page) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchApd = async () => {
+    setLoadData(true);
+    setLoading(true);
+    const result = await apdService.getAllApd(
+      page,
+      limit,
+      filterType,
+      startDate,
+      endDate,
+      selectedLocationFilter === "all" ? null : selectedLocationFilter
+    );
+    if (result.success) {
+      setDataApd(result.data);
+      setPagination(result.pagination);
+      setLoadData(false);
+    } else {
+      setLoadData(false);
+    }
+    setLoading(false);
+  };
 
-      const result = await apdService.getAllApd(currentPage, limit);
+  // for export
+  const fetchAllApd = async () => {
+    setLoading(true);
+    const result = await apdService.getAllApd(
+      1,
+      0,
+      filterType,
+      startDate,
+      endDate,
+      selectedLocationFilter === "all" ? null : selectedLocationFilter
+    );
+    if (result.success) {
+      setDataReportApd(result.data);
+      setLoadData(false);
+    } else {
+      setLoadData(false);
+    }
+    setLoading(false);
+  };
 
-      if (result.success) {
-        setDataApd(result.data);
-        setPagination(result.pagination);
-      } else {
-        setError(`Gagal memuat data APD: ${result.error}`);
-      }
-    } catch (err) {
-      setError(`Gagal memuat data APD: ${err.message}`);
-      console.error("Error fetching dataApd:", err);
-    } finally {
-      setLoading(false);
+  const fetchDailyStats = async () => {
+    const result = await apdService.getDailyStats(
+      filterType,
+      startDate,
+      endDate,
+      selectedLocationFilter === "all" ? null : selectedLocationFilter
+    );
+    if (result.success) {
+      setDailyStats(result)
+    } else {
+      setLoadData(false);
+    }
+  };
+
+  const fetchTodayPerWeek = async () => {
+    const result = await apdService.getTodayCountPerWeek(
+      filterType,
+      startDate,
+      endDate,
+      selectedLocationFilter === "all" ? null : selectedLocationFilter
+    );
+    if (result.success) {
+      setTodayPerWeek(result.data);
+    }
+    else {
+      setLoadData(false);
     }
   };
 
   const fetchSummaryViolation = async () => {
-    try {
-      const result = await apdService.getSummaryViolation(today);
-      if (result.success) {
-        setSummaryViolation(result.summary);
-      } else {
-        console.error("Gagal ambil summary violation:", result.error);
-      }
-    } catch (err) {
-      console.error("Error fetching summary violation:", err);
+    const result = await apdService.getSummaryViolation(
+      filterType,
+      startDate,
+      endDate,
+      selectedLocationFilter === "all" ? null : selectedLocationFilter
+    );
+    if (result.success) {
+      setSummaryViolation(result.summary);
+    } else {
+      setLoadData(false);
     }
   };
 
-  // Fetch last record
-  const fetchLastApd = async () => {
-    try {
-      const result = await apdService.getLastApd();
-      if (result.success) {
-        setLastRecord(result.data);
-      } else {
-        console.error("Gagal ambil last record:", result.error);
-      }
-    } catch (err) {
-      console.error("Error fetching last record:", err);
-    }
-  };
-
-  const fetchDailyStats = async () => {
-    try {
-      const result = await apdService.getDailyStats(today);
-      if (result.success) {
-        setDailyStats({
-          hourly: result.hourly,
-          // yesterday: result.yesterday,
-          totalChange: result.totalChange,
-          violationSummary: result.violationSummary,
-        });
-      } else {
-        console.error("Gagal ambil daily stats:", result.error);
-      }
-    } catch (err) {
-      console.error("Error fetching daily stats:", err);
-    }
-  };
-
-
-  // Fetch today per hour
   const fetchTodayPerHour = async () => {
-    try {
-      // (YYYY-MM-DD)
-      // const today = new Date().toISOString().slice(0, 10);
-      const result = await apdService.getTodayCountPerHour(today);
-      if (result.success) {
-        setTodayPerHour(result.data);
-      } else {
-        console.error("Gagal ambil data grafik:", result.error);
-      }
-    } catch (err) {
-      console.error("Error fetching today per hour:", err);
+    const result = await apdService.getTodayCountPerHour(
+      filterType,
+      startDate,
+      endDate,
+      selectedLocationFilter === "all" ? null : selectedLocationFilter
+    );
+    if (result.success) {
+      setTodayPerHour(result.data);
+    } else {
+      setLoadData(false);
+    }
+  };
+
+  const fetchLastApd = async () => {
+    const result = await apdService.getLastApd(
+      filterType,
+      startDate,
+      endDate,
+      selectedLocationFilter === "all" ? null : selectedLocationFilter
+    );
+    if (result.success) {
+      setLastRecord(result.data);
+    } else {
+      setLoadData(false);
     }
   };
 
   useEffect(() => {
-    // saat page berubah
-    fetchApd(page);
+    fetchApd();
     fetchLastApd();
     fetchTodayPerHour();
     fetchDailyStats();
     fetchSummaryViolation();
-
-    // auto-refresh 8 detik
-    const interval = setInterval(() => {
-      fetchApd(page);
-      fetchLastApd();
-      fetchSummaryViolation();
-      fetchTodayPerHour();
-      fetchDailyStats();
-    }, 8000);
-
-    // clear interval
-    return () => clearInterval(interval);
-  }, [page]);
+    fetchAllApd();
+    fetchTodayPerWeek();
+    console.log(todayPerWeek)
+  }, [page, filterType, startDate, endDate, selectedLocationFilter]);
 
   return {
     dataApd,
-    lastRecord,
-    todayPerHour,
     pagination,
+    dailyStats,
+    summaryViolation,
+    todayPerHour,
+    lastRecord,
     page,
     setPage,
+    filterType,
+    setFilterType,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
     loading,
-    error,
     fetchApd,
-    dailyStats,
-    fetchDailyStats,
-    fetchLastApd,
-    summaryViolation,
-    fetchTodayPerHour,
+    selectedLocationFilter,
+    setSelectedLocationFilter,
+    fetchAllApd,
+    loadData,
+    dataReportApd,
+    todayPerWeek,
+    today
   };
 };

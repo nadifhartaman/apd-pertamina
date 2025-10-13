@@ -115,7 +115,7 @@ const ExportSurveyTable = ({ vehicleData }) => {
 
         // Capture canvas
         const canvas = await html2canvas(tableRef.current, {
-          scale: 4,
+          scale: 1,
           useCORS: true,
           allowTaint: true,
           logging: false,
