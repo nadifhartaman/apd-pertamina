@@ -24,7 +24,6 @@ export default function NavbarUserDropdown () {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
   // Toggle dropdown
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -35,7 +34,7 @@ export default function NavbarUserDropdown () {
       {/* User avatar and dropdown toggle */}
       <div className="flex items-center gap-3 px-2 cursor-pointer" onClick={toggleDropdown}>
         <div className="flex items-center bg-neutral-100 p-2 rounded-md text-neutral-700">
-          <span className="text-[11px] font-medium px-2 sm:w-fit w-20 truncate capitalize">Hi, {user?.roles?.map(item => item.name).join(', ') || ' '} User!</span>
+          <span className="text-[11px] font-medium px-2 sm:w-fit w-20 truncate capitalize">Hi, {user.full_name}</span>
           <FaAngleDown className={`text-md text-neutral-700 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </div>
@@ -46,7 +45,7 @@ export default function NavbarUserDropdown () {
           <div role="menu" aria-orientation="vertical">
             {user && (
               <div className=" text-xs border-b border-base-300 p-4">
-                <p className="font-medium">{user?.name}</p>
+                <p className="font-medium capitalize">{user && user?.username +  ' - ' + user.role}</p>
                 <p className="text-xs text-neutral-700">{user?.email || ''}</p>
               </div>
             )}

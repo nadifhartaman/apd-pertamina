@@ -51,12 +51,12 @@ export default function AuthLogin () {
 
       console.log('Login response:', response);
 
-      const { token } = response.data;
+      const { token, user } = response.data;
 
       if (!token) {
         throw new Error("Token tidak ditemukan di response");
       }
-      login(token);
+      login(token, user);
       setRedirecting(true);
       setTimeout(() => {
         router.push('/');
