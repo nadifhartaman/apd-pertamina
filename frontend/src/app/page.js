@@ -20,6 +20,7 @@ import ComplianceCard from '@/components/dashboard/compliance';
 import CameraDetectionChart from '@/components/dashboard/cameraDetection'
 import ExportPdfComponent from '@/components/dashboard/exportReport';
 import { createPortal } from "react-dom";
+import ListPreview from '@/components/dashboard/listPreview';
 
 // Register Chart.js components
 ChartJS.register(
@@ -358,7 +359,16 @@ const DashboardSummary = () => {
         )}
       </div>
       <MapComponent />
-
+      {/* <video src="http://localhost:3001/api/stream/start?url=rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov&key=camera1" controls></video>
+       */}
+      {/* <div className="aspect-video">
+        <UniversalCameraPreview
+          url={"http://localhost:3001/hls/camera1/index.m3u8"}
+          customcss={"w-full h-full object-cover"}
+          cameraId={location?.id}
+        />
+      </div> */}
+      <ListPreview />
       {loadOverlay}
     </div>
   );
