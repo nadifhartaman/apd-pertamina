@@ -1,22 +1,19 @@
 const { dbApd } = require("../db");
 
 async function getAllCameraStatus() {
-  const [[{ total }]] = await dbApd.query(
-    "SELECT COUNT(*) as total FROM cameras"
+  const [[statusSummary]] = await dbApd.query(
+    `SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'online' THEN 1 ELSE 0 END) as online,
+        SUM(CASE WHEN status = 'offline' THEN 1 ELSE 0 END) as offline
+     FROM cameras`
   );
 
-  const [[{ online }]] = await dbApd.query(
-    "SELECT COUNT(*) as online FROM cameras WHERE status = 'online'"
-  );
-
-  const [[{ offline }]] = await dbApd.query(
-    "SELECT COUNT(*) as offline FROM cameras WHERE status = 'offline'"
-  );
-
+  // Hasilnya mungkin berisi string, konversi ke angka untuk keamanan
   return {
-    total,
-    online,
-    offline,
+    total: parseInt(statusSummary.total, 10),
+    online: parseInt(statusSummary.online, 10) || 0,
+    offline: parseInt(statusSummary.offline, 10) || 0,
   };
 }
 
