@@ -5,6 +5,7 @@ import { MdVideoSettings, MdLocationOn, MdDescription, MdLink } from "react-icon
 import { IoInformationCircle, IoWarningOutline, IoEye } from "react-icons/io5";
 import { BiVideoRecording, BiSearchAlt } from "react-icons/bi";
 import CameraPreview from "@/components/dialog/cameraPreview";
+import UniversalCameraPreview from "@/components/manager/universalCheck";
 import { HiMiniPencil } from "react-icons/hi2";
 import { cameras } from '@/lib/apiService';
 import { toast } from 'react-toastify';
@@ -14,6 +15,7 @@ const CCTVManager = () => {
   const { dataCamAPD, fetchCamAPD, createCamAPD, updateCamAPD, deleteCamAPD } = useCameraAPD();
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [streamKeys, setStreamKeys] = useState({});
   const [showEditModal, setShowEditModal] = useState(false);
   const [showMetadataModal, setShowMetadataModal] = useState(false);
   const [selectedCamera, setSelectedCamera] = useState(null);
@@ -34,6 +36,36 @@ const CCTVManager = () => {
   });
 
   const maxCameras = 4;
+
+  // Fetch stream keys dari backend
+  useEffect(() => {
+    const fetchStreamKeys = async () => {
+      try {
+        const streamKeyMap = {};
+
+        for (const cam of dataCamAPD) {
+          if (cam.rtsp_url?.includes("rtsp")) {
+            try {
+              const response = await fetch(`http://localhost:3001/api/stream/${cam.channel || cam.id}`);
+              const data = await response.json();
+              streamKeyMap[cam.id] = data.streamKey;
+            } catch (err) {
+              console.error(`Error fetching stream key for ${cam.name}:`, err);
+              streamKeyMap[cam.id] = cam.channel || `Channel${cam.id}`;
+            }
+          }
+        }
+
+        setStreamKeys(streamKeyMap);
+      } catch (err) {
+        console.error("Error fetching stream keys:", err);
+      }
+    };
+
+    if (dataCamAPD.length > 0) {
+      fetchStreamKeys();
+    }
+  }, [dataCamAPD]);
 
   // Filter dataCamAPD based on search and status
   const filteredCameras = dataCamAPD.filter(camera => {
@@ -242,7 +274,25 @@ const CCTVManager = () => {
                 {/* Camera Preview Placeholder */}
                 <div className="bg-gray-100 rounded-lg mb-4 aspect-video flex items-center justify-center overflow-hidden">
                   {camera.rtsp_url ? (
-                    <CameraPreview url={camera.rtsp_url} />
+                    camera.rtsp_url.includes("rtsp") ? (
+                      streamKeys[camera.id] ? (
+                        <UniversalCameraPreview
+                          url={`http://localhost:3001/hls/${streamKeys[camera.id]}/index.m3u8`}
+                          customcss="w-full h-full object-cover"
+                          cameraId={camera.id}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                          <span className="text-gray-600 text-sm">Loading stream...</span>
+                        </div>
+                      )
+                    ) : (
+                      <UniversalCameraPreview
+                        url={camera.rtsp_url}
+                        customcss="w-full h-full object-cover"
+                        cameraId={camera.id}
+                      />
+                    )
                   ) : (
                     <BiVideoRecording size={48} className="text-gray-400" />
                   )}

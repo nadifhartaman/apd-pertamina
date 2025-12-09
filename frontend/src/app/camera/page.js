@@ -26,6 +26,7 @@ import {
 } from "react-icons/io5";
 import { MdVideoSettings, MdLocationOn } from "react-icons/md";
 import CameraPreview from "@/components/dialog/cameraPreview";
+import UniversalCameraPreview from "@/components/manager/universalCheck";
 import { useCameraAPD } from '@/hooks/useCameraAPD';
 import TimeSeriesCard from '@/components/dashboard/timeSeries';
 import { useAPD } from "@/hooks/useAPD";
@@ -54,7 +55,8 @@ const DashboardPerKamera = () => {
   const { dataApd, lastRecord, pagination, page, setPage, loading, todayPerHour, dailyStats, summaryViolation, setFilterType, filterType, setStartDate, setEndDate, startDate, endDate, selectedLocationFilter, setSelectedLocationFilter, dataReportApd, loadData, today, todayPerWeek } = useAPD();
   const { dataCamAPD, pagination: paginationCAM, listCameraAPD, fetchCamAPDById } = useCameraAPD()
   const [selectedCamera, setSelectedCamera] = useState("");
-  const [camDetail, setCamDet] = useState({})
+  const [camDetail, setCamDet] = useState({});
+  const [streamKeys, setStreamKeys] = useState({});
   const [selectedTimeFilter, setSelectedTimeFilter] = useState("today");
   const [activeTab, setActiveTab] = useState("analytics");
   const [statsData, setStatsData] = useState([]);
@@ -74,6 +76,18 @@ const DashboardPerKamera = () => {
       const loadCamera = async () => {
         const cam = await fetchCamAPDById(selectedCamera);
         setCamDet(cam);
+        
+        // Fetch stream key if RTSP
+        if (cam.rtsp_url?.includes("rtsp")) {
+          try {
+            const response = await fetch(`http://localhost:3001/api/stream/${cam.channel || cam.id}`);
+            const data = await response.json();
+            setStreamKeys(prev => ({ ...prev, [cam.id]: data.streamKey }));
+          } catch (err) {
+            console.error(`Error fetching stream key for ${cam.name}:`, err);
+            setStreamKeys(prev => ({ ...prev, [cam.id]: cam.channel || `Channel${cam.id}` }));
+          }
+        }
       };
       loadCamera();
     }
@@ -678,7 +692,25 @@ const DashboardPerKamera = () => {
             {activeTab === "camera" && (
               <div className="card bg-white border-gray-100 border min-h-96">
                 {camDetail.rtsp_url ? (
-                  <CameraPreview url={camDetail.rtsp_url} customcss={'min-h-[500px]'} />
+                  camDetail.rtsp_url.includes("rtsp") ? (
+                    streamKeys[camDetail.id] ? (
+                      <UniversalCameraPreview
+                        url={`http://localhost:3001/hls/${streamKeys[camDetail.id]}/index.m3u8`}
+                        customcss="min-h-[500px] w-full object-cover"
+                        cameraId={camDetail.id}
+                      />
+                    ) : (
+                      <div className="w-full min-h-[500px] bg-gray-300 flex items-center justify-center">
+                        <span className="text-gray-600">Loading stream...</span>
+                      </div>
+                    )
+                  ) : (
+                    <UniversalCameraPreview
+                      url={camDetail.rtsp_url}
+                      customcss="min-h-[500px] w-full object-cover"
+                      cameraId={camDetail.id}
+                    />
+                  )
                 ) : (
                   // <BiVideoRecording size={48} className="text-gray-400" />
                   <div className="card-body text-center py-16">

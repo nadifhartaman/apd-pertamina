@@ -437,111 +437,131 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
 
 
 async function getViolationByCamera (date = null, type = "today", startDate = null, endDate = null, id_camera = null) {
-  const [cameras] = await dbApd.query("SELECT id FROM cameras");
+  try {
+    console.log('📊 getViolationByCamera START - type:', type, 'date:', date, 'startDate:', startDate, 'endDate:', endDate, 'id_camera:', id_camera);
+    
+    const [cameras] = await dbApd.query("SELECT id, name, location FROM cameras");
+    console.log('📷 Cameras loaded:', cameras.length);
 
-  // 🧱 Inisialisasi summary tiap kamera
-  const summary = {};
-  cameras.forEach(cam => {
-    summary[cam.id] = {
-      totals: { violation: 0, nonViolation: 0, totalDetections: 0 },
-      percentages: { violation: "0.00%", nonViolation: "0.00%" }
-    };
-  });
-
-  // 🕒 Tentukan filter waktu berdasarkan type
-  let whereClause = "";
-  let params = [];
-
-  switch (type) {
-    case "yesterday":
-      whereClause = "WHERE DATE(timestamp) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
-      break;
-
-    case "week":
-      // Ambil 7 hari terakhir (termasuk hari ini)
-      whereClause = "WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
-      break;
-
-    case "month":
-      // Ambil data bulan ini
-      whereClause = `
-        WHERE YEAR(timestamp) = YEAR(CURDATE())
-        AND MONTH(timestamp) = MONTH(CURDATE())
-      `;
-      break;
-
-    case "custom":
-      if (startDate && endDate) {
-        whereClause = "WHERE DATE(timestamp) BETWEEN ? AND ?";
-        params.push(startDate, endDate);
-      } else {
-        whereClause = "WHERE DATE(timestamp) = CURDATE()"; // fallback
-      }
-      break;
-
-    case "today":
-    default:
-      whereClause = "WHERE DATE(timestamp) = CURDATE()";
-      break;
-  }
-
-  if (id_camera) {
-    whereClause += " AND id_camera = ?";
-    params.push(id_camera);
-  }
-
-  // 📦 Ambil data container sesuai filter waktu
-  const [rows] = await dbApd.query(
-    `
-      SELECT id_camera, detected_container_id
-      FROM container
-      ${whereClause}
-    `,
-    params
-  );
-
-  // 🚨 Tentukan kriteria pelanggaran
-  const violationCriteria = ["No Hardhat", "No Mask", "No Glove"];
-  const ignoreLabels = ["Person"]; // abaikan label Person
-
-  // 🔄 Iterasi data container
-  rows.forEach(row => {
-    if (!row.detected_container_id) return;
-
-    const cameraSummary = summary[row.id_camera];
-    if (!cameraSummary) return;
-
-    const labels = row.detected_container_id
-      .split(",")
-      .map(l => l.trim())
-      .filter(l => l.length > 0);
-
-    labels.forEach(label => {
-      if (ignoreLabels.includes(label)) return;
-
-      if (violationCriteria.includes(label)) {
-        cameraSummary.totals.violation += 1;
-      } else {
-        cameraSummary.totals.nonViolation += 1;
-      }
-      cameraSummary.totals.totalDetections += 1;
+    // 🧱 Inisialisasi summary tiap kamera
+    const summary = {};
+    cameras.forEach(cam => {
+      summary[cam.id] = {
+        id: cam.id,
+        name: cam.name || `Camera ${cam.id}`,
+        location: cam.location || 'Unknown',
+        totals: { violation: 0, nonViolation: 0, totalDetections: 0 },
+        percentages: { violation: "0.00%", nonViolation: "0.00%" }
+      };
     });
-  });
 
-  // 📊 Hitung persentase per kamera
-  Object.values(summary).forEach(cam => {
-    const { violation, nonViolation, totalDetections } = cam.totals;
-    cam.percentages.violation =
-      totalDetections > 0
-        ? ((violation / totalDetections) * 100).toFixed(2) + "%"
-        : "0.00%";
-    cam.percentages.nonViolation =
-      totalDetections > 0
-        ? ((nonViolation / totalDetections) * 100).toFixed(2) + "%"
-        : "0.00%";
-  });
+    // 🕒 Tentukan filter waktu berdasarkan type
+    let whereClause = "";
+    let params = [];
 
-  return summary;
+    switch (type) {
+      case "yesterday":
+        whereClause = "WHERE DATE(timestamp) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
+        break;
+
+      case "week":
+        // Ambil 7 hari terakhir (termasuk hari ini)
+        whereClause = "WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+        break;
+
+      case "month":
+        // Ambil data bulan ini
+        whereClause = `
+          WHERE YEAR(timestamp) = YEAR(CURDATE())
+          AND MONTH(timestamp) = MONTH(CURDATE())
+        `;
+        break;
+
+      case "custom":
+        if (startDate && endDate) {
+          whereClause = "WHERE DATE(timestamp) BETWEEN ? AND ?";
+          params.push(startDate, endDate);
+        } else {
+          whereClause = "WHERE DATE(timestamp) = CURDATE()"; // fallbacka
+        }
+        break;
+
+      case "today":
+      default:
+        // Gunakan parameter date jika ada, jika tidak gunakan hari ini
+        const targetDate = date || new Date().toISOString().split('T')[0];
+        whereClause = "WHERE DATE(timestamp) = ?";
+        params.push(targetDate);
+        break;
+    }
+
+    if (id_camera) {
+      whereClause += " AND id_camera = ?";
+      params.push(parseInt(id_camera));
+    }
+
+    // 📦 Ambil data container sesuai filter waktu
+    const [rows] = await dbApd.query(
+      `
+        SELECT id_camera, detected_container_id
+        FROM container
+        ${whereClause}
+      `,
+      params
+    );
+    
+    console.log('📦 Container rows found:', rows.length);
+
+    // 🚨 Tentukan kriteria pelanggaran
+    const violationCriteria = ["No Hardhat", "No Mask", "No Glove"];
+    const ignoreLabels = ["Person"]; // abaikan label Person
+
+    // 🔄 Iterasi data container
+    rows.forEach(row => {
+      if (!row.detected_container_id) return;
+
+      const cameraSummary = summary[row.id_camera];
+      if (!cameraSummary) return;
+
+      const labels = row.detected_container_id
+        .split(",")
+        .map(l => l.trim())
+        .filter(l => l.length > 0);
+
+      labels.forEach(label => {
+        if (ignoreLabels.includes(label)) return;
+
+        if (violationCriteria.includes(label)) {
+          cameraSummary.totals.violation += 1;
+        } else {
+          cameraSummary.totals.nonViolation += 1;
+        }
+        cameraSummary.totals.totalDetections += 1;
+      });
+    });
+
+    // 📊 Hitung persentase per kamera
+    Object.values(summary).forEach(cam => {
+      const { violation, nonViolation, totalDetections } = cam.totals;
+      cam.percentages.violation =
+        totalDetections > 0
+          ? ((violation / totalDetections) * 100).toFixed(2) + "%"
+          : "0.00%";
+      cam.percentages.nonViolation =
+        totalDetections > 0
+          ? ((nonViolation / totalDetections) * 100).toFixed(2) + "%"
+          : "0.00%";
+    });
+
+    // Konversi object ke array untuk response
+    const result = Object.values(summary);
+    console.log('✅ getViolationByCamera SUCCESS - cameras returned:', result.length);
+    
+    return result;
+  } catch (error) {
+    console.error('❌ getViolationByCamera ERROR:', error.message);
+    throw error;
+  }
 }
 
 module.exports = {

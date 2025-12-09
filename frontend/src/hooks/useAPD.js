@@ -15,7 +15,7 @@ export const useAPD = () => {
   const [todayPerHour, setTodayPerHour] = useState([]);
   const [lastRecord, setLastRecord] = useState(null);
   const [dataReportApd, setDataReportApd] = useState([]);
-  const [todayPerWeek ,setTodayPerWeek] = useState([]);
+  const [todayPerWeek, setTodayPerWeek] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
@@ -97,6 +97,7 @@ export const useAPD = () => {
       endDate,
       selectedLocationFilter === "all" ? null : selectedLocationFilter
     );
+    console.log("data", result);
     if (result.success) {
       setSummaryViolation(result.summary);
     } else {

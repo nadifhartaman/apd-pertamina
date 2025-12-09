@@ -166,7 +166,7 @@ const MapComponent = () => {
         </div>
 
         {/* Camera Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {currentCameras.map((location, index) => (
             <motion.div
               key={location.id}
@@ -189,14 +189,10 @@ const MapComponent = () => {
               </div>
               <div className="absolute top-0 right-0 z-10 p-2">
                 <h4 className="font-semibold text-[9px] bg-black/90 p-1 rounded-sm text-white truncate">{location.name}</h4>
-                {/* <p className="text-sm text-white mt-1 truncate">{location.description}</p> */}
-                {/* <div className="text-xs text-white mt-2">
-                  {location.position[0].toFixed(4)}, {location.position[1].toFixed(4)}
-                </div> */}
               </div>
             </motion.div>
           ))}
-        </div>
+        </div> */}
 
         {/* Empty state when no cameras */}
         {locations.length === 0 && (

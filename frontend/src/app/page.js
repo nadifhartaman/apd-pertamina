@@ -107,8 +107,9 @@ const DashboardSummary = () => {
     ]);
 
     const mappedData = Object.entries(summaryViolation).map(([id, data]) => {
+      console.log("data", data);
       return {
-        label: `Kamera ${id}`,
+        label: `${data.name || 'Unknown'}`,
         value: data.totals.violation // atau bisa pakai percentage
           ? parseFloat(data.totals.violation) // misal ambil persen
           : 0,

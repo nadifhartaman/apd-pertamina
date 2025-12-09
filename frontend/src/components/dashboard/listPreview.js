@@ -18,7 +18,7 @@ const ListPreview = () => {
       try {
         setLoading(true);
         const streamKeyMap = {};
-        
+
         for (const cam of dataCamAPD) {
           if (cam.rtsp_url?.includes("rtsp")) {
             try {
@@ -33,7 +33,7 @@ const ListPreview = () => {
             }
           }
         }
-        
+
         setStreamKeys(streamKeyMap);
       } catch (err) {
         console.error("Error fetching stream keys:", err);
@@ -57,9 +57,9 @@ const ListPreview = () => {
   }));
 
   return <div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 bg-base-100 rounded-lg border-1 border-gray-100">
       {locations.map((location, index) => (
-        location.rtsp_url.includes("rtsp") && (
+        location.rtsp_url.includes("rtsp") ? (
           <motion.div
             key={location.id}
             initial={{ opacity: 0, y: 20 }}
@@ -87,8 +87,34 @@ const ListPreview = () => {
             </div>
             <div className="absolute top-0 right-0 z-10 p-2">
               <h4 className="font-semibold text-[9px] bg-black/90 p-1 rounded-sm text-white truncate">
-                {`http://localhost:3001/api/stream/${location.channel || location.id}`}
+                {/* {`http://localhost:3001/api/stream/${location.channel || location.id}`} */}
+                {location.name}
               </h4>
+            </div>
+          </motion.div>
+        ) : (
+
+          <motion.div
+            key={location.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              delay: index * 0.1
+            }}
+            whileHover={{ scale: 1.02 }}
+            className="rounded-lg relative shadow-md border border-gray-200 overflow-hidden bg-white"
+          >
+            <div className="aspect-video">
+              <UniversalCameraPreview
+                url={location?.rtsp_url}
+                customcss={"w-full h-full object-cover"}
+                cameraId={location?.id}
+              />
+            </div>
+            <div className="absolute top-0 right-0 z-10 p-2">
+              <h4 className="font-semibold text-[9px] bg-black/90 p-1 rounded-sm text-white truncate">{location.name}</h4>
             </div>
           </motion.div>
         )
