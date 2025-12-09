@@ -55,3 +55,24 @@ export const authApi = {
   addUserRole: (id, data) => createRequest(`/users/${id}/role`, data),
   deleteUserRole: (id, role_id) => deleteRequest(`/users/${id}/role/${role_id}`, { role_id: role_id }),
 };
+
+export const apdApi = {
+  // Get APD data dengan filter
+  getApdData: (page = 1, limit = 10, filters = {}) => {
+    const params = new URLSearchParams({
+      page,
+      limit,
+      ...filters // spread filters (type, startDate, endDate, id_camera, dll)
+    });
+    return getRequest(`/apd?${params.toString()}`);
+  },
+  
+  // Get APD by ID
+  getApdById: (id) => getRequest(`/apd/${id}`),
+  
+  // Get today APD summary
+  getTodayApdSummary: () => getRequest(`/apd/today/summary`),
+  
+  // Get APD per hour
+  getApdPerHour: (date) => getRequest(`/apd/per-hour?date=${date}`),
+};

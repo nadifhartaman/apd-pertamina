@@ -1,79 +1,73 @@
 const { dbApd } = require("../db");
 const { differenceInDays, addDays, format, startOfMonth, endOfMonth } = require("date-fns");
 
-async function getAllContainer (
-  limit,
-  offset,
-  type = "today",
-  startDate = null,
-  endDate = null,
-  id_camera = null
-) {
-  let whereConditions = [];
-  let params = [];
+const getAllContainer = async (limit, offset, type, startDate, endDate, id_camera) => {
+  try {
+    console.log('🔄 getAllContainer query starting...');
+    
+    let whereConditions = [];
+    let params = [];
 
-  // 🔹 Tentukan kondisi waktu
-  if (type === "custom" && startDate && endDate) {
-    whereConditions.push("DATE(timestamp) BETWEEN ? AND ?");
-    params.push(startDate, endDate);
-  }
-  else if (type === "month") {
-    whereConditions.push("MONTH(timestamp) = MONTH(CURDATE())");
-    whereConditions.push("YEAR(timestamp) = YEAR(CURDATE())");
-  }
-  else if (type === "today") {
-    whereConditions.push("DATE(timestamp) = CURDATE()");
-  }
-  else if (type === "week") {
-    whereConditions.push("timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)");
-  }
-  else if (type === "yesterday") {
-    whereConditions.push("DATE(timestamp) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
-  }
-  else {
-    // fallback: hari ini
-    whereConditions.push("DATE(timestamp) = CURDATE()");
-  }
+    if (type === 'custom' && startDate && endDate) {
+      whereConditions.push('timestamp BETWEEN ? AND ?');
+      params.push(`${startDate} 00:00:00`, `${endDate} 23:59:59`);
+    }
+    else if (type === 'month') {
+      whereConditions.push('MONTH(timestamp) = MONTH(CURDATE()) AND YEAR(timestamp) = YEAR(CURDATE())');
+    }
+    else if (type === 'today') {
+      const dateParam = startDate || new Date().toISOString().split('T')[0];
+      whereConditions.push('DATE(timestamp) = ?');
+      params.push(dateParam);
+    }
+    else {
+      whereConditions.push('DATE(timestamp) = CURDATE()');
+    }
 
-  // 🔹 Tambahkan filter kamera jika ada
-  if (id_camera) {
-    whereConditions.push("id_camera = ?");
-    params.push(id_camera);
+    if (id_camera) {
+      whereConditions.push('id_camera = ?');
+      params.push(parseInt(id_camera));
+    }
+
+    // OPTION 1: Include image_frame (LAMBAT tapi complete)
+    const query = `
+      SELECT id, detected_container_id, timestamp, id_camera, image_frame
+      FROM container 
+      WHERE ${whereConditions.join(' AND ')}
+      ORDER BY timestamp DESC
+      LIMIT ? OFFSET ?
+    `;
+    
+    const [data] = await dbApd.query(query, [...params, parseInt(limit), parseInt(offset)]);
+    
+    // Query total
+    const countQuery = `
+      SELECT COUNT(*) as total FROM container 
+      WHERE ${whereConditions.join(' AND ')}
+    `;
+    
+    const [[{ total }]] = await dbApd.query(countQuery, params);
+    
+    console.log(`✅ Query done - rows: ${data.length}, total: ${total}`);
+    return { data, total };
+  } catch (error) {
+    console.error('❌ Query error:', error.message);
+    throw error;
   }
-
-  const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : "";
-
-  // 🔹 Jika limit = 0, ambil semua data (tanpa LIMIT OFFSET)
-  const limitQuery = limit === 0 ? "" : "LIMIT ? OFFSET ?";
-
-  const [rows] = await dbApd.query(
-    `
-      SELECT * 
-      FROM container
-      ${whereClause}
-      ORDER BY id DESC
-      ${limitQuery}
-    `,
-    limit === 0 ? params : [...params, limit, offset]
-  );
-
-  const [[{ count }]] = await dbApd.query(
-    `
-      SELECT COUNT(*) AS count
-      FROM container
-      ${whereClause}
-    `,
-    params
-  );
-
-  return { data: rows, total: count };
-}
+};
 
 async function getLastContainer (type = 'today', startDate = null, endDate = null, id_camera = null) {
   let whereConditions = [];
   let params = [];
 
-  // Tentukan kondisi waktu
+  const formatDate = (d) => {
+    const dt = new Date(d);
+    const yyyy = dt.getFullYear();
+    const mm = String(dt.getMonth() + 1).padStart(2, '0');
+    const dd = String(dt.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   if (type === 'custom' && startDate && endDate) {
     whereConditions.push('DATE(timestamp) BETWEEN ? AND ?');
     params.push(startDate, endDate);
@@ -83,14 +77,14 @@ async function getLastContainer (type = 'today', startDate = null, endDate = nul
     whereConditions.push('YEAR(timestamp) = YEAR(CURDATE())');
   }
   else if (type === 'today') {
+    const dateParam = startDate ? formatDate(startDate) : formatDate(new Date());
     whereConditions.push('DATE(timestamp) = ?');
-    params.push(date);
+    params.push(dateParam);
   }
   else {
     whereConditions.push('DATE(timestamp) = CURDATE()');
   }
 
-  // Tambahkan filter camera jika ada
   if (id_camera) {
     whereConditions.push('id_camera = ?');
     params.push(id_camera);

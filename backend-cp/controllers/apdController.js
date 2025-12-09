@@ -4,12 +4,19 @@ async function getContainers (req, res) {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit);
-    console.log(limit)
+    console.log('📍 getContainers start - page:', page, 'limit:', limit);
     const offset = (page - 1) * limit;
 
     const { type, startDate, endDate, id_camera } = req.query;
+    console.log('📍 Filters:', { type, startDate, endDate, id_camera });
 
+    console.log('📍 Calling getAllContainer...');
+    const startTime = Date.now();
+    
     const { data, total } = await apdModel.getAllContainer(limit, offset, type, startDate, endDate, id_camera);
+    
+    const duration = Date.now() - startTime;
+    console.log(`✅ getAllContainer done in ${duration}ms, rows: ${data.length}, total: ${total}`);
 
     res.status(200).json({
       success: true,
@@ -22,6 +29,7 @@ async function getContainers (req, res) {
       },
     });
   } catch (err) {
+    console.error('❌ Error:', err.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch containers",

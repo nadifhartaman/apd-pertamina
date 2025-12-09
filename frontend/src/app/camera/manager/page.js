@@ -120,10 +120,17 @@ const CCTVManager = () => {
     setSelectedCamera(null);
   };
 
-  const handleDeleteCamera = (camera) => {
-    console.log(camera)
+  const handleDeleteCamera = (cameraId) => {
+    console.log(cameraId)
     if (window.confirm('Apakah Anda yakin ingin menghapus kamera ini?')) {
-      deleteCamAPD(camera)
+      deleteCamAPD(cameraId).then(res => {
+        if (res.success) {
+          toast.success("Camera berhasil dihapus 🗑️");
+          fetchCamAPD();
+        } else {
+          toast.error(`Gagal hapus camera: ${res.error}`);
+        }
+      });
     }
   };
 
@@ -274,13 +281,13 @@ const CCTVManager = () => {
                     >
                       <HiMiniPencil size={16} />
                     </button>
-                    {/* <button
+                    <button
                       className="btn btn-sm btn-ghost text-red-600"
-                      onClick={() => handleDeleteCamera(camera)}
+                      onClick={() => handleDeleteCamera(camera.id)}
                       title="Hapus Kamera"
                     >
                       <FaTrash size={16} />
-                    </button> */}
+                    </button>
                   </div>
                 </div>
               </div>

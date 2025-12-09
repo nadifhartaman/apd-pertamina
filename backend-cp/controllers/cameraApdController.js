@@ -19,6 +19,35 @@ async function getCameras(req, res) {
     });
   }
 }
+
+async function getCamerasPublic(req, res) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const cameras = await cameraApdModel.getAllCamera(page, limit);
+
+    // Ambil hanya rtsp_url dan channel
+    const data = cameras.data.map(cam => ({
+      id: cam.id,
+      name: cam.name,
+      rtsp_url: cam.rtsp_url,
+      channel: cam.channel
+    }));
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch cameras",
+      error: err.message,
+    });
+  }
+}
+
 async function getByCamera(req, res) {
   try {
     const { id } = req.params;
@@ -161,4 +190,4 @@ async function removeCamera(req, res) {
   }
 }
 
-module.exports = { getCameras, getByCamera, addCamera, editCamera, removeCamera };
+module.exports = { getCameras, getByCamera, addCamera, editCamera, removeCamera, getCamerasPublic };

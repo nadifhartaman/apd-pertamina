@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion } from "framer-motion";
 import { BsFileEarmarkBarGraph } from "react-icons/bs";
 import { BiVideoRecording } from "react-icons/bi";
+import { apdApi } from '@/lib/apiService'; // tambahkan import ini
 
 const options = {
   scales: {
@@ -161,6 +162,33 @@ export const CRecapImageComponent = ({ dataApd = [] }) => {
 
 const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, todayPerHour, activeTabCCTV, setActiveTabCCTV }) => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  // Fetch APD data
+  useEffect(() => {
+    const fetchApdData = async () => {
+      try {
+        setLoading(true);
+        const response = await apdApi.getApdData(page, 10, {
+          type: 'month',
+          startDate: new Date().toISOString().split('T')[0],
+          endDate: new Date().toISOString().split('T')[0],
+          id_camera: 1
+        });
+        
+        console.log('APD Response:', response.data);
+        // setDataApd(response.data.data);
+        // setPagination(response.data.pagination);
+      } catch (error) {
+        console.error('Error fetching APD data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchApdData();
+  }, [page]);
+
   const chartData = {
     labels: todayPerHour.map(d => `${d.hour}:00`),
     datasets: [
@@ -266,7 +294,10 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
               }}
               whileHover={{ scale: 1.01 }}
               className='overflow-x-auto border border-base-300 my-5 rounded-xl'>
-
+              {/* <pre className="text-xs p-2 bg-gray-100">
+                dataApd length: {dataApd?.length || 0}
+                {'\n'}pagination: {JSON.stringify(pagination)}
+              </pre> */}
               <table className="table table-md table-zebra w-full">
                 <thead>
                   <tr>
