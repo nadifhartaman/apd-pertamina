@@ -1,7 +1,7 @@
-const { dbApd } = require("../db");
+const { db } = require("../db");
 
 async function getAllCameraStatus() {
-  const [[statusSummary]] = await dbApd.query(
+  const [[statusSummary]] = await db.query(
     `SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'online' THEN 1 ELSE 0 END) as online,
@@ -20,12 +20,12 @@ async function getAllCameraStatus() {
 async function getAllCamera (page = 1, limit = 10) {
   const offset = (page - 1) * limit;
 
-  const [rows] = await dbApd.query(
+  const [rows] = await db.query(
     "SELECT * FROM cameras LIMIT ? OFFSET ?",
     [limit, offset]
   );
 
-  const [[{ total }]] = await dbApd.query(
+  const [[{ total }]] = await db.query(
     "SELECT COUNT(*) as total FROM cameras"
   );
   
@@ -44,7 +44,7 @@ async function getAllCamera (page = 1, limit = 10) {
 }
 
 async function getCameraById (id) {
-  const [rows] = await dbApd.query(
+  const [rows] = await db.query(
     "SELECT * FROM cameras WHERE id = ?",
     [id]
   );
@@ -55,7 +55,7 @@ async function getCameraById (id) {
 async function createCamera (name, location, description, rtsp_url, status, resolution, channel) {
   const now = new Date();
 
-  const [result] = await dbApd.query(
+  const [result] = await db.query(
     `INSERT INTO cameras 
       (name, location, description, rtsp_url, status, created_at, updated_at, resolution, channel) 
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -89,7 +89,7 @@ async function createCamera (name, location, description, rtsp_url, status, reso
 async function updateCamera (id, name, location, description, ip_address, rtsp_url, status, resolution, channel) {
   const now = new Date();
 
-  await dbApd.query(
+  await db.query(
     `UPDATE cameras 
      SET name = ?, location = ?, description = ?, ip_address = ?, rtsp_url = ?, 
          status = ?, updated_at = ?, resolution = ?, channel = ? 
@@ -122,7 +122,7 @@ async function updateCamera (id, name, location, description, ip_address, rtsp_u
 }
 
 async function deleteCamera (id) {
-  await dbApd.query("DELETE FROM cameras WHERE id = ?", id);
+  await db.query("DELETE FROM cameras WHERE id = ?", id);
   return { message: "Camera APD deleted", id };
 }
 

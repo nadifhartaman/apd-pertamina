@@ -14,7 +14,6 @@ async function getContainers (req, res) {
     const { data, total } = await apdModel.getAllContainer(limit, offset, type, startDate, endDate, id_camera);
     
     const duration = Date.now() - startTime;
-    console.log(`getAllContainer done in ${duration}ms, rows: ${data.length}, total: ${total}`);
 
     res.status(200).json({
       success: true,
@@ -86,16 +85,28 @@ async function getDailyStats (req, res) {
   try {
     const { date, type, startDate, endDate, id_camera } = req.query;
 
+
     const todayDate = date || new Date().toISOString().slice(0, 10);
     const yesterdayDate = new Date(new Date(todayDate).getTime() - 86400000)
       .toISOString()
       .slice(0, 10);
 
+    // Auto-generate date range for week if not provided
+    let finalStartDate = startDate;
+    let finalEndDate = endDate;
+    if (type === 'week' && !startDate && !endDate) {
+      const today = new Date(todayDate);
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      finalStartDate = weekAgo.toISOString().slice(0, 10);
+      finalEndDate = todayDate;
+    }
+
+
     const [todayTotal, todayHourly, yesterdayTotal, violationSummary] = await Promise.all([
-      apdModel.getTotalDetection(todayDate, type, startDate, endDate, id_camera),
-      apdModel.getCountPerHour(todayDate, type, startDate, endDate, id_camera),
-      apdModel.getTotalDetection(yesterdayDate, id_camera),
-      apdModel.getViolationSummary(todayDate, type, startDate, endDate, id_camera),
+      apdModel.getTotalDetection(todayDate, type, finalStartDate, finalEndDate, id_camera),
+      apdModel.getCountPerHour(null, type, finalStartDate, finalEndDate, id_camera),
+      apdModel.getTotalDetection(yesterdayDate, 'yesterday', null, null, id_camera),
+      apdModel.getViolationSummary(todayDate, type, finalStartDate, finalEndDate, id_camera),
     ]);
 
     let percentageChange = 0;

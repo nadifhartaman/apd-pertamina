@@ -1,9 +1,8 @@
-const { dbApd } = require("../db");
+const { db } = require("../db");
 const { differenceInDays, addDays, format, startOfMonth, endOfMonth } = require("date-fns");
 
-const getAllContainer = async (limit, offset, type, startDate, endDate, id_camera) => {
+async function getAllContainer(limit, offset, type, startDate, endDate, id_camera) {
   try {
-    console.log('🔄 getAllContainer query starting...');
 
     let whereConditions = [];
     let params = [];
@@ -91,17 +90,15 @@ const getAllContainer = async (limit, offset, type, startDate, endDate, id_camer
     `;
 
     
-    console.log('⏳ Executing data and count queries concurrently...');
 
     const [dataResult, countResult] = await Promise.all([
-      dbApd.query(query, [...params, finalLimit, finalOffset]),
-      dbApd.query(countQuery, params)
+      db.query(query, [...params, finalLimit, finalOffset]),
+      db.query(countQuery, params)
     ]);
 
     const [data] = dataResult;
     const [[{ total }]] = countResult;
 
-    console.log(`✅ Query done - rows: ${data.length}, total: ${total}`);
     return { data, total };
   } catch (error) {
     console.error('❌ Query error:', error.message);
@@ -143,7 +140,7 @@ async function getLastContainer (type = 'today', startDate = null, endDate = nul
     params.push(id_camera);
   }
 
-  const [rows] = await dbApd.query(
+  const [rows] = await db.query(
     `
       SELECT * 
       FROM container 
@@ -160,7 +157,7 @@ async function getLastContainer (type = 'today', startDate = null, endDate = nul
 async function getCountPerHourRaw (date = null) {
   const targetDate = date || new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-  const [rows] = await dbApd.query(
+  const [rows] = await db.query(
     `
       SELECT 
         HOUR(timestamp) as hour,
@@ -181,10 +178,15 @@ async function getCountPerHour (date = null, type = 'today', startDate = null, e
   let whereConditions = [];
   let params = [];
 
+
   // Tentukan kondisi waktu
-  if (type === 'custom' && startDate && endDate) {
+  if ((type === 'custom' || type === 'week') && startDate && endDate) {
     whereConditions.push('DATE(timestamp) BETWEEN ? AND ?');
     params.push(startDate, endDate);
+  }
+  else if (type === 'week') {
+    // Default: 7 hari terakhir jika tidak ada startDate/endDate
+    whereConditions.push('DATE(timestamp) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)');
   }
   else if (type === 'month') {
     whereConditions.push('MONTH(timestamp) = MONTH(CURDATE())');
@@ -215,7 +217,7 @@ async function getCountPerHour (date = null, type = 'today', startDate = null, e
     ORDER BY hour
   `;
 
-  const [rows] = await dbApd.query(query, params);
+  const [rows] = await db.query(query, params);
 
   // Lengkapi jam 0-23
   const fullData = Array.from({ length: 24 }, (_, hour) => {
@@ -272,7 +274,7 @@ async function getCountPerWeek (date = null, type = "month", startDate = null, e
     ORDER BY week_number
   `;
 
-  const [rows] = await dbApd.query(query, params);
+  const [rows] = await db.query(query, params);
 
   // === Jika type custom, generate minggu manual dari range tanggal ===
   if (type === "custom") {
@@ -333,7 +335,12 @@ async function getTotalDetection (date = null, type = "today", startDate = null,
       break;
 
     case "week":
-      whereClause = "WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+      if (startDate && endDate) {
+        whereClause = "WHERE DATE(timestamp) BETWEEN ? AND ?";
+        params.push(startDate, endDate);
+      } else {
+        whereClause = "WHERE DATE(timestamp) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)";
+      }
       break;
 
     case "month":
@@ -365,7 +372,7 @@ async function getTotalDetection (date = null, type = "today", startDate = null,
     params.push(id_camera);
   }
 
-  const [[{ total }]] = await dbApd.query(
+  const [[{ total }]] = await db.query(
     `SELECT COUNT(*) as total FROM container ${whereClause}`,
     params
   );
@@ -403,7 +410,12 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
       whereClause = "WHERE DATE(timestamp) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
       break;
     case "week":
-      whereClause = "WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+      if (startDate && endDate) {
+        whereClause = "WHERE DATE(timestamp) BETWEEN ? AND ?";
+        params.push(startDate, endDate);
+      } else {
+        whereClause = "WHERE DATE(timestamp) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)";
+      }
       break;
     case "month":
       whereClause = `
@@ -432,7 +444,7 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
     params.push(id_camera);
   }
 
-  const [rows] = await dbApd.query(
+  const [rows] = await db.query(
     `SELECT detected_container_id FROM container ${whereClause}`,
     params
   );
@@ -510,10 +522,8 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
 
 async function getViolationByCamera (date = null, type = "today", startDate = null, endDate = null, id_camera = null) {
   try {
-    console.log('📊 getViolationByCamera START - type:', type, 'date:', date, 'startDate:', startDate, 'endDate:', endDate, 'id_camera:', id_camera);
 
-    const [cameras] = await dbApd.query("SELECT id, name, location FROM cameras");
-    console.log('📷 Cameras loaded:', cameras.length);
+    const [cameras] = await db.query("SELECT id, name, location FROM cameras");
 
     // 🧱 Inisialisasi summary tiap kamera
     const summary = {};
@@ -570,7 +580,7 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
     }
 
     // 📦 Ambil data container sesuai filter waktu
-    const [rows] = await dbApd.query(
+    const [rows] = await db.query(
       `
             SELECT id_camera, detected_container_id
             FROM container
@@ -579,7 +589,6 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
       params
     );
 
-    console.log('📦 Container rows found:', rows.length);
 
     // 🚨 Tentukan kriteria pelanggaran BARU
     const IGNORE_LABEL = "person"; // Dalam bentuk lowercase
@@ -635,7 +644,6 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
 
     // Konversi object ke array untuk response
     const result = Object.values(summary);
-    console.log('✅ getViolationByCamera SUCCESS - cameras returned:', result.length);
 
     return result;
   } catch (error) {
