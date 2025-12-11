@@ -55,6 +55,7 @@ export const useAPD = () => {
     if (result.success) {
       setDataReportApd(result.data);
       setLoadData(false);
+      console.log("data report", result);
     } else {
       setLoadData(false);
     }

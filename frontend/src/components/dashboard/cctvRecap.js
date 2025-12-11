@@ -163,7 +163,7 @@ export const CRecapImageComponent = ({ dataApd = [] }) => {
 const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, todayPerHour, activeTabCCTV, setActiveTabCCTV }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+
   // Fetch APD data
   useEffect(() => {
     const fetchApdData = async () => {
@@ -175,7 +175,7 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
           endDate: new Date().toISOString().split('T')[0],
           id_camera: 1
         });
-        
+
         console.log('APD Response:', response.data);
         // setDataApd(response.data.data);
         // setPagination(response.data.pagination);
@@ -185,7 +185,7 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
         setLoading(false);
       }
     };
-    
+
     fetchApdData();
   }, [page]);
 
@@ -206,8 +206,8 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
     <>
       <div className="card bg-white border-gray-100 border">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">📹 Rekap CCTV yang Diaktifkan</h3>
-          <div className="tabs tabs-lifted flex mb-6 gap-2">
+          <h3 className="card-title text-lg mb-4">Rekap Deteksi CCTV</h3>
+          <div className="tabs tabs-lifted flex mb-1 gap-2">
             <button
               className={`btn btn-md items-center flex gap-1 tab-lg shadow-none rounded-lg ${activeTabCCTV === 'detail'
                 ? 'bg-blue-200/80 text-blue-700 font-medium'
@@ -227,7 +227,7 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
           </div>
 
           {/* <pre>{JSON.stringify(lastRecord, null, 2)}</pre> */}
-          <div className="grid md:grid-cols-2 gap-4 w-full items-stretch">
+          {/* <div className="grid md:grid-cols-2 gap-4 w-full items-stretch">
             <div className="flex flex-col">
               <h2 className='font-semibold text-xl py-2'>Last Capture</h2>
               {lastRecord ? (
@@ -281,7 +281,7 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
                 <Line data={chartData} options={options} />
               </motion.div>
             </div>
-          </div>
+          </div> */}
 
           {activeTabCCTV === 'detail' && (
             <motion.div
@@ -312,6 +312,10 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
                 <tbody>
                   {dataApd.map((record, index) => {
                     const number = (page - 1) * pagination.limit + (index + 1);
+                    console.log('Rendering record:', record);
+                    const datePart = record.timestamp?.split('T')[0];
+                    const timePart = record.timestamp?.split('T')[1]?.split('.')[0];
+
                     return (
                       <tr key={record.id} className='text-sm'>
                         <td>
@@ -325,12 +329,12 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
                               <BiVideoRecording size={18} />
                             </div>
                             <div>
-                              <div className="font-semibold text-nowrap">Kamera {record?.id_camera}</div>
+                              <div className="font-semibold text-nowrap">{record.camera_name}</div>
                             </div>
                           </div>
                         </td>
                         <td className='text-center'>
-                          <span className="text-sm text-nowrap">{record.timestamp}</span>
+                          <span className="text-sm text-nowrap">{datePart} {timePart}</span>
                         </td>
                         <td className='text-center'>
                           {record?.detected_container_id &&
@@ -343,11 +347,11 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
                                   <span
                                     key={idx}
                                     className={`badge text-xs text-nowrap p-1 font-semibold truncate overflow-hidden rounded-full badge-sm mr-1
-                                      ${item.toLowerCase().includes("no")
+                              ${item.toLowerCase().includes("no")
                                         ? "text-error bg-red-100/90"
                                         : "text-success bg-green-100/90"
                                       }
-                                    `}
+                            `}
                                   >
                                     <div className="flex justify-center items-center">
                                       <div className={`w-2 h-2 ${item.toLowerCase().includes("no") ? 'bg-red-500/80' : 'bg-green-500/80'} rounded-full mr-2`}></div>

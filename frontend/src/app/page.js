@@ -21,7 +21,7 @@ import CameraDetectionChart from '@/components/dashboard/cameraDetection'
 import ExportPdfComponent from '@/components/dashboard/exportReport';
 import { createPortal } from "react-dom";
 import ListPreview from '@/components/dashboard/listPreview';
-
+import { ViolationBreakdownVertical } from '@/components/dashboard/violationBreakdown';
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
@@ -68,8 +68,6 @@ const DashboardSummary = () => {
 
   useEffect(() => {
     if (!dailyStats || !dataCamAPD || !summaryViolation) return;
-    console.log(summaryViolation);
-    // console.log(dailyStats);
     setStatsData([
       {
         title: "Total Deteksi",
@@ -85,29 +83,13 @@ const DashboardSummary = () => {
         color: "text-[#FCB700]",
         icon: FaCheck,
       },
-      {
-        title: "Pelanggaran",
-        value: `${dailyStats?.violationSummary?.totals?.violation}`,
-        desc: `${dailyStats?.violationSummary?.totals?.violation <= dailyStats?.violationSummary?.totals?.nonViolation ? "↘︎" : "↗︎"} ${dailyStats?.violationSummary?.percentages?.violation} dari kemarin`,
-        color: "text-[#ed1b2f]",
-        icon: IoWarningOutline,
-      },
-      {
-        title: "Kamera Aktif",
-        value: `${paginationCAM?.statusSummary?.online || 0} / ${paginationCAM?.total || 0}`,
-        desc: `${paginationCAM?.total == paginationCAM?.statusSummary?.online ? "Semua Online" : `${paginationCAM?.statusSummary?.offline} Camera Offline`}`,
-        color: "text-[#006db7]",
-        icon: BiVideoRecording,
-      },
     ]);
 
     setComplianceRaw([
       { label: "Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.nonViolation}` },
       { label: "Tidak Sesuai APD", value: `${dailyStats?.violationSummary?.totals?.violation}` },
     ]);
-
     const mappedData = Object.entries(summaryViolation).map(([id, data]) => {
-      console.log("data", data);
       return {
         label: `${data.name || 'Unknown'}`,
         value: data.totals.violation // atau bisa pakai percentage
@@ -131,7 +113,7 @@ const DashboardSummary = () => {
   const pages2 = chunkArray(dataReportApd, 21);
   return (
     <div className="min-h-screen w-full p-6">
-      <div className="w-full">
+      <div className="w-full mb-5">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Summary</h1>
@@ -139,7 +121,7 @@ const DashboardSummary = () => {
         </div>
 
         {/* Tabs */}
-        <div className="tabs tabs-lifted mb-6">
+        {/* <div className="tabs tabs-lifted mb-6">
           <button
             className={`tab items-center flex gap-1 tab-lg ${activeTab === 'analytics' ? 'tab-active' : ''}`}
             onClick={() => setActiveTab('analytics')}
@@ -152,7 +134,7 @@ const DashboardSummary = () => {
           >
             <BiVideoRecording size={18} /> CCTV Rekap
           </button>
-        </div>
+        </div> */}
 
         {/* Filters */}
         <div className="card bg-white border-gray-100 border mb-6">
@@ -316,7 +298,7 @@ const DashboardSummary = () => {
 
         {/* Content based on active tab */}
         {activeTab === 'analytics' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Camera Detection Chart */}
             <div className="card bg-white border-gray-100 border">
               <div className="card-body">
@@ -340,25 +322,36 @@ const DashboardSummary = () => {
               </div>
             </div>
 
-            {/* Time Series Chart */}
-            <div className="card bg-white border-gray-100 border lg:col-span-2 xl:col-span-1">
-              <div className="card-body">
-                <h3 className="card-title text-lg mb-4"><SlGraph size={18} /> Tren Waktu</h3>
-                <div className="h-64">
-                  <TimeSeriesCard rawData={dailyStats.hourly ? dailyStats.hourly : timeSeriesRaw} maxRotation />
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 w-full lg:col-span-3 gap-5">
+              <div className="col-span-1">
+                <StatsCardGrid stats={statsData} />
+                {/* Time Series Chart */}
+                <div className="card bg-white border-gray-100 border lg:col-span-2 xl:col-span-1">
+                  <div className="card-body">
+                    <h3 className="card-title text-lg mb-4"><SlGraph size={18} /> Tren Waktu</h3>
+                    <div className="h-64">
+                      <TimeSeriesCard rawData={dailyStats.hourly ? dailyStats.hourly : timeSeriesRaw} maxRotation />
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div className="col-span-1">
+                <ViolationBreakdownVertical
+                  violationData={dailyStats?.violationSummary?.violationCounts}
+                  totalViolations={dailyStats?.violationSummary?.totals?.violation}
+                />
               </div>
             </div>
 
-            {/* Statistics Cards */}
-            <StatsCardGrid stats={statsData} />
           </div>
         )}
 
-        {activeTab === 'cctv' && (
+        {/* {activeTab === 'cctv' && (
           <CRecapComponent dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV} />
-        )}
+        )} */}
       </div>
+      <CRecapComponent dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV} />
       <MapComponent />
       {/* <video src="http://localhost:3001/api/stream/start?url=rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov&key=camera1" controls></video>
        */}
@@ -369,8 +362,8 @@ const DashboardSummary = () => {
           cameraId={location?.id}
         />
       </div> */}
-      <ListPreview />
-      {loadOverlay}
+      {/* <ListPreview /> */}
+      {/* {loadOverlay} */}
     </div>
   );
 };

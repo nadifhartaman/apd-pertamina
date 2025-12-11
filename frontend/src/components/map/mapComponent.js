@@ -107,7 +107,7 @@ const MapComponent = () => {
         </MapContainer>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         {locations.map((location, index) => (
           <motion.div
             key={location.id}
@@ -127,11 +127,11 @@ const MapComponent = () => {
             </div>
           </motion.div>
         ))}
-      </div>
+      </div> */}
 
       {/* Camera Grid Section */}
       <div className="mt-8">
-        <div className="flex justify-between items-center mb-6">
+        {/* <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-800">Live Camera Feed</h3>
             <p className="text-sm text-gray-600">
@@ -139,7 +139,6 @@ const MapComponent = () => {
             </p>
           </div>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="flex items-center gap-2">
               <button
@@ -163,7 +162,7 @@ const MapComponent = () => {
               </button>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Camera Grid */}
         {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
