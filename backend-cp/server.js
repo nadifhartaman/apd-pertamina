@@ -53,8 +53,15 @@ const printRoutes = () => {
 };
 
 const PORT = process.env.PORT || 3001;
+const ENABLE_HLS = process.env.ENABLE_HLS_CONVERSION !== 'false';
+
 app.listen(PORT, async () => {
   console.log(`Server running at http://localhost:${PORT}`);
-  await initializeStreams();
+  if (ENABLE_HLS) {
+    console.log("HLS Conversion: ENABLED ✓");
+    await initializeStreams();
+  } else {
+    console.log("HLS Conversion: DISABLED (Direct RTSP mode only)");
+  }
   printRoutes();
 });

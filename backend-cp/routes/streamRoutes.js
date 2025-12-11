@@ -14,6 +14,7 @@ function generateStreamKey(rtspUrl) {
 router.get("/:cameraName", async (req, res) => {
   try {
     const { cameraName } = req.params;
+    const ENABLE_HLS = process.env.ENABLE_HLS_CONVERSION !== 'false';
 
     // Ambil kamera berdasarkan nama atau channel
     let camera;
@@ -33,7 +34,23 @@ router.get("/:cameraName", async (req, res) => {
       return res.status(400).json({ error: `RTSP URL is missing for camera '${cameraName}'` });
     }
 
-    // Mulai stream via FFmpeg
+    // Jika HLS disabled, return direct RTSP URL
+    if (!ENABLE_HLS) {
+      return res.json({
+        message: `HLS conversion disabled. Returning direct RTSP stream for ${cameraName}`,
+        streamKey: generateStreamKey(camera.rtsp_url),
+        rtsp_url: camera.rtsp_url,
+        mode: "direct_rtsp",
+        camera: {
+          id: camera.id,
+          name: camera.name,
+          channel: camera.channel,
+          rtsp_url: camera.rtsp_url
+        },
+      });
+    }
+
+    // Mulai stream via FFmpeg (HLS enabled)
     const { uniqueStreamKey } = startStream(camera.rtsp_url, cameraName);
 
     // Tunggu sebentar agar HLS files ter-generate
@@ -46,6 +63,7 @@ router.get("/:cameraName", async (req, res) => {
       message: `Stream started for ${cameraName}`,
       playlist,
       streamKey: uniqueStreamKey,
+      mode: "hls",
       camera: {
         id: camera.id,
         name: camera.name,

@@ -4,50 +4,103 @@ const { differenceInDays, addDays, format, startOfMonth, endOfMonth } = require(
 const getAllContainer = async (limit, offset, type, startDate, endDate, id_camera) => {
   try {
     console.log('🔄 getAllContainer query starting...');
-    
+
     let whereConditions = [];
     let params = [];
 
+    const finalLimit = parseInt(limit, 10) > 0 ? parseInt(limit, 10) : 10; // Default limit 10 if 0 or invalid
+    const finalOffset = parseInt(offset, 10) || 0; // Default offset 0
+    
+    
     if (type === 'custom' && startDate && endDate) {
-      whereConditions.push('timestamp BETWEEN ? AND ?');
+      whereConditions.push('c.timestamp BETWEEN ? AND ?');
       params.push(`${startDate} 00:00:00`, `${endDate} 23:59:59`);
     }
     else if (type === 'month') {
-      whereConditions.push('MONTH(timestamp) = MONTH(CURDATE()) AND YEAR(timestamp) = YEAR(CURDATE())');
+      const startMonth = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+      const endMonth = format(endOfMonth(new Date()), 'yyyy-MM-dd');
+      
+      whereConditions.push('c.timestamp BETWEEN ? AND ?');
+      params.push(`${startMonth} 00:00:00`, `${endMonth} 23:59:59`);
+    }
+    else if (type === 'week') {
+      // Get data for the current week (Monday to Sunday)
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convert Sunday (0) to 6
+      
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - daysFromMonday);
+      weekStart.setHours(0, 0, 0, 0);
+      
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      weekEnd.setHours(23, 59, 59, 999);
+      
+      const startDateStr = format(weekStart, 'yyyy-MM-dd');
+      const endDateStr = format(weekEnd, 'yyyy-MM-dd');
+      
+      whereConditions.push('c.timestamp BETWEEN ? AND ?');
+      params.push(`${startDateStr} 00:00:00`, `${endDateStr} 23:59:59`);
     }
     else if (type === 'today') {
-      const dateParam = startDate || new Date().toISOString().split('T')[0];
-      whereConditions.push('DATE(timestamp) = ?');
-      params.push(dateParam);
+      const dateParam = startDate ? startDate.substring(0, 10) : new Date().toISOString().split('T')[0];
+      
+      whereConditions.push('c.timestamp BETWEEN ? AND ?');
+      params.push(`${dateParam} 00:00:00`, `${dateParam} 23:59:59`);
     }
     else {
-      whereConditions.push('DATE(timestamp) = CURDATE()');
+      whereConditions.push('DATE(c.timestamp) = CURDATE()');
     }
+
 
     if (id_camera) {
-      whereConditions.push('id_camera = ?');
-      params.push(parseInt(id_camera));
+      const cameraId = parseInt(id_camera, 10);
+      if (!isNaN(cameraId)) { 
+        whereConditions.push('c.id_camera = ?');
+        params.push(cameraId);
+      }
     }
 
-    // OPTION 1: Include image_frame (LAMBAT tapi complete)
+
+    const finalWhere = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
     const query = `
-      SELECT id, detected_container_id, timestamp, id_camera, image_frame
-      FROM container 
-      WHERE ${whereConditions.join(' AND ')}
-      ORDER BY timestamp DESC
+      SELECT 
+        c.id, 
+        c.detected_container_id, 
+        c.timestamp, 
+        c.id_camera, 
+        c.image_frame,
+        a.name AS camera_name, 
+        a.location AS camera_location 
+      FROM 
+        container c
+      JOIN 
+        cameras a ON c.id_camera = a.id
+      ${finalWhere}
+      ORDER BY c.timestamp DESC
       LIMIT ? OFFSET ?
     `;
-    
-    const [data] = await dbApd.query(query, [...params, parseInt(limit), parseInt(offset)]);
-    
-    // Query total
+
     const countQuery = `
-      SELECT COUNT(*) as total FROM container 
-      WHERE ${whereConditions.join(' AND ')}
+      SELECT COUNT(*) as total 
+      FROM container c
+      JOIN cameras a ON c.id_camera = a.id
+      ${finalWhere}
     `;
+
     
-    const [[{ total }]] = await dbApd.query(countQuery, params);
-    
+    console.log('⏳ Executing data and count queries concurrently...');
+
+    const [dataResult, countResult] = await Promise.all([
+      dbApd.query(query, [...params, finalLimit, finalOffset]),
+      dbApd.query(countQuery, params)
+    ]);
+
+    const [data] = dataResult;
+    const [[{ total }]] = countResult;
+
     console.log(`✅ Query done - rows: ${data.length}, total: ${total}`);
     return { data, total };
   } catch (error) {
@@ -320,6 +373,27 @@ async function getTotalDetection (date = null, type = "today", startDate = null,
   return total;
 }
 
+
+// Fungsi pembantu untuk normalisasi label (lowercase dan hapus strip)
+const normalizeLabel = (label) => {
+  let normalized = label.toLowerCase().trim();
+
+  normalized = normalized.replace(/-/g, ' ');
+
+  normalized = normalized.replace(/\s\s+/g, ' ');
+
+  return normalized;
+};
+
+const capitalizeLabel = (normalizedLabel) => {
+  const parts = normalizedLabel.split(' ');
+  const capitalizedParts = parts.map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1)
+  );
+  return capitalizedParts.join(' ');
+}
+
+
 async function getViolationSummary (date = null, type = "today", startDate = null, endDate = null, id_camera = null) {
   let whereClause = "";
   let params = [];
@@ -328,18 +402,15 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
     case "yesterday":
       whereClause = "WHERE DATE(timestamp) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
       break;
-
     case "week":
       whereClause = "WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
       break;
-
     case "month":
       whereClause = `
-        WHERE YEAR(timestamp) = YEAR(CURDATE())
-        AND MONTH(timestamp) = MONTH(CURDATE())
-      `;
+    WHERE YEAR(timestamp) = YEAR(CURDATE())
+    AND MONTH(timestamp) = MONTH(CURDATE())
+   `;
       break;
-
     case "custom":
       if (startDate && endDate) {
         whereClause = "WHERE DATE(timestamp) BETWEEN ? AND ?";
@@ -348,7 +419,6 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
         whereClause = "WHERE DATE(timestamp) = CURDATE()";
       }
       break;
-
     case "today":
     default:
       const targetDate = date || new Date().toISOString().slice(0, 10);
@@ -367,24 +437,12 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
     params
   );
 
-  const masterLabels = [
-    "Person",
-    "No Hardhat",
-    "No Mask",
-    "No Glove",
-    "Hardhat",
-    "Mask",
-    "Glove"
-  ];
-
-  const violationCriteria = ["No Hardhat", "No Mask", "No Glove"];
-  const ignoreLabels = ["Person"];
+  const IGNORE_LABEL = "person";
 
   const counts = {};
-  masterLabels.forEach(l => (counts[l] = 0));
-
   let violationTotal = 0;
   let nonViolationTotal = 0;
+  const violationCounts = {};
 
   rows.forEach(row => {
     if (!row.detected_container_id) return;
@@ -395,22 +453,36 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
       .filter(l => l.length > 0);
 
     labels.forEach(label => {
-      if (ignoreLabels.includes(label)) return;
 
-      if (counts[label] !== undefined) {
-        counts[label] += 1;
+      const normalizedLabel = normalizeLabel(label);
+
+      if (normalizedLabel === IGNORE_LABEL) return;
+
+      const isViolation = normalizedLabel.includes("no ");
+
+      const finalLabel = capitalizeLabel(normalizedLabel);
+
+      if (counts[finalLabel] !== undefined) {
+        counts[finalLabel] += 1;
       } else {
-        counts[label] = 1;
+        counts[finalLabel] = 1;
       }
 
-      if (violationCriteria.includes(label)) {
+      if (isViolation) {
         violationTotal += 1;
+
+        if (violationCounts[finalLabel] !== undefined) {
+          violationCounts[finalLabel] += 1;
+        } else {
+          violationCounts[finalLabel] = 1;
+        }
       } else {
         nonViolationTotal += 1;
       }
     });
   });
 
+  // ... (Perhitungan persentase dan return tetap sama)
   const totalDetections = violationTotal + nonViolationTotal;
   const violationPercentage =
     totalDetections > 0
@@ -432,14 +504,14 @@ async function getViolationSummary (date = null, type = "today", startDate = nul
       nonViolation: nonViolationPercentage + "%",
     },
     counts,
+    violationCounts
   };
 }
-
 
 async function getViolationByCamera (date = null, type = "today", startDate = null, endDate = null, id_camera = null) {
   try {
     console.log('📊 getViolationByCamera START - type:', type, 'date:', date, 'startDate:', startDate, 'endDate:', endDate, 'id_camera:', id_camera);
-    
+
     const [cameras] = await dbApd.query("SELECT id, name, location FROM cameras");
     console.log('📷 Cameras loaded:', cameras.length);
 
@@ -455,7 +527,7 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
       };
     });
 
-    // 🕒 Tentukan filter waktu berdasarkan type
+    // 🕒 Tentukan filter waktu berdasarkan type (Bagian ini tetap sama)
     let whereClause = "";
     let params = [];
 
@@ -465,16 +537,14 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
         break;
 
       case "week":
-        // Ambil 7 hari terakhir (termasuk hari ini)
         whereClause = "WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
         break;
 
       case "month":
-        // Ambil data bulan ini
         whereClause = `
-          WHERE YEAR(timestamp) = YEAR(CURDATE())
-          AND MONTH(timestamp) = MONTH(CURDATE())
-        `;
+               WHERE YEAR(timestamp) = YEAR(CURDATE())
+               AND MONTH(timestamp) = MONTH(CURDATE())
+            `;
         break;
 
       case "custom":
@@ -482,13 +552,12 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
           whereClause = "WHERE DATE(timestamp) BETWEEN ? AND ?";
           params.push(startDate, endDate);
         } else {
-          whereClause = "WHERE DATE(timestamp) = CURDATE()"; // fallbacka
+          whereClause = "WHERE DATE(timestamp) = CURDATE()";
         }
         break;
 
       case "today":
       default:
-        // Gunakan parameter date jika ada, jika tidak gunakan hari ini
         const targetDate = date || new Date().toISOString().split('T')[0];
         whereClause = "WHERE DATE(timestamp) = ?";
         params.push(targetDate);
@@ -503,18 +572,17 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
     // 📦 Ambil data container sesuai filter waktu
     const [rows] = await dbApd.query(
       `
-        SELECT id_camera, detected_container_id
-        FROM container
-        ${whereClause}
-      `,
+            SELECT id_camera, detected_container_id
+            FROM container
+            ${whereClause}
+          `,
       params
     );
-    
+
     console.log('📦 Container rows found:', rows.length);
 
-    // 🚨 Tentukan kriteria pelanggaran
-    const violationCriteria = ["No Hardhat", "No Mask", "No Glove"];
-    const ignoreLabels = ["Person"]; // abaikan label Person
+    // 🚨 Tentukan kriteria pelanggaran BARU
+    const IGNORE_LABEL = "person"; // Dalam bentuk lowercase
 
     // 🔄 Iterasi data container
     rows.forEach(row => {
@@ -529,18 +597,30 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
         .filter(l => l.length > 0);
 
       labels.forEach(label => {
-        if (ignoreLabels.includes(label)) return;
+        // --- START MODIFIKASI NORMALISASI & LOGIKA ---
 
-        if (violationCriteria.includes(label)) {
+        const normalizedLabel = normalizeLabel(label);
+
+        // 1. Abaikan label "person"
+        if (normalizedLabel === IGNORE_LABEL) return;
+
+        // 2. Cek apakah ini Pelanggaran (mengandung 'no ')
+        const isViolation = normalizedLabel.includes("no ");
+
+        // TALLY HANYA BERDASARKAN isViolation
+        if (isViolation) {
           cameraSummary.totals.violation += 1;
         } else {
           cameraSummary.totals.nonViolation += 1;
         }
+
         cameraSummary.totals.totalDetections += 1;
+
+        // --- END MODIFIKASI NORMALISASI & LOGIKA ---
       });
     });
 
-    // 📊 Hitung persentase per kamera
+    // 📊 Hitung persentase per kamera (Bagian ini tetap sama)
     Object.values(summary).forEach(cam => {
       const { violation, nonViolation, totalDetections } = cam.totals;
       cam.percentages.violation =
@@ -556,7 +636,7 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
     // Konversi object ke array untuk response
     const result = Object.values(summary);
     console.log('✅ getViolationByCamera SUCCESS - cameras returned:', result.length);
-    
+
     return result;
   } catch (error) {
     console.error('❌ getViolationByCamera ERROR:', error.message);

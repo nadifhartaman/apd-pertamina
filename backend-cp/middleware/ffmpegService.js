@@ -203,6 +203,14 @@ function startStream (rtspUrl, streamKey) {
 }
 
 async function initializeStreams () {
+  // Check if HLS conversion is enabled
+  const ENABLE_HLS = process.env.ENABLE_HLS_CONVERSION !== 'false';
+  
+  if (!ENABLE_HLS) {
+    console.log("HLS Conversion is disabled. Skipping FFmpeg initialization.");
+    return;
+  }
+
   console.log("Initializing camera streams from database...");
   try {
     const { data: cameras } = await cameraApdModel.getAllCamera(1, 200);
