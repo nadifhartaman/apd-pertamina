@@ -56,10 +56,8 @@ export default function AuthRegister () {
       await authApi.register(userData);
 
       // langsung login
-      console.log('Registration successful, attempting login with:', { email, password });
       const loginResponse = await authApi.login({ email, password });
 
-      console.log('Login response after registration:', loginResponse);
       const { token, user } = loginResponse.data;
 
       if (!token) throw new Error("Token tidak ditemukan di response");

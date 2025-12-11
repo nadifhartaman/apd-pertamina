@@ -50,7 +50,6 @@ const ModalFormUser = ({ isOpen, onClose, user, onSuccess }) => {
       } else {
         response = await authApi.createNewUser(formData);
       }
-      console.log(response)
       toast.success(!isEdit ? "Sukses membuat data baru" : ("Sukses Merubah data " + response.data.data.user.email), { position: 'top-right' });
       // if (response.status !== 200 || response.status !== 201) return;
 
@@ -134,3 +133,4 @@ const ModalFormUser = ({ isOpen, onClose, user, onSuccess }) => {
 };
 
 export default ModalFormUser;
+

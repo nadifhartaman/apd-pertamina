@@ -114,7 +114,6 @@ const CCTVManager = () => {
       fps: camera.fps,
       status: camera.status
     });
-    console.log(camera.id)
     setSelectedIdCam(camera.id)
     setShowEditModal(true);
   };
@@ -153,7 +152,6 @@ const CCTVManager = () => {
   };
 
   const handleDeleteCamera = (cameraId) => {
-    console.log(cameraId)
     if (window.confirm('Apakah Anda yakin ingin menghapus kamera ini?')) {
       deleteCamAPD(cameraId).then(res => {
         if (res.success) {

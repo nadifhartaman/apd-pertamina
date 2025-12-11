@@ -66,7 +66,6 @@ export const useCameraAPD = () => {
         }));
 
         setListCameraAPD(parsed);
-        console.log("dataCamAPD for list:", parsed);
       } else {
         setError(`Gagal memuat data camera: ${result.error}`);
       }
@@ -147,3 +146,4 @@ export const useCameraAPD = () => {
     deleteCamAPD
   };
 };
+

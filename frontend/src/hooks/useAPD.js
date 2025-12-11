@@ -20,6 +20,26 @@ export const useAPD = () => {
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
 
+  // Auto-update dates based on filter type
+  useEffect(() => {
+    const currentToday = new Date().toISOString().split("T")[0];
+    
+    if (filterType === 'week') {
+      // For week filter, send no dates or auto-calculated range
+      // Backend will handle the 7-day range
+      setStartDate("");
+      setEndDate("");
+    } else if (filterType === 'month') {
+      // For month filter, also let backend handle it
+      setStartDate("");
+      setEndDate("");
+    } else {
+      // For today, yesterday, or custom
+      setStartDate(currentToday);
+      setEndDate(currentToday);
+    }
+  }, [filterType]);
+
   const fetchApd = async () => {
     setLoadData(true);
     setLoading(true);
@@ -55,7 +75,6 @@ export const useAPD = () => {
     if (result.success) {
       setDataReportApd(result.data);
       setLoadData(false);
-      console.log("data report", result);
     } else {
       setLoadData(false);
     }
@@ -98,7 +117,6 @@ export const useAPD = () => {
       endDate,
       selectedLocationFilter === "all" ? null : selectedLocationFilter
     );
-    console.log("data", result);
     if (result.success) {
       setSummaryViolation(result.summary);
     } else {
@@ -142,7 +160,6 @@ export const useAPD = () => {
     fetchSummaryViolation();
     fetchAllApd();
     fetchTodayPerWeek();
-    console.log(todayPerWeek)
   }, [page, filterType, startDate, endDate, selectedLocationFilter]);
 
   return {
@@ -171,3 +188,4 @@ export const useAPD = () => {
     today
   };
 };
+

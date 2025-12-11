@@ -25,7 +25,6 @@ const ListPreview = () => {
               const response = await fetch(`http://localhost:3001/api/stream/${cam.channel || cam.id}`);
               const data = await response.json();
               streamKeyMap[cam.id] = data.streamKey;
-              console.log(`✅ Stream key untuk ${cam.name}: ${data.streamKey}`);
             } catch (err) {
               console.error(`❌ Error fetching stream key for ${cam.name}:`, err);
               // Fallback ke channel name jika error

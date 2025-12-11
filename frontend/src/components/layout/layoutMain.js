@@ -62,7 +62,6 @@ const Layout = ({ children }) => {
     const filteredMenu = filterMenuByRole(baseMenu);
     // setMenu(filteredMenu);
     setMenu(listMenu);
-    console.log("path", filteredMenu)
   }, [pathname, user])
 
   if (!mounted) return null;

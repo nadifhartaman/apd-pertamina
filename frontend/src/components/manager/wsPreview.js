@@ -57,7 +57,6 @@ const WebSocketCameraPreview = ({ url, cameraId, customcss, streamType = "auto" 
       ws.onopen = () => {
         setIsConnected(true);
         setError(null);
-        console.log('WebSocket connected');
         
         // Send camera request if cameraId provided
         if (cameraId) {
@@ -102,7 +101,6 @@ const WebSocketCameraPreview = ({ url, cameraId, customcss, streamType = "auto" 
 
       ws.onclose = (event) => {
         setIsConnected(false);
-        console.log('WebSocket disconnected:', event.code, event.reason);
         
         // Attempt to reconnect after delay if not a normal closure
         if (event.code !== 1000 && event.code !== 1001) {
@@ -139,7 +137,6 @@ const WebSocketCameraPreview = ({ url, cameraId, customcss, streamType = "auto" 
       socket.on('connect', () => {
         setIsConnected(true);
         setError(null);
-        console.log('Socket.IO connected');
         
         // Subscribe to camera stream
         if (cameraId) {
@@ -178,11 +175,9 @@ const WebSocketCameraPreview = ({ url, cameraId, customcss, streamType = "auto" 
 
       socket.on('disconnect', (reason) => {
         setIsConnected(false);
-        console.log('Socket.IO disconnected:', reason);
       });
 
       socket.on('reconnect', (attemptNumber) => {
-        console.log('Socket.IO reconnected after', attemptNumber, 'attempts');
         setIsConnected(true);
         setError(null);
       });

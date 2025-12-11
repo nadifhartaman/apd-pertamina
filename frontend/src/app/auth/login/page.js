@@ -43,13 +43,10 @@ export default function AuthLogin () {
       return;
     }
     try {
-      console.log('Attempting login with:', { email, password });
       const response = await authApi.login({
         email,
         password
       });
-
-      console.log('Login response:', response);
 
       const { token, user } = response.data;
 

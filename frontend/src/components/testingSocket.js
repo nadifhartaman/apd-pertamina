@@ -17,13 +17,11 @@ export default function SocketConnection() {
     socketInstance.on('connect', () => {
       setIsConnected(true);
       setConnectionStatus('Connected');
-      console.log('Connected to socket server');
     });
 
     socketInstance.on('disconnect', () => {
       setIsConnected(false);
       setConnectionStatus('Disconnected');
-      console.log('Disconnected from socket server');
     });
 
     socketInstance.on('connect_error', (error) => {
@@ -33,7 +31,6 @@ export default function SocketConnection() {
 
     // Listen to result_detection_2 topic
     socketInstance.on('result_detection_2', (data) => {
-      console.log('Received data from result_detection_2:', data);
       setMessages(prev => [...prev, {
         id: Date.now(),
         timestamp: new Date().toLocaleTimeString(),

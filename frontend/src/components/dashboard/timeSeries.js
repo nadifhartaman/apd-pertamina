@@ -5,7 +5,6 @@ import { Line, Bar } from "react-chartjs-2";
 
 export default function TimeSeriesCard({ rawData, filterType = "hour", type = "hour", maxRotation = true, chartType = "Line" }) {
   // === Tentukan label berdasarkan tipe data ===
-  console.log(rawData)
   const labels =
     type === "week"
       ? rawData.map((item, i) => `Minggu ke-${item.week ?? i + 1}`)
@@ -74,3 +73,4 @@ export default function TimeSeriesCard({ rawData, filterType = "hour", type = "h
     return <Line data={chartData} options={chartOptions} />;
   }
 }
+

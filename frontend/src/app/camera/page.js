@@ -97,7 +97,6 @@ const DashboardPerKamera = () => {
 
   useEffect(() => {
     if (!dailyStats || !dataCamAPD || !summaryViolation) return;
-    console.log(summaryViolation);
     // console.log(dailyStats);
     setStatsData([
       {
@@ -737,3 +736,4 @@ const DashboardPerKamera = () => {
 };
 
 export default DashboardPerKamera;
+

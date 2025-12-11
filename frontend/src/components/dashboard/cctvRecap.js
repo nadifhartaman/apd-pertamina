@@ -176,7 +176,6 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
           id_camera: 1
         });
 
-        console.log('APD Response:', response.data);
         // setDataApd(response.data.data);
         // setPagination(response.data.pagination);
       } catch (error) {
@@ -312,7 +311,6 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
                 <tbody>
                   {dataApd.map((record, index) => {
                     const number = (page - 1) * pagination.limit + (index + 1);
-                    console.log('Rendering record:', record);
                     const datePart = record.timestamp?.split('T')[0];
                     const timePart = record.timestamp?.split('T')[1]?.split('.')[0];
 
@@ -382,42 +380,69 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
                       </tr>
                     )
                   })}
+                  {dataApd.length === 0 && (
+                    <tr>
+                      <td colSpan="6" className="text-center py-8">
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <div className="text-gray-300">
+                            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
+                          </div>
+                          <p className="text-gray-500 font-medium">Data tidak ditemukan</p>
+                          <p className="text-gray-400 text-sm">Belum ada deteksi APD untuk periode yang dipilih</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </motion.div>
           )}
           {activeTabCCTV === 'image' && (
             <div className='my-5'>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {dataApd.map((record, index) => (
-                  <motion.div
-                    key={record.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 300,
-                      delay: index * 0.1
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    className="rounded-lg relative shadow-md border border-gray-200 overflow-hidden bg-white"
-                  >
-                    <div className="aspect-video relative">
-                      <Image
-                        src={`data:image/jpeg;base64,${record.image_frame}`}
-                        alt="Capture"
-                        fill
-                        className="object-cover rounded-lg"
-                        unoptimized
-                      />
-                    </div>
+              {dataApd.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-12">
+                  <div className="text-gray-300">
+                    <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 font-medium">Tidak ada gambar deteksi</p>
+                  <p className="text-gray-400 text-sm">Belum ada hasil tangkapan APD untuk periode yang dipilih</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {dataApd.map((record, index) => (
+                    <motion.div
+                      key={record.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        delay: index * 0.1
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      className="rounded-lg relative shadow-md border border-gray-200 overflow-hidden bg-white"
+                    >
+                      <div className="aspect-video relative">
+                        <Image
+                          src={`data:image/jpeg;base64,${record.image_frame}`}
+                          alt="Capture"
+                          fill
+                          className="object-cover rounded-lg"
+                          unoptimized
+                        />
+                      </div>
 
-                    <div className="absolute top-0 right-0 z-10 p-2">
-                      <h4 className="font-semibold text-[9px] bg-black/90 p-1 rounded-sm text-white truncate">{record.timestamp.split('T')[0]} - {record.timestamp.split('T')[1].split('.')[0]} - {record.id_camera ? `Kamera ${record.id_camera}` : ''}</h4>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+                      <div className="absolute top-0 right-0 z-10 p-2">
+                        <h4 className="font-semibold text-[9px] bg-black/90 p-1 rounded-sm text-white truncate">{record.timestamp.split('T')[0]} - {record.timestamp.split('T')[1].split('.')[0]} - {record.id_camera ? `Kamera ${record.id_camera}` : ''}</h4>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
           {pagination && (
