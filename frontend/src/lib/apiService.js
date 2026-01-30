@@ -5,7 +5,7 @@ import axios from 'axios';
 //   ? `${process.env.NEXT_PUBLIC_API_PERTAMINA}/api`
 //   : 'http://localhost:3001/api';
 
-const baseURLPertamina = process.env.NEXT_PUBLIC_API_URL
+const baseURLPertamina = `${process.env.NEXT_PUBLIC_API_URL}/api`
 // generic func to fetch data
 export const apiRequest = async (method, url, data = null) => {
   try {

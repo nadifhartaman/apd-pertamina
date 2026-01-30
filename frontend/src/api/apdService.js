@@ -2,7 +2,7 @@ import api from "./apiInstance";
 
 export const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+export const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 export const cameraService = {
   // Get paginated camera data

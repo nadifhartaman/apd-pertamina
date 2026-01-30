@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // const API_BASE_URL = 'http://103.30.195.159:3001/api';
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+export const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 export const API_THIRD_CAMERA_URL = process.env.NEXT_PUBLIC_CAMERA_API_URL;
 
 export const cameraService = {

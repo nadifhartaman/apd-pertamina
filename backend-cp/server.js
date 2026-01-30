@@ -39,7 +39,7 @@ const printRoutes = () => {
 
     // Mounted router (layer.name may vary), inspect handle.stack
     const handleStack = layer.handle?.stack || layer?.handle;
-    if (handleStack && Array.isArray(handleStack)) {
+    if (handleStack && Array.isArray(handleStack)) {x
       handleStack.forEach((handler) => {
         if (handler.route) {
           const methods = Object.keys(handler.route.methods).join(",").toUpperCase();
