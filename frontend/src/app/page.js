@@ -352,7 +352,7 @@ const DashboardSummary = () => {
         )} */}
       </div>
       <CRecapComponent dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV} />
-      <MapComponent />
+      {/* <MapComponent /> */}
       {/* <video src="http://localhost:3001/api/stream/start?url=rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov&key=camera1" controls></video>
        */}
       {/* <div className="aspect-video">

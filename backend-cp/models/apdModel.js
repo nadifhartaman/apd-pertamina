@@ -652,6 +652,21 @@ async function getViolationByCamera (date = null, type = "today", startDate = nu
   }
 }
 
+async function deleteOldData() {
+  try {
+    // Delete data older than the *first day* of the 3rd month ago.
+    // Example: If today is Jan 15, 3 months ago is Oct. 
+    // This query deletes data BEFORE Oct 1st. So Oct, Nov, Dec, and Jan are kept.
+    // Only when we reach Feb 1st will Oct data be deleted (cutoff moves to Nov 1st).
+    const query = `DELETE FROM container WHERE timestamp < DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y-%m-01')`;
+    const [result] = await db.query(query);
+    return result;
+  } catch (error) {
+    console.error('❌ deleteOldData ERROR:', error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   getAllContainer,
   getLastContainer,
@@ -659,5 +674,6 @@ module.exports = {
   getTotalDetection,
   getViolationSummary,
   getViolationByCamera,
-  getCountPerWeek
+  getCountPerWeek,
+  deleteOldData
 };

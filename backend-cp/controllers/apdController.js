@@ -158,7 +158,24 @@ async function getViolationSummaryByCamera (req, res) {
   }
 }
 
+async function cleanupOldData(req, res) {
+  try {
+    const result = await apdModel.deleteOldData();
+    res.status(200).json({
+      success: true,
+      message: `Deleted ${result.affectedRows} old records.`,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to cleanup old data",
+      error: err.message,
+    });
+  }
+}
+
 module.exports = {
+  cleanupOldData,
   getContainers,
   getLastContainer,
   getTodayCountPerHour,

@@ -9,6 +9,7 @@ const authApdRoutes = require("./routes/authApdRoutes");
 const authMiddleware = require("./middleware/authApdMiddleware");
 const streamRoutes = require("./routes/streamRoutes");
 const { initializeStreams } = require('./middleware/ffmpegService');
+const { deleteOldData } = require('./models/apdModel');
 const publicRoutes = require("./routes/publicRoutes");
 
 const app = express();
@@ -54,9 +55,34 @@ const printRoutes = () => {
 
 const PORT = process.env.PORT || 3001;
 const ENABLE_HLS = process.env.ENABLE_HLS_CONVERSION !== 'false';
+const AUTO_CLEANUP = process.env.AUTO_CLEANUP === 'true';
 
 app.listen(PORT, async () => {
   console.log(`Server running at http://localhost:${PORT}`);
+
+  if (AUTO_CLEANUP) {
+    const runCleanup = async () => {
+      try {
+        console.log("🧹 Auto Cleanup: Running task...");
+        const result = await deleteOldData();
+        if (result.affectedRows > 0) {
+          console.log(`✔️ Auto Cleanup: Deleted ${result.affectedRows} records older than 3 months.`);
+        } else {
+          console.log("✔️ Auto Cleanup: No old records found.");
+        }
+      } catch (error) {
+        console.error("❌ Auto Cleanup Failed:", error.message);
+      }
+    };
+
+    // Run immediately on start
+    await runCleanup();
+
+    // Schedule to run every 24 hours
+    setInterval(runCleanup, 24 * 60 * 60 * 1000);
+    console.log("⏰ Auto Cleanup Schedule: Active (Every 24 hours)");
+  }
+
   if (ENABLE_HLS) {
     console.log("HLS Conversion: ENABLED ✓");
     await initializeStreams();

@@ -271,7 +271,7 @@ const CCTVManager = () => {
 
                 {/* Camera Preview Placeholder */}
                 <div className="bg-gray-100 rounded-lg mb-4 aspect-video flex items-center justify-center overflow-hidden">
-                  {camera.rtsp_url ? (
+                  {/* {camera.rtsp_url ? (
                     camera.rtsp_url.includes("rtsp") ? (
                       streamKeys[camera.id] ? (
                         <UniversalCameraPreview
@@ -293,7 +293,8 @@ const CCTVManager = () => {
                     )
                   ) : (
                     <BiVideoRecording size={48} className="text-gray-400" />
-                  )}
+                  )} */}
+                  <BiVideoRecording size={48} className="text-gray-400" />
                 </div>
 
                 {/* Camera Info */}

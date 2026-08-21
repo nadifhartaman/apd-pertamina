@@ -685,7 +685,7 @@ const DashboardPerKamera = () => {
               //     </div>
               //   </div>
               // </div>
-              <CRecapComponent dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV} />
+              <CRecapComponent dataApd={dataApd} pagination={pagination} page={page} setPage={setPage} lastRecord={lastRecord} todayPerHour={todayPerHour} setActiveTabCCTV={setActiveTabCCTV} activeTabCCTV={activeTabCCTV} filterType={filterType} startDate={startDate} endDate={endDate} selectedCamera={selectedCamera} />
             )}
 
             {activeTab === "camera" && (

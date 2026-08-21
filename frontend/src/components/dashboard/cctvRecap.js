@@ -7,6 +7,9 @@ import { motion } from "framer-motion";
 import { BsFileEarmarkBarGraph } from "react-icons/bs";
 import { BiVideoRecording } from "react-icons/bi";
 import { apdApi } from '@/lib/apiService'; // tambahkan import ini
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import { FiDownload } from 'react-icons/fi';
 
 const options = {
   scales: {
@@ -88,16 +91,6 @@ export const CRecapTableComponent = ({ dataApd = [] }) => {
                       link
                     </a>
                   </td>
-                  {/* <td className="text-center">
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() =>
-                            setSelectedImage(`data:image/jpeg;base64,${record.image_frame}`)
-                          }
-                        >
-                          Lihat
-                        </button>
-                      </td> */}
                 </tr>
               );
             })
@@ -160,7 +153,7 @@ export const CRecapImageComponent = ({ dataApd = [] }) => {
   );
 };
 
-const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, todayPerHour, activeTabCCTV, setActiveTabCCTV }) => {
+const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, todayPerHour, activeTabCCTV, setActiveTabCCTV, filterType, startDate, endDate, selectedCamera }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -201,28 +194,112 @@ const CRecapComponent = ({ dataApd, lastRecord, pagination, page, setPage, today
       },
     ],
   };
+
+  const exportExcel = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch all data for the current filters
+      const params = { page: 1, limit: 10000, type: filterType };
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+      if (selectedCamera) params.id_camera = selectedCamera;
+
+      const response = await apdApi.getApdData(1, 10000, params);
+      const allData = response.data?.data || [];
+
+      // Create Excel workbook
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Rekap Deteksi CCTV');
+
+      // Add headers
+      worksheet.columns = [
+        { header: 'No', key: 'no', width: 5 },
+        { header: 'Nama Kamera', key: 'camera_name', width: 20 },
+        { header: 'Tanggal', key: 'date', width: 20 },
+        { header: 'Informasi', key: 'information', width: 30 },
+        { header: 'Status', key: 'status', width: 10 },
+      ];
+
+      // Add data rows
+      allData.forEach((record, index) => {
+        const datePart = record.timestamp?.split('T')[0];
+        const timePart = record.timestamp?.split('T')[1]?.split('.')[0];
+        const fullDate = `${datePart} ${timePart}`;
+
+        const information = record?.detected_container_id
+          ? record.detected_container_id
+              .split(",")
+              .map(rawItem => rawItem.trim())
+              .filter(item => !item.toLowerCase().includes("person"))
+              .join(", ")
+          : '-';
+
+        worksheet.addRow({
+          no: index + 1,
+          camera_name: record.camera_name || `Kamera ${record.id_camera}`,
+          date: fullDate,
+          information: information,
+          status: 'Online',
+        });
+      });
+
+      // Style the header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF006DB7' }
+      };
+      worksheet.getRow(1).font = { color: { argb: 'FFFFFFFF' }, bold: true };
+
+      // Generate and download the file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const fileName = `rekap_deteksi_cctv_${new Date().toISOString().split('T')[0]}.xlsx`;
+      saveAs(blob, fileName);
+
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      alert('Terjadi kesalahan saat export Excel');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       <div className="card bg-white border-gray-100 border">
         <div className="card-body">
           <h3 className="card-title text-lg mb-4">Rekap Deteksi CCTV</h3>
-          <div className="tabs tabs-lifted flex mb-1 gap-2">
-            <button
-              className={`btn btn-md items-center flex gap-1 tab-lg shadow-none rounded-lg ${activeTabCCTV === 'detail'
-                ? 'bg-blue-200/80 text-blue-700 font-medium'
-                : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border-0'}`}
-              onClick={() => setActiveTabCCTV('detail')}
-            >
-              <BsFileEarmarkBarGraph size={18} />Tabel
-            </button>
-            <button
-              className={`btn btn-md items-center flex gap-1 tab-lg shadow-none rounded-lg ${activeTabCCTV === 'image'
-                ? 'bg-blue-200/80 text-blue-600 font-medium'
-                : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border-0'}`}
-              onClick={() => setActiveTabCCTV('image')}
-            >
-              <BiVideoRecording size={18} />Image
-            </button>
+          <div className="tabs tabs-lifted flex mb-1 gap-2 justify-between">
+            <div className="flex gap-2">
+              <button
+                className={`btn btn-md items-center flex gap-1 tab-lg shadow-none rounded-lg ${activeTabCCTV === 'detail'
+                  ? 'bg-blue-200/80 text-blue-700 font-medium'
+                  : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border-0'}`}
+                onClick={() => setActiveTabCCTV('detail')}
+              >
+                <BsFileEarmarkBarGraph size={18} />Tabel
+              </button>
+              <button
+                className={`btn btn-md items-center flex gap-1 tab-lg shadow-none rounded-lg ${activeTabCCTV === 'image'
+                  ? 'bg-blue-200/80 text-blue-600 font-medium'
+                  : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border-0'}`}
+                onClick={() => setActiveTabCCTV('image')}
+              >
+                <BiVideoRecording size={18} />Image
+              </button>
+            </div>
+            {activeTabCCTV === 'detail' && (
+              <button
+                className="btn btn-md items-center flex gap-1 tab-lg shadow-none rounded-lg bg-green-200/80 text-green-700 font-medium hover:bg-green-100 border-0"
+                onClick={exportExcel}
+                disabled={loading}
+              >
+                <FiDownload size={18} />
+                {loading ? 'Exporting...' : 'Export Excel'}
+              </button>
+            )}
           </div>
 
           {/* <pre>{JSON.stringify(lastRecord, null, 2)}</pre> */}
