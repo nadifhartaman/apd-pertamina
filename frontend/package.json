@@ -5,9 +5,9 @@
   "author": "Indismart",
   "description": "Pertamina APD Frontend",
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbo -p 9014",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 9014",
     "lint": "next lint"
   },
   "dependencies": {
