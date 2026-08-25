@@ -13,6 +13,14 @@ const { deleteOldData } = require('./models/apdModel');
 const publicRoutes = require("./routes/publicRoutes");
 
 const app = express();
+
+// ===== DEMO MODE WARNING =====
+if (process.env.DEMO_MODE === 'true') {
+  console.warn('==============================================');
+  console.warn('  DEMO_MODE AKTIF - LOGIN & SESSION DI-BYPASS');
+  console.warn('  Jangan gunakan konfigurasi ini di production!');
+  console.warn('==============================================');
+}
 app.use(express.json());
 
 //middleware

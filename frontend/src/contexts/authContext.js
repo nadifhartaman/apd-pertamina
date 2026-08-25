@@ -10,6 +10,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const AuthContext = createContext();
 
+// DEMO MODE: auto-login user demo & skip halaman login
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 export function AuthProvider ({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -66,6 +69,23 @@ export function AuthProvider ({ children }) {
 
   useEffect(() => {
     const checkToken = async () => {
+      // DEMO MODE: langsung set user demo tanpa perlu login
+      if (DEMO_MODE) {
+        const demoToken = "mocked.jwt.token";
+        const demoUser = { username: "Demo User", roles: [{ name: "admin" }] };
+        if (!Cookies.get("token")) {
+          Cookies.set("token", demoToken, { expires: 0.5, path: "/" });
+          Cookies.set("user", JSON.stringify(demoUser), { expires: 0.5, path: "/" });
+        }
+        setToken(demoToken);
+        setUser(demoUser);
+        setLoading(true);
+        if (pathname === "/auth/login") {
+          router.push("/");
+        }
+        return;
+      }
+
       const storedToken = Cookies.get("token");
       const userId = Cookies.get("id_user") || null;
 

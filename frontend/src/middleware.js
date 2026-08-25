@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+// DEMO MODE: saat aktif, semua route dianggap sudah login (tanpa token).
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 export function middleware (req) {
   const token = req.cookies.get("token")?.value;
   const pathname = req.nextUrl.pathname;
@@ -28,7 +31,8 @@ export function middleware (req) {
   }
 
   // Jika path = protectedRoutes dan tidak ada token, redirect ke login
-  if (protectedRoutes.includes(pathname) && !token) {
+  // (dilewati saat DEMO_MODE aktif)
+  if (protectedRoutes.includes(pathname) && !token && !DEMO_MODE) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
